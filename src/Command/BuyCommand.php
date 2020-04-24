@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Factory\Bl3pApiFactory;
+use Jorijn\Bl3pDca\Factory\Bl3PClientFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +26,7 @@ class BuyCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         // TODO: think about adding Dependency Injection here >
-        $api = (new Bl3pApiFactory())->createApi();
+        $api = (new Bl3PClientFactory())->createApi();
         $io = new SymfonyStyle($input, $output);
         $amount = $input->getArgument('amount');
 

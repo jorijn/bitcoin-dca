@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Api;
+namespace Jorijn\Bl3pDca\Client;
 
 /**
  * @source https://github.com/BitonicNL/bl3p-api/blob/master/examples/php/example.php
  */
-class Bl3pApi
+class Bl3PClient
 {
     /** @var string */
     private $publicKey;
