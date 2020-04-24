@@ -23,7 +23,7 @@ RUN composer dump-autoload \
     --no-plugins \
     --classmap-authoritative
 
-FROM php:7.4-alpine-cli
+FROM php:7.4-cli-alpine
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
