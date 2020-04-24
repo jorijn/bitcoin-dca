@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+use Jorijn\Bl3pDca\Command\BuyCommand;
+use Jorijn\Bl3pDca\Command\BalanceCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+$dotenv->loadEnv(__DIR__.'/../.env');
+
+$app = new Application();
+$app->add(new BuyCommand('buy'));
+$app->add(new BalanceCommand('balance'));
+$app->run();

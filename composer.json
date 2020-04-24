@@ -1,0 +1,26 @@
+{
+    "name": "jorijn/bl3p-dca",
+    "description": "Tool for automatically buying and withdrawing Bitcoin on Bl3P",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jorijn Schrijvershof",
+            "email": "jorijn@jorijn.com"
+        }
+    ],
+    "require": {
+        "symfony/console": "^5.0",
+        "symfony/dotenv": "^5.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jorijn\\Bl3pDca\\": "src/"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16"
+    }
+}
