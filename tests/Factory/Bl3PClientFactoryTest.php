@@ -33,9 +33,9 @@ class Bl3PClientFactoryTest extends TestCase
     {
         $factory = new Bl3PClientFactory();
 
-        $_ENV['BL3P_API_URL'] = 'url'.mt_rand();
-        $_ENV['BL3P_PUBLIC_KEY'] = 'pub_key'.mt_rand();
-        $_ENV['BL3P_PRIVATE_KEY'] = 'private_key'.mt_rand();
+        $_SERVER['BL3P_API_URL'] = 'url'.mt_rand();
+        $_SERVER['BL3P_PUBLIC_KEY'] = 'pub_key'.mt_rand();
+        $_SERVER['BL3P_PRIVATE_KEY'] = 'private_key'.mt_rand();
 
         self::assertInstanceOf(Bl3PClientInterface::class, $factory->createApi());
     }
