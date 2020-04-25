@@ -104,19 +104,19 @@ The `buy` and `withdraw` command both allow skipping the confirmation questions 
 
 ### Example: Buying €50.00 of Bitcoin and withdrawing every monday. Buy at 3am and withdraw at 3:30am.
 ```
-0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
-30 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+0 3 * * mon docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+30 3 * * mon docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
 ```
 
 ### Example: Buying €50.00 of Bitcoin every week on monday, withdrawing everything on the 1st of every month.
 ```
-0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
-0 0 1 * * docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+0 3 * * mon docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+0 0 1 * * docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
 ```
 
 ### Example: Send out an email when Bitcoin was bought
 ```
-0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi |mail -s "You just bought more Bitcoin!" youremail@here.com
+0 3 * * mon docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi |mail -s "You just bought more Bitcoin!" youremail@here.com
 ```
 
 You can use the great tool at https://crontab.guru/ to try more combinations. 
