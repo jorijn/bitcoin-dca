@@ -120,3 +120,4 @@ You can use the great tool at https://crontab.guru/ to try more combinations.
 ### Tips
 * You can create and run this tool with different configuration files, e.g. different withdrawal addresses for your spouse, children or other saving purposes.
 * On Linux, you can redirect the output to other tools, e.g. email yourself when Bitcoin is bought. Use `--no-ansi` to disable colored output.
+* Go nuts on security, use a different API keys for buying and withdrawal. You can even lock your BL3P account to only allow a single Bitcoin address for withdrawal through the API.
