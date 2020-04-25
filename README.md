@@ -1,5 +1,7 @@
 # Bitcoin DCA using the BL3P Exchange
 
+_Please be aware this is beta software. Test thoroughly with small amounts of money at first._
+
 ## Requirements
 * You need to have an account on BL3P: https://bl3p.eu/.
 * You need to have Docker installed: https://docs.docker.com/get-docker/
