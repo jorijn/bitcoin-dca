@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class WithdrawCommand extends Command
 {
     /** @var int withdraw fee in satoshis */
-    public const WITHDRAW_FEE = 30000;
+    public const WITHDRAW_FEE = 50000;
 
     protected Bl3PClientInterface $client;
 
