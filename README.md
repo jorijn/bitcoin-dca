@@ -1,6 +1,6 @@
 # Bitcoin DCA using the BL3P Exchange
 
-_Please be aware this is beta software. Test thoroughly with small amounts of money at first._
+_Please be aware this is beta software. Test thoroughly with small amounts of money at first. This software is provided "as is" and comes without warranty. See [LICENSE](LICENSE)._
 
 ## Requirements
 * You need to have an account on BL3P: https://bl3p.eu/.
