@@ -1,5 +1,9 @@
 # Bitcoin DCA using the BL3P Exchange
 
+![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bl3p-dca)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jorijn/bl3p-dca)
+![GitHub](https://img.shields.io/github/license/jorijn/bl3p-dca)
+
 _Please be aware this is beta software. Test thoroughly with small amounts of money at first. This software is provided "as is" and comes without warranty. See [LICENSE](LICENSE)._
 
 ## Requirements
