@@ -5,6 +5,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Jorijn\Bl3pDca\Command\BuyCommand;
 use Jorijn\Bl3pDca\Command\BalanceCommand;
+use Jorijn\Bl3pDca\Command\WithdrawCommand;
+use Jorijn\Bl3pDca\Factory\Bl3PClientFactory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -13,7 +15,11 @@ if (file_exists(__DIR__.'/../.env')) {
     $dotenv->loadEnv(__DIR__.'/../.env');
 }
 
+// create dependencies
+$api = (new Bl3PClientFactory())->createApi();
+
 $app = new Application();
-$app->add(new BuyCommand('buy'));
-$app->add(new BalanceCommand('balance'));
+$app->add(new BuyCommand('buy', $api));
+$app->add(new BalanceCommand('balance', $api));
+$app->add(new WithdrawCommand('withdraw', $api));
 $app->run();

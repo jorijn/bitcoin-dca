@@ -10,6 +10,6 @@ class Bl3PClientFactory
 {
     public function createApi(): Bl3PClient
     {
-        return new Bl3PClient($_ENV['Bl3P_API_URL'], $_ENV['BL3P_PUBLIC_KEY'], $_ENV['BL3P_PRIVATE_KEY']);
+        return new Bl3PClient($_ENV['BL3P_API_URL'], $_ENV['BL3P_PUBLIC_KEY'], $_ENV['BL3P_PRIVATE_KEY']);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Factory\Bl3PClientFactory;
+use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,18 +15,28 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BuyCommand extends Command
 {
-    public function configure()
+    public const ORDER_TIMEOUT = 30;
+
+    protected Bl3PClientInterface $client;
+
+    public function __construct(string $name, Bl3PClientInterface $client)
+    {
+        parent::__construct($name);
+
+        $this->client = $client;
+    }
+
+    public function configure(): void
     {
         $this
             ->addArgument('amount', InputArgument::REQUIRED, 'The amount of EUR to use for the BUY order')
-            ->addOption('yes', 'y', InputOption::VALUE_NONE, 'If supplied, will not confirm the amount and place the order immediately')
+            ->addOption('yes', 'y', InputOption::VALUE_NONE,
+                'If supplied, will not confirm the amount and place the order immediately')
             ->setDescription('Places a buy order on the exchange');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        // TODO: think about adding Dependency Injection here >
-        $api = (new Bl3PClientFactory())->createApi();
         $io = new SymfonyStyle($input, $output);
         $amount = $input->getArgument('amount');
 
@@ -38,7 +48,8 @@ class BuyCommand extends Command
 
         if (!$input->getOption('yes')) {
             $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion('Are you sure you want to place an order for EUR '.$amount.'? [y/N] ', false);
+            $question = new ConfirmationQuestion('Are you sure you want to place an order for EUR '.$amount.'? [y/N] ',
+                false);
             if (!$helper->ask($input, $output, $question)) {
                 return 0;
             }
@@ -51,19 +62,38 @@ class BuyCommand extends Command
         ];
 
         // FIXME: be more defensive about this part, stuff could break here and no one likes error messages when it comes to money
-        $result = $api->apiCall('BTCEUR/money/order/add', $params);
+        $result = $this->client->apiCall('BTCEUR/money/order/add', $params);
 
-        // fetch the order info
-        $orderInfo = $api->apiCall('BTCEUR/money/order/result', ['order_id' => $result['data']['order_id']]);
+        // fetch the order info and wait until the order has been filled
+        $failureAt = time() + self::ORDER_TIMEOUT;
+        do {
+            $orderInfo = $this->client->apiCall('BTCEUR/money/order/result', [
+                'order_id' => $result['data']['order_id'],
+            ]);
 
-        $io->success(sprintf(
-            'Bought: %s, EUR: %s, price: %s, spent fees: %s',
-            $orderInfo['data']['total_amount']['display'],
-            $orderInfo['data']['total_spent']['display_short'],
-            $orderInfo['data']['avg_cost']['display_short'],
-            $orderInfo['data']['total_fee']['display']
-        ));
+            if ('closed' === $orderInfo['data']['status']) {
+                break;
+            }
 
-        return 0;
+            sleep(1);
+        } while (time() < $failureAt);
+
+        if ('closed' === $orderInfo['data']['status']) {
+            $io->success(sprintf(
+                'Bought: %s, EUR: %s, price: %s, spent fees: %s',
+                $orderInfo['data']['total_amount']['display'],
+                $orderInfo['data']['total_spent']['display_short'],
+                $orderInfo['data']['avg_cost']['display_short'],
+                $orderInfo['data']['total_fee']['display']
+            ));
+
+            return 0;
+        }
+
+        $this->client->apiCall('BTCEUR/money/order/cancel', ['order_id' => $result['data']['order_id']]);
+
+        $io->error('Was not able to fill a MARKET order within the specified timeout ('.self::ORDER_TIMEOUT.' seconds). The order was cancelled.');
+
+        return 1;
     }
 }
