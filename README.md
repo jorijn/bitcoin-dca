@@ -3,7 +3,7 @@
 ## Requirements
 * You need to have an account on BL3P: https://bl3p.eu/.
 * You need to have Docker installed: https://docs.docker.com/get-docker/
-* You need to have an API key active on BL3P. Create one here: https://bl3p.eu/security. It needs **read**, **trade** and **withdraw** permission. For safety, I would recommend locking the API key to the IP address your planning on running this tool from.
+* You need to have an API key active on BL3P. Create one here: https://bl3p.eu/security. It needs **read**, **trade** and **withdraw** permission. For safety, I would recommend locking the API key to the IP address you are planning on running this tool from.
 
 ## About this software
 The DCA tool is built with flexibility in mind, allowing you to specify your own schedule of buying and withdrawing. A few examples that are possible:
@@ -56,7 +56,7 @@ BL3P_API_URL=https://api.bl3p.eu/1/
 BL3P_WITHDRAW_ADDRESS=hardware wallet address here
 ```
 
-You can test that it work properly with:
+You can test that it work with:
 
 ```bash
 $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest balance
@@ -94,4 +94,27 @@ Ready to withdraw 0.00412087 BTC to Bitcoin Address bc1abcdefghijklmopqrstuvwxuz
 **When testing, make sure to verify the displayed Bitcoin address matches the one configured in your `.bl3p-dca` configuration file. When confirming this question, withdrawal executes immediately.**
 
 ## Automating buying and withdrawing
-TODO
+The `buy` and `withdraw` command both allow skipping the confirmation questions with the `--yes` option. By leveraging the system's cron daemon on Linux, you can create flexible setups. Use the command `crontab -e` to edit periodic tasks for your user:
+
+### Example: Buying €50.00 of Bitcoin and withdrawing every monday. Buy at 3am and withdraw at 3:30am.
+```
+0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+30 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+```
+
+### Example: Buying €50.00 of Bitcoin every week on monday, withdrawing everything on the 1st of every month.
+```
+0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+0 0 1 * * docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+```
+
+### Example: Send out an email when Bitcoin was bought
+```
+0 3 * * mon docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi |mail -s "You just bought more Bitcoin!" youremail@here.com
+```
+
+You can use the great tool at https://crontab.guru/ to try more combinations. 
+
+### Tips
+* You can create and run this tool with different configuration files, e.g. different withdrawal addresses for your spouse, children or other saving purposes.
+* On Linux, you can redirect the output to other tools, e.g. email yourself when Bitcoin is bought. Use `--no-ansi` to disable colored output.
