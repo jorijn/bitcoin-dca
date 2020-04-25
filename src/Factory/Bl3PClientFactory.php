@@ -12,10 +12,10 @@ class Bl3PClientFactory
 {
     public function createApi(): Bl3PClientInterface
     {
-        if (!isset($_ENV['BL3P_API_URL'], $_ENV['BL3P_PUBLIC_KEY'], $_ENV['BL3P_PRIVATE_KEY'])) {
+        if (!isset($_SERVER['BL3P_API_URL'], $_SERVER['BL3P_PUBLIC_KEY'], $_SERVER['BL3P_PRIVATE_KEY'])) {
             throw new InvalidArgumentException('Incomplete configuration, missing BL3P_API_URL, BL3P_PUBLIC_KEY or BL3P_PRIVATE_KEY');
         }
 
-        return new Bl3PClient($_ENV['BL3P_API_URL'], $_ENV['BL3P_PUBLIC_KEY'], $_ENV['BL3P_PRIVATE_KEY']);
+        return new Bl3PClient($_SERVER['BL3P_API_URL'], $_SERVER['BL3P_PUBLIC_KEY'], $_SERVER['BL3P_PRIVATE_KEY']);
     }
 }

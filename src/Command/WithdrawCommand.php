@@ -54,7 +54,7 @@ class WithdrawCommand extends Command
         }
 
         // TODO find out if better validation is available here
-        $address = $_ENV['BL3P_WITHDRAW_ADDRESS'];
+        $address = $_SERVER['BL3P_WITHDRAW_ADDRESS'];
         if (empty($address)) {
             $io->error('No address available. Did you configure BL3P_WITHDRAW_ADDRESS?');
 
