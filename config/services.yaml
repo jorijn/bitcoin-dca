@@ -1,0 +1,46 @@
+parameters:
+
+services:
+  bl3p.command.buy:
+    class: Jorijn\Bl3pDca\Command\BuyCommand
+    arguments:
+      - 'buy'
+      - '@bl3p.api.client'
+    tags:
+      - { name: bl3p-dca.cli }
+
+  bl3p.command.withdraw:
+    class: Jorijn\Bl3pDca\Command\WithdrawCommand
+    arguments:
+      - 'withdraw'
+      - '@bl3p.api.client'
+      - '%env(BL3P_WITHDRAW_ADDRESS)%'
+    tags:
+      - { name: bl3p-dca.cli }
+
+  bl3p.command.balance:
+    class: Jorijn\Bl3pDca\Command\BalanceCommand
+    arguments:
+      - 'balance'
+      - '@bl3p.api.client'
+    tags:
+      - { name: bl3p-dca.cli }
+
+  bl3p.factory.api_client:
+    class: Jorijn\Bl3pDca\Factory\Bl3PClientFactory
+    arguments:
+      - '%env(BL3P_API_URL)%'
+      - '%env(BL3P_PUBLIC_KEY)%'
+      - '%env(BL3P_PRIVATE_KEY)%'
+
+  bl3p.api.client:
+    class: Jorijn\Bl3pDca\Client\Bl3PClient
+    factory:
+      - '@bl3p.factory.api_client'
+      - 'createApi'
+
+  bl3p.application:
+    class: Symfony\Component\Console\Application
+    public: true
+    arguments:
+      - 'BL3P Bitcoin DCA Tool'

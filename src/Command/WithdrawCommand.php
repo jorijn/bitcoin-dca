@@ -18,12 +18,14 @@ class WithdrawCommand extends Command
     public const WITHDRAW_FEE = 30000;
 
     protected Bl3PClientInterface $client;
+    protected string $address;
 
-    public function __construct(string $name, Bl3PClientInterface $client)
+    public function __construct(string $name, Bl3PClientInterface $client, string $address)
     {
         parent::__construct($name);
 
         $this->client = $client;
+        $this->address = $address;
     }
 
     public function configure(): void
@@ -54,8 +56,7 @@ class WithdrawCommand extends Command
         }
 
         // TODO find out if better validation is available here
-        $address = $_SERVER['BL3P_WITHDRAW_ADDRESS'];
-        if (empty($address)) {
+        if (empty($this->address)) {
             $io->error('No address available. Did you configure BL3P_WITHDRAW_ADDRESS?');
 
             return 1;
@@ -66,7 +67,7 @@ class WithdrawCommand extends Command
             $question = new ConfirmationQuestion(sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee [y/N]: ',
                 $balanceToWithdraw / 100000000,
-                $address,
+                $this->address,
                 self::WITHDRAW_FEE / 100000000
             ), false);
 
@@ -77,7 +78,7 @@ class WithdrawCommand extends Command
 
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
-            'address' => $address,
+            'address' => $this->address,
             'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
         ]);
 
