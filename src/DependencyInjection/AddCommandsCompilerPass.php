@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-class AddCliCommandsCompilerPass implements CompilerPassInterface
+class AddCommandsCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $taggedServices = $container->findTaggedServiceIds('bl3p-dca.cli');
         if (empty($taggedServices)) {
@@ -21,7 +21,7 @@ class AddCliCommandsCompilerPass implements CompilerPassInterface
             return ($serviceB[0]['priority'] ?? 0) <=> ($serviceA[0]['priority'] ?? 0);
         });
 
-        $applicationDefinition = $container->findDefinition('bl3p.application');
+        $applicationDefinition = $container->findDefinition('dca.application');
         foreach ($taggedServices as $id => $tags) {
             $applicationDefinition->addMethodCall('add', [new Reference($id)]);
         }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,15 +18,16 @@ class WithdrawCommand extends Command
     /** @var int withdraw fee in satoshis */
     public const WITHDRAW_FEE = 30000;
 
+    /** @var WithdrawAddressProviderInterface[] */
+    protected iterable $addressProviders;
     protected Bl3PClientInterface $client;
-    protected string $address;
 
-    public function __construct(string $name, Bl3PClientInterface $client, string $address)
+    public function __construct(string $name, Bl3PClientInterface $client, iterable $addressProviders)
     {
         parent::__construct($name);
 
         $this->client = $client;
-        $this->address = $address;
+        $this->addressProviders = $addressProviders;
     }
 
     public function configure(): void
@@ -49,17 +51,12 @@ class WithdrawCommand extends Command
         }
 
         $balanceToWithdraw = $this->getBalanceToWithdraw($input);
+        $addressToWithdrawTo = $this->getAddressToWithdrawTo();
+
         if (0 === $balanceToWithdraw) {
             $io->error('No balance available, better start saving something!');
 
             return 0;
-        }
-
-        // TODO find out if better validation is available here
-        if (empty($this->address)) {
-            $io->error('No address available. Did you configure BL3P_WITHDRAW_ADDRESS?');
-
-            return 1;
         }
 
         if (!$input->getOption('yes')) {
@@ -67,7 +64,7 @@ class WithdrawCommand extends Command
             $question = new ConfirmationQuestion(sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee [y/N]: ',
                 $balanceToWithdraw / 100000000,
-                $this->address,
+                $addressToWithdrawTo,
                 self::WITHDRAW_FEE / 100000000
             ), false);
 
@@ -78,7 +75,7 @@ class WithdrawCommand extends Command
 
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
-            'address' => $this->address,
+            'address' => $addressToWithdrawTo,
             'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
         ]);
 
@@ -96,5 +93,18 @@ class WithdrawCommand extends Command
         }
 
         return 0;
+    }
+
+    protected function getAddressToWithdrawTo(): string
+    {
+        foreach ($this->addressProviders as $addressProvider) {
+            try {
+                return $addressProvider->provide();
+            } catch (\Throwable $exception) {
+                // allowed to fail
+            }
+        }
+
+        throw new \RuntimeException('Unable to determine address to withdraw to, did you configure any?');
     }
 }
