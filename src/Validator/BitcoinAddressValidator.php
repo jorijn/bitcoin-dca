@@ -16,7 +16,7 @@ class BitcoinAddressValidator implements ValidationInterface
         $this->addressCreator = $addressCreator;
     }
 
-    public function validate($input): bool
+    public function validate($input): void
     {
         if (empty($input)) {
             throw new BitcoinAddressValidatorException('Configured address cannot be empty');
@@ -24,8 +24,6 @@ class BitcoinAddressValidator implements ValidationInterface
 
         try {
             $this->addressCreator->fromString($input);
-
-            return true;
         } catch (\Throwable $exception) {
             throw new BitcoinAddressValidatorException('Configured address failed validation', $exception->getCode(), $exception);
         }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Factory;
 
-use Jorijn\Bl3pDca\Client\Bl3PClient;
-use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Client\Bl3pClient;
+use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 
-class Bl3PClientFactory
+class Bl3pClientFactory
 {
     protected string $apiUrl;
     protected string $publicKey;
@@ -20,8 +20,8 @@ class Bl3PClientFactory
         $this->privateKey = $privateKey;
     }
 
-    public function createApi(): Bl3PClientInterface
+    public function createApi(): Bl3pClientInterface
     {
-        return new Bl3PClient($this->apiUrl, $this->publicKey, $this->privateKey);
+        return new Bl3pClient($this->apiUrl, $this->publicKey, $this->privateKey);
     }
 }

@@ -32,14 +32,14 @@ services:
       - bl3p-dca.cli
 
   dca.factory.api_client:
-    class: Jorijn\Bl3pDca\Factory\Bl3PClientFactory
+    class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
     arguments:
       - '%env(string:BL3P_API_URL)%'
       - '%env(string:BL3P_PUBLIC_KEY)%'
       - '%env(string:BL3P_PRIVATE_KEY)%'
 
   dca.api.client:
-    class: Jorijn\Bl3pDca\Client\Bl3PClient
+    class: Jorijn\Bl3pDca\Client\Bl3pClient
     factory:
       - '@dca.factory.api_client'
       - 'createApi'

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,9 +17,9 @@ class BuyCommand extends Command
 {
     public const ORDER_TIMEOUT = 30;
 
-    protected Bl3PClientInterface $client;
+    protected Bl3pClientInterface $client;
 
-    public function __construct(string $name, Bl3PClientInterface $client)
+    public function __construct(string $name, Bl3pClientInterface $client)
     {
         parent::__construct($name);
 

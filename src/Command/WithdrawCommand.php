@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,9 +20,9 @@ class WithdrawCommand extends Command
 
     /** @var WithdrawAddressProviderInterface[] */
     protected iterable $addressProviders;
-    protected Bl3PClientInterface $client;
+    protected Bl3pClientInterface $client;
 
-    public function __construct(string $name, Bl3PClientInterface $client, iterable $addressProviders)
+    public function __construct(string $name, Bl3pClientInterface $client, iterable $addressProviders)
     {
         parent::__construct($name);
 

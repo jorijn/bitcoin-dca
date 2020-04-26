@@ -20,9 +20,7 @@ class SimpleWithdrawAddressProvider implements WithdrawAddressProviderInterface
 
     public function provide(): string
     {
-        if (!$this->validation->validate($this->configuredAddress)) {
-            throw new \RuntimeException('Could not determine address to withdraw to, configured address does not validate');
-        }
+        $this->validation->validate($this->configuredAddress);
 
         return $this->configuredAddress;
     }

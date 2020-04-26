@@ -9,5 +9,5 @@ interface ValidationInterface
     /**
      * @param mixed $input
      */
-    public function validate($input): bool;
+    public function validate($input): void;
 }

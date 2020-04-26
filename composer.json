@@ -31,7 +31,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit --testdox"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

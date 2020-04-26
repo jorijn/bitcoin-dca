@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Client;
 
-interface Bl3PClientInterface
+interface Bl3pClientInterface
 {
     /**
      * To make a call to BL3P API.

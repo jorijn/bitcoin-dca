@@ -46,6 +46,6 @@ COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 # compile the container for performance reasons
-RUN /app/bin/bl3p-dca
+RUN /app/bin/bl3p-dca >/dev/null
 
 ENTRYPOINT ["docker-entrypoint"]
