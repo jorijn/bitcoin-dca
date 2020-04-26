@@ -13,6 +13,7 @@ RUN composer install \
     --no-scripts \
     --prefer-dist \
     --classmap-authoritative \
+    --no-ansi \
     --no-dev
 
 FROM php:7.4-cli-alpine as base_image
@@ -32,7 +33,7 @@ COPY --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app/vendor/ /app/vendor/
 
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
-RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist
+RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi
 RUN composer run-script test
 
 FROM base_image as production_build
