@@ -1,4 +1,5 @@
 vendor
+var/cache/*
 .env
 .env.dist
 .php_cs
