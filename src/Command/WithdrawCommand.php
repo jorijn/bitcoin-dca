@@ -6,6 +6,7 @@ namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
+use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,13 +22,19 @@ class WithdrawCommand extends Command
     /** @var WithdrawAddressProviderInterface[] */
     protected iterable $addressProviders;
     protected Bl3pClientInterface $client;
+    protected TaggedBalanceRepositoryInterface $balanceRepository;
 
-    public function __construct(string $name, Bl3pClientInterface $client, iterable $addressProviders)
-    {
+    public function __construct(
+        string $name,
+        Bl3pClientInterface $client,
+        iterable $addressProviders,
+        TaggedBalanceRepositoryInterface $balanceRepository
+    ) {
         parent::__construct($name);
 
         $this->client = $client;
         $this->addressProviders = $addressProviders;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function configure(): void
@@ -37,6 +44,8 @@ class WithdrawCommand extends Command
                 'If supplied, will withdraw all available Bitcoin to the configured address')
             ->addOption('yes', 'y', InputOption::VALUE_NONE,
                 'If supplied, will not confirm the withdraw go ahead immediately')
+            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
+                'If supplied, will limit the withdrawal to the balance available for this tag')
             ->setDescription('Withdraw Bitcoin from Bl3P');
     }
 
@@ -79,6 +88,10 @@ class WithdrawCommand extends Command
             'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
         ]);
 
+        if ($tagValue = $input->getOption('tag')) {
+            $this->balanceRepository->setTagBalance($tagValue, 0);
+        }
+
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
 
         return 0;
@@ -88,8 +101,16 @@ class WithdrawCommand extends Command
     {
         if ($input->getOption('all')) {
             $response = $this->client->apiCall('GENMKT/money/info');
+            $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
 
-            return (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
+            if ($tagValue = $input->getOption('tag')) {
+                $tagBalance = $this->balanceRepository->getTagBalance($tagValue);
+
+                // limit the balance to what comes first: the tagged balance, or the maximum balance
+                return $tagBalance <= $maxAvailableBalance ? $tagBalance : $maxAvailableBalance;
+            }
+
+            return $maxAvailableBalance;
         }
 
         return 0;

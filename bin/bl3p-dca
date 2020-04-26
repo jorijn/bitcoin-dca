@@ -27,6 +27,7 @@ if (!$containerConfigCache->isFresh()) {
     $loader->load('services.yaml');
 
     $containerBuilder->addCompilerPass(new AddCommandsCompilerPass());
+    $containerBuilder->setParameter('dca.application.path', dirname(__DIR__));
     $containerBuilder->compile();
 
     // write the compiled container to file

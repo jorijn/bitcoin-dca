@@ -11,6 +11,7 @@ services:
     arguments:
       - 'buy'
       - '@dca.api.client'
+      - '@dca.repository.tag_balance.file'
     tags:
       - bl3p-dca.cli
 
@@ -20,6 +21,7 @@ services:
       - 'withdraw'
       - '@dca.api.client'
       - !tagged_iterator bl3p-dca.address_provider
+      - '@dca.repository.tag_balance.file'
     tags:
       - bl3p-dca.cli
 
@@ -63,6 +65,11 @@ services:
     public: true
     arguments:
       - '%dca.application_title%'
+
+  dca.repository.tag_balance.file:
+    class: Jorijn\Bl3pDca\Repository\FileTaggedBalanceRepository
+    arguments:
+      - '%dca.application.path%/var/storage/tags.db'
 
   dca.bitwasp.address.creator:
     class: BitWasp\Bitcoin\Address\AddressCreator
