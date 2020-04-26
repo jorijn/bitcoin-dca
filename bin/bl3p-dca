@@ -3,11 +3,12 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Jorijn\Bl3pDca\Command\BuyCommand;
-use Jorijn\Bl3pDca\Command\BalanceCommand;
-use Jorijn\Bl3pDca\Command\WithdrawCommand;
-use Jorijn\Bl3pDca\Factory\Bl3PClientFactory;
-use Symfony\Component\Console\Application;
+use Jorijn\Bl3pDca\DependencyInjection\AddCommandsCompilerPass;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Dotenv\Dotenv;
 
 if (file_exists(__DIR__.'/../.env')) {
@@ -15,11 +16,28 @@ if (file_exists(__DIR__.'/../.env')) {
     $dotenv->loadEnv(__DIR__.'/../.env');
 }
 
-// create dependencies
-$api = (new Bl3PClientFactory())->createApi();
+$containerCache = __DIR__.'/../var/cache/container.php';
+$containerConfigCache = new ConfigCache($containerCache, $_SERVER['DEBUG'] ?? false);
 
-$app = new Application('BL3P Bitcoin DCA Tool');
-$app->add(new BuyCommand('buy', $api));
-$app->add(new BalanceCommand('balance', $api));
-$app->add(new WithdrawCommand('withdraw', $api));
-$app->run();
+if (!$containerConfigCache->isFresh()) {
+    $containerBuilder = new ContainerBuilder();
+
+    // load the DI config
+    $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../config/'));
+    $loader->load('services.yaml');
+
+    $containerBuilder->addCompilerPass(new AddCommandsCompilerPass());
+    $containerBuilder->setParameter('dca.application.path', dirname(__DIR__));
+    $containerBuilder->compile();
+
+    // write the compiled container to file
+    $dumper = new PhpDumper($containerBuilder);
+    $containerConfigCache->write(
+        $dumper->dump(['class' => 'Bl3pDcaContainer']),
+        $containerBuilder->getResources()
+    );
+}
+
+require_once $containerCache;
+$container = new Bl3pDcaContainer();
+$container->get('dca.application')->run();

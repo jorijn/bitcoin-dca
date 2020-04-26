@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
+use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,13 +19,22 @@ class WithdrawCommand extends Command
     /** @var int withdraw fee in satoshis */
     public const WITHDRAW_FEE = 30000;
 
-    protected Bl3PClientInterface $client;
+    /** @var WithdrawAddressProviderInterface[] */
+    protected iterable $addressProviders;
+    protected Bl3pClientInterface $client;
+    protected TaggedBalanceRepositoryInterface $balanceRepository;
 
-    public function __construct(string $name, Bl3PClientInterface $client)
-    {
+    public function __construct(
+        string $name,
+        Bl3pClientInterface $client,
+        iterable $addressProviders,
+        TaggedBalanceRepositoryInterface $balanceRepository
+    ) {
         parent::__construct($name);
 
         $this->client = $client;
+        $this->addressProviders = $addressProviders;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function configure(): void
@@ -33,6 +44,8 @@ class WithdrawCommand extends Command
                 'If supplied, will withdraw all available Bitcoin to the configured address')
             ->addOption('yes', 'y', InputOption::VALUE_NONE,
                 'If supplied, will not confirm the withdraw go ahead immediately')
+            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
+                'If supplied, will limit the withdrawal to the balance available for this tag')
             ->setDescription('Withdraw Bitcoin from Bl3P');
     }
 
@@ -47,18 +60,12 @@ class WithdrawCommand extends Command
         }
 
         $balanceToWithdraw = $this->getBalanceToWithdraw($input);
+        $addressToWithdrawTo = $this->getAddressToWithdrawTo();
+
         if (0 === $balanceToWithdraw) {
             $io->error('No balance available, better start saving something!');
 
             return 0;
-        }
-
-        // TODO find out if better validation is available here
-        $address = $_SERVER['BL3P_WITHDRAW_ADDRESS'];
-        if (empty($address)) {
-            $io->error('No address available. Did you configure BL3P_WITHDRAW_ADDRESS?');
-
-            return 1;
         }
 
         if (!$input->getOption('yes')) {
@@ -66,7 +73,7 @@ class WithdrawCommand extends Command
             $question = new ConfirmationQuestion(sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee [y/N]: ',
                 $balanceToWithdraw / 100000000,
-                $address,
+                $addressToWithdrawTo,
                 self::WITHDRAW_FEE / 100000000
             ), false);
 
@@ -77,9 +84,13 @@ class WithdrawCommand extends Command
 
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
-            'address' => $address,
+            'address' => $addressToWithdrawTo,
             'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
         ]);
+
+        if ($tagValue = $input->getOption('tag')) {
+            $this->balanceRepository->setTagBalance($tagValue, 0);
+        }
 
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
 
@@ -90,10 +101,31 @@ class WithdrawCommand extends Command
     {
         if ($input->getOption('all')) {
             $response = $this->client->apiCall('GENMKT/money/info');
+            $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
 
-            return (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
+            if ($tagValue = $input->getOption('tag')) {
+                $tagBalance = $this->balanceRepository->getTagBalance($tagValue);
+
+                // limit the balance to what comes first: the tagged balance, or the maximum balance
+                return $tagBalance <= $maxAvailableBalance ? $tagBalance : $maxAvailableBalance;
+            }
+
+            return $maxAvailableBalance;
         }
 
         return 0;
+    }
+
+    protected function getAddressToWithdrawTo(): string
+    {
+        foreach ($this->addressProviders as $addressProvider) {
+            try {
+                return $addressProvider->provide();
+            } catch (\Throwable $exception) {
+                // allowed to fail
+            }
+        }
+
+        throw new \RuntimeException('Unable to determine address to withdraw to, did you configure any?');
     }
 }

@@ -9,7 +9,7 @@ use Exception;
 /**
  * @source https://github.com/BitonicNL/bl3p-api/blob/master/examples/php/example.php
  */
-class Bl3PClient implements Bl3PClientInterface
+class Bl3pClient implements Bl3pClientInterface
 {
     private string $publicKey;
     private string $privateKey;

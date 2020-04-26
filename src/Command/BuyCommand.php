@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3PClientInterface;
+use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,13 +18,19 @@ class BuyCommand extends Command
 {
     public const ORDER_TIMEOUT = 30;
 
-    protected Bl3PClientInterface $client;
+    protected Bl3pClientInterface $client;
+    /** @var TaggedBalanceRepositoryInterface */
+    protected TaggedBalanceRepositoryInterface $balanceRepository;
 
-    public function __construct(string $name, Bl3PClientInterface $client)
-    {
+    public function __construct(
+        string $name,
+        Bl3pClientInterface $client,
+        TaggedBalanceRepositoryInterface $balanceRepository
+    ) {
         parent::__construct($name);
 
         $this->client = $client;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function configure(): void
@@ -32,6 +39,8 @@ class BuyCommand extends Command
             ->addArgument('amount', InputArgument::REQUIRED, 'The amount of EUR to use for the BUY order')
             ->addOption('yes', 'y', InputOption::VALUE_NONE,
                 'If supplied, will not confirm the amount and place the order immediately')
+            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
+                'If supplied, this will increase the balance in the database for this tag with the purchased amount of Bitcoin')
             ->setDescription('Places a buy order on the exchange');
     }
 
@@ -86,6 +95,10 @@ class BuyCommand extends Command
                 $orderInfo['data']['avg_cost']['display_short'],
                 $orderInfo['data']['total_fee']['display']
             ));
+
+            if ($tagValue = $input->getOption('tag')) {
+                $this->balanceRepository->increaseTagBalance($tagValue, (int) $orderInfo['data']['total_amount']['value_int']);
+            }
 
             return 0;
         }

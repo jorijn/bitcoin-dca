@@ -1,0 +1,75 @@
+parameters:
+  dca.application_title: 'BL3P Bitcoin DCA Tool'
+  env(BL3P_API_URL): ''
+  env(BL3P_PUBLIC_KEY): ''
+  env(BL3P_PRIVATE_KEY): ''
+  env(BL3P_WITHDRAW_ADDRESS): ''
+
+services:
+  dca.command.buy:
+    class: Jorijn\Bl3pDca\Command\BuyCommand
+    arguments:
+      - 'buy'
+      - '@dca.api.client'
+      - '@dca.repository.tag_balance.file'
+    tags:
+      - bl3p-dca.cli
+
+  dca.command.withdraw:
+    class: Jorijn\Bl3pDca\Command\WithdrawCommand
+    arguments:
+      - 'withdraw'
+      - '@dca.api.client'
+      - !tagged_iterator bl3p-dca.address_provider
+      - '@dca.repository.tag_balance.file'
+    tags:
+      - bl3p-dca.cli
+
+  dca.command.balance:
+    class: Jorijn\Bl3pDca\Command\BalanceCommand
+    arguments:
+      - 'balance'
+      - '@dca.api.client'
+    tags:
+      - bl3p-dca.cli
+
+  dca.factory.api_client:
+    class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
+    arguments:
+      - '%env(string:BL3P_API_URL)%'
+      - '%env(string:BL3P_PUBLIC_KEY)%'
+      - '%env(string:BL3P_PRIVATE_KEY)%'
+
+  dca.api.client:
+    class: Jorijn\Bl3pDca\Client\Bl3pClient
+    factory:
+      - '@dca.factory.api_client'
+      - 'createApi'
+
+  # this is the default address provider, new ones with special capabilities can be configured with more priority
+  dca.address_provider.simple:
+    class: Jorijn\Bl3pDca\Provider\SimpleWithdrawAddressProvider
+    arguments:
+      - '@dca.validator.bitcoin_address'
+      - '%env(string:BL3P_WITHDRAW_ADDRESS)%'
+    tags:
+      - { name: 'bl3p-dca.address_provider', priority: -1000 }
+
+  dca.validator.bitcoin_address:
+    class: Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
+    arguments:
+      - '@dca.bitwasp.address.creator'
+
+  dca.application:
+    class: Symfony\Component\Console\Application
+    public: true
+    arguments:
+      - '%dca.application_title%'
+
+  dca.repository.tag_balance.file:
+    class: Jorijn\Bl3pDca\Repository\FileTaggedBalanceRepository
+    arguments:
+      - '%dca.application.path%/var/storage/tags.db'
+
+  dca.bitwasp.address.creator:
+    class: BitWasp\Bitcoin\Address\AddressCreator
