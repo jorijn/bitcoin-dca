@@ -4,6 +4,7 @@ parameters:
   env(BL3P_PUBLIC_KEY): ''
   env(BL3P_PRIVATE_KEY): ''
   env(BL3P_WITHDRAW_ADDRESS): ''
+  env(BL3P_WITHDRAW_XPUB): ~
 
 services:
   dca.command.buy:
@@ -33,12 +34,25 @@ services:
     tags:
       - bl3p-dca.cli
 
+  dca.command.verify_xpub:
+    class: Jorijn\Bl3pDca\Command\VerifyXPubCommand
+    arguments:
+      - 'verify-xpub'
+      - '@dca.factory.derive_from_master_public_key'
+      - '%env(BL3P_WITHDRAW_XPUB)%'
+      - 'BL3P_WITHDRAW_XPUB'
+    tags:
+      - bl3p-dca.cli
+
   dca.factory.api_client:
     class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
     arguments:
       - '%env(string:BL3P_API_URL)%'
       - '%env(string:BL3P_PUBLIC_KEY)%'
       - '%env(string:BL3P_PRIVATE_KEY)%'
+
+  dca.factory.derive_from_master_public_key:
+    class: Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory
 
   dca.api.client:
     class: Jorijn\Bl3pDca\Client\Bl3pClient
@@ -54,6 +68,17 @@ services:
       - '%env(string:BL3P_WITHDRAW_ADDRESS)%'
     tags:
       - { name: 'bl3p-dca.address_provider', priority: -1000 }
+
+  # this address provider parses the configured xpub and returns a fresh address for each transaction
+  # DISABLED FOR NOW, WORK IN PROGRESS
+  dca.address_provider.xpub:
+    class: Jorijn\Bl3pDca\Provider\XpubWithdrawAddressProvider
+    arguments:
+      - '@dca.validator.bitcoin_address'
+      - '@dca.factory.derive_from_master_public_key'
+      - '%env(BL3P_WITHDRAW_XPUB)%'
+  #    tags:
+  #      - { name: 'bl3p-dca.address_provider', priority: -500 }
 
   dca.validator.bitcoin_address:
     class: Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
