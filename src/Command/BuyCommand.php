@@ -97,7 +97,14 @@ class BuyCommand extends Command
             ));
 
             if ($tagValue = $input->getOption('tag')) {
-                $this->balanceRepository->increaseTagBalance($tagValue, (int) $orderInfo['data']['total_amount']['value_int']);
+                $subtractFees = 'BTC' === $orderInfo['data']['total_fee']['currency']
+                    ? (int) $orderInfo['data']['total_fee']['value_int']
+                    : 0;
+
+                $this->balanceRepository->increaseTagBalance(
+                    $tagValue,
+                    ((int) $orderInfo['data']['total_amount']['value_int']) - $subtractFees
+                );
             }
 
             return 0;
