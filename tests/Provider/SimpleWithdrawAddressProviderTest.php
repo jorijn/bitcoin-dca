@@ -13,14 +13,25 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\Provider\SimpleWithdrawAddressProvider
  * @covers ::__construct
+ *
+ * @internal
  */
-class SimpleWithdrawAddressProviderTest extends TestCase
+final class SimpleWithdrawAddressProviderTest extends TestCase
 {
-    /** @var ValidationInterface|MockObject */
+    /** @var MockObject|ValidationInterface */
     private $validation;
     /** @var SimpleWithdrawAddressProvider */
     private SimpleWithdrawAddressProvider $provider;
     private string $configuredAddress;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->configuredAddress = 'ca'.mt_rand();
+        $this->validation = $this->createMock(ValidationInterface::class);
+        $this->provider = new SimpleWithdrawAddressProvider($this->validation, $this->configuredAddress);
+    }
 
     /**
      * @covers ::provide
@@ -30,10 +41,11 @@ class SimpleWithdrawAddressProviderTest extends TestCase
         $validationException = new ValidationException('error'.mt_rand());
 
         $this->validation
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('validate')
             ->with($this->configuredAddress)
-            ->willThrowException($validationException);
+            ->willThrowException($validationException)
+        ;
 
         $this->expectExceptionObject($validationException);
 
@@ -46,19 +58,11 @@ class SimpleWithdrawAddressProviderTest extends TestCase
     public function testExpectAddressToBeReturnedWhenValid(): void
     {
         $this->validation
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('validate')
-            ->with($this->configuredAddress);
+            ->with($this->configuredAddress)
+        ;
 
-        self::assertSame($this->configuredAddress, $this->provider->provide());
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->configuredAddress = 'ca'.mt_rand();
-        $this->validation = $this->createMock(ValidationInterface::class);
-        $this->provider = new SimpleWithdrawAddressProvider($this->validation, $this->configuredAddress);
+        static::assertSame($this->configuredAddress, $this->provider->provide());
     }
 }

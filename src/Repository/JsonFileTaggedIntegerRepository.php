@@ -6,7 +6,7 @@ namespace Jorijn\Bl3pDca\Repository;
 
 use JsonException;
 
-class FileTaggedBalanceRepository implements TaggedBalanceRepositoryInterface
+class JsonFileTaggedIntegerRepository implements TaggedIntegerRepositoryInterface
 {
     protected string $fileLocation;
 
@@ -15,36 +15,36 @@ class FileTaggedBalanceRepository implements TaggedBalanceRepositoryInterface
         $this->fileLocation = $fileLocation;
     }
 
-    public function increaseTagBalance(string $tag, int $satoshis): void
+    public function increase(string $tag, int $value = 1): void
     {
         $data = $this->read();
 
         $data[$tag] ??= 0;
-        $data[$tag] += $satoshis;
+        $data[$tag] += $value;
 
         $this->write($data);
     }
 
-    public function decreaseTagBalance(string $tag, int $satoshis): void
+    public function decrease(string $tag, int $value = 1): void
     {
         $data = $this->read();
 
         $data[$tag] ??= 0;
-        $data[$tag] -= $satoshis;
+        $data[$tag] -= $value;
 
         $this->write($data);
     }
 
-    public function setTagBalance(string $tag, int $satoshis): void
+    public function set(string $tag, int $value): void
     {
         $data = $this->read();
 
-        $data[$tag] = $satoshis;
+        $data[$tag] = $value;
 
         $this->write($data);
     }
 
-    public function getTagBalance(string $tag): int
+    public function get(string $tag): int
     {
         $data = $this->read();
 

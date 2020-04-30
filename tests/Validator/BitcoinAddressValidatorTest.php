@@ -14,13 +14,23 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
  * @covers ::__construct
+ *
+ * @internal
  */
-class BitcoinAddressValidatorTest extends TestCase
+final class BitcoinAddressValidatorTest extends TestCase
 {
     /** @var AddressCreator|MockObject */
     private $addressCreator;
     /** @var BitcoinAddressValidator */
     private BitcoinAddressValidator $validator;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->addressCreator = $this->createMock(AddressCreator::class);
+        $this->validator = new BitcoinAddressValidator($this->addressCreator);
+    }
 
     /**
      * @covers ::validate
@@ -40,10 +50,11 @@ class BitcoinAddressValidatorTest extends TestCase
         $addressCreatorException = new Exception('error'.mt_rand());
 
         $this->addressCreator
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('fromString')
             ->with($address)
-            ->willThrowException($addressCreatorException);
+            ->willThrowException($addressCreatorException)
+        ;
 
         $this->expectException(BitcoinAddressValidatorException::class);
         $this->validator->validate($address);
@@ -57,18 +68,11 @@ class BitcoinAddressValidatorTest extends TestCase
         $address = 'address'.mt_rand();
 
         $this->addressCreator
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('fromString')
-            ->with($address);
+            ->with($address)
+        ;
 
         $this->validator->validate($address);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->addressCreator = $this->createMock(AddressCreator::class);
-        $this->validator = new BitcoinAddressValidator($this->addressCreator);
     }
 }

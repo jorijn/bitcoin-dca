@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
+use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,35 +25,55 @@ class WithdrawCommand extends Command
     /** @var WithdrawAddressProviderInterface[] */
     protected iterable $addressProviders;
     protected Bl3pClientInterface $client;
-    protected TaggedBalanceRepositoryInterface $balanceRepository;
+    protected TaggedIntegerRepositoryInterface $balanceRepository;
+    protected EventDispatcherInterface $dispatcher;
+    protected LoggerInterface $logger;
 
     public function __construct(
-        string $name,
         Bl3pClientInterface $client,
         iterable $addressProviders,
-        TaggedBalanceRepositoryInterface $balanceRepository
+        TaggedIntegerRepositoryInterface $balanceRepository,
+        EventDispatcherInterface $dispatcher,
+        LoggerInterface $logger
     ) {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
         $this->addressProviders = $addressProviders;
         $this->balanceRepository = $balanceRepository;
+        $this->dispatcher = $dispatcher;
+        $this->logger = $logger;
     }
 
     public function configure(): void
     {
         $this
-            ->addOption('all', 'a', InputOption::VALUE_NONE,
-                'If supplied, will withdraw all available Bitcoin to the configured address')
-            ->addOption('yes', 'y', InputOption::VALUE_NONE,
-                'If supplied, will not confirm the withdraw go ahead immediately')
-            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
-                'If supplied, will limit the withdrawal to the balance available for this tag')
-            ->setDescription('Withdraw Bitcoin from Bl3P');
+            ->addOption(
+                'all',
+                'a',
+                InputOption::VALUE_NONE,
+                'If supplied, will withdraw all available Bitcoin to the configured address'
+            )
+            ->addOption(
+                'yes',
+                'y',
+                InputOption::VALUE_NONE,
+                'If supplied, will not confirm the withdraw go ahead immediately'
+            )
+            ->addOption(
+                'tag',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'If supplied, will limit the withdrawal to the balance available for this tag'
+            )
+            ->setDescription('Withdraw Bitcoin from Bl3P')
+        ;
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $io = new SymfonyStyle($input, $output);
 
         if (!$input->getOption('all')) {
@@ -62,6 +85,12 @@ class WithdrawCommand extends Command
         $balanceToWithdraw = $this->getBalanceToWithdraw($input);
         $addressToWithdrawTo = $this->getAddressToWithdrawTo();
 
+        $this->logger->info('preparing withdraw to {address} for {balance} satoshis', [
+            'tag' => $input->getOption('tag'),
+            'balance' => $balanceToWithdraw,
+            'address' => $addressToWithdrawTo,
+        ]);
+
         if (0 === $balanceToWithdraw) {
             $io->error('No balance available, better start saving something!');
 
@@ -69,42 +98,56 @@ class WithdrawCommand extends Command
         }
 
         if (!$input->getOption('yes')) {
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion(sprintf(
-                'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee [y/N]: ',
+            $question = sprintf(
+                'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee.',
                 $balanceToWithdraw / 100000000,
                 $addressToWithdrawTo,
                 self::WITHDRAW_FEE / 100000000
-            ), false);
+            );
 
-            if (!$helper->ask($input, $output, $question)) {
+            if (!$io->confirm($question, false)) {
                 return 0;
             }
         }
 
+        $netAmountToWithdraw = $balanceToWithdraw - self::WITHDRAW_FEE;
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
             'address' => $addressToWithdrawTo,
-            'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
+            'amount_int' => $netAmountToWithdraw,
         ]);
 
+        $eventContext = [];
         if ($tagValue = $input->getOption('tag')) {
-            $this->balanceRepository->setTagBalance($tagValue, 0);
+            $this->balanceRepository->set($tagValue, 0);
+            $eventContext['tag'] = $tagValue;
         }
+
+        $this->dispatcher->dispatch(
+            new WithdrawSuccessEvent($addressToWithdrawTo, $netAmountToWithdraw, $eventContext)
+        );
+
+        $this->logger->info('withdraw to {address} successful, processing as ID {data.id}', [
+            'tag' => $input->getOption('tag'),
+            'balance' => $balanceToWithdraw,
+            'address' => $addressToWithdrawTo,
+            'data' => $response['data'],
+        ]);
 
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
 
         return 0;
     }
 
-    protected function getBalanceToWithdraw(InputInterface $input): int
-    {
+    protected function getBalanceToWithdraw(
+        InputInterface $input
+    ): int {
         if ($input->getOption('all')) {
             $response = $this->client->apiCall('GENMKT/money/info');
             $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
 
             if ($tagValue = $input->getOption('tag')) {
-                $tagBalance = $this->balanceRepository->getTagBalance($tagValue);
+                $tagBalance = $this->balanceRepository->get($tagValue);
 
                 // limit the balance to what comes first: the tagged balance, or the maximum balance
                 return $tagBalance <= $maxAvailableBalance ? $tagBalance : $maxAvailableBalance;
