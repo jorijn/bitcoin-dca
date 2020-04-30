@@ -98,15 +98,14 @@ class WithdrawCommand extends Command
         }
 
         if (!$input->getOption('yes')) {
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion(sprintf(
-                'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee [y/N]: ',
+            $question = sprintf(
+                'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee.',
                 $balanceToWithdraw / 100000000,
                 $addressToWithdrawTo,
                 self::WITHDRAW_FEE / 100000000
-            ), false);
+            );
 
-            if (!$helper->ask($input, $output, $question)) {
+            if (!$io->confirm($question, false)) {
                 return 0;
             }
         }

@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BuyCommand extends Command
@@ -66,15 +65,11 @@ class BuyCommand extends Command
             return 1;
         }
 
-        if (!$input->getOption('yes')) {
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion(
-                'Are you sure you want to place an order for EUR '.$amount.'? [y/N] ',
-                false
-            );
-            if (!$helper->ask($input, $output, $question)) {
-                return 0;
-            }
+        if (!$input->getOption('yes') && !$io->confirm(
+            'Are you sure you want to place an order for EUR '.$amount.'?',
+            false
+        )) {
+            return 0;
         }
 
         $params = [
