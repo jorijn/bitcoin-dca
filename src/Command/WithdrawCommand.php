@@ -48,13 +48,26 @@ class WithdrawCommand extends Command
     public function configure(): void
     {
         $this
-            ->addOption('all', 'a', InputOption::VALUE_NONE,
-                'If supplied, will withdraw all available Bitcoin to the configured address')
-            ->addOption('yes', 'y', InputOption::VALUE_NONE,
-                'If supplied, will not confirm the withdraw go ahead immediately')
-            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
-                'If supplied, will limit the withdrawal to the balance available for this tag')
-            ->setDescription('Withdraw Bitcoin from Bl3P');
+            ->addOption(
+                'all',
+                'a',
+                InputOption::VALUE_NONE,
+                'If supplied, will withdraw all available Bitcoin to the configured address'
+            )
+            ->addOption(
+                'yes',
+                'y',
+                InputOption::VALUE_NONE,
+                'If supplied, will not confirm the withdraw go ahead immediately'
+            )
+            ->addOption(
+                'tag',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'If supplied, will limit the withdrawal to the balance available for this tag'
+            )
+            ->setDescription('Withdraw Bitcoin from Bl3P')
+        ;
     }
 
     public function execute(

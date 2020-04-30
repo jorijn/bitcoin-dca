@@ -10,15 +10,34 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
  * @covers ::__construct
+ *
+ * @internal
  */
-class JsonFileTaggedIntegerRepositoryTest extends TestCase
+final class JsonFileTaggedIntegerRepositoryTest extends TestCase
 {
     private string $file;
     private JsonFileTaggedIntegerRepository $repository;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->file = __CLASS__.'.db';
+        $this->repository = new JsonFileTaggedIntegerRepository($this->file);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        if (file_exists($this->file)) {
+            unlink($this->file);
+        }
+    }
+
     /**
-     * @covers ::set
      * @covers ::read
+     * @covers ::set
      * @covers ::write
      */
     public function testSetTagBalance(): void
@@ -58,8 +77,8 @@ class JsonFileTaggedIntegerRepositoryTest extends TestCase
 
         $this->assertFileContents(['test1' => 500, 'test2' => 1000]);
 
-        self::assertSame(500, $this->repository->get('test1'));
-        self::assertSame(1000, $this->repository->get('test2'));
+        static::assertSame(500, $this->repository->get('test1'));
+        static::assertSame(1000, $this->repository->get('test2'));
     }
 
     /**
@@ -85,7 +104,7 @@ class JsonFileTaggedIntegerRepositoryTest extends TestCase
     public function testNonExistingFileReturnsEmpty(): void
     {
         $this->repository = new JsonFileTaggedIntegerRepository('file'.mt_rand());
-        self::assertSame(0, $this->repository->get('test'));
+        static::assertSame(0, $this->repository->get('test'));
     }
 
     /**
@@ -94,31 +113,14 @@ class JsonFileTaggedIntegerRepositoryTest extends TestCase
     public function testCorruptJsonGetsReset(): void
     {
         file_put_contents($this->file, 'cor,,ru..ptjson'.mt_rand());
-        self::assertSame(0, $this->repository->get('test'));
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->file = __CLASS__.'.db';
-        $this->repository = new JsonFileTaggedIntegerRepository($this->file);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        if (file_exists($this->file)) {
-            unlink($this->file);
-        }
+        static::assertSame(0, $this->repository->get('test'));
     }
 
     protected function assertFileContents(array $data): void
     {
         $testedData = json_decode(file_get_contents($this->file), true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertIsArray($testedData);
-        self::assertSame($data, $testedData);
+        static::assertIsArray($testedData);
+        static::assertSame($data, $testedData);
     }
 }

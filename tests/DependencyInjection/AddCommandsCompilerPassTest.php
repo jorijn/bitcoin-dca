@@ -12,21 +12,31 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\DependencyInjection\AddCommandsCompilerPass
+ *
+ * @internal
  */
-class AddCommandsCompilerPassTest extends TestCase
+final class AddCommandsCompilerPassTest extends TestCase
 {
     /** @var AddCommandsCompilerPass */
     private AddCommandsCompilerPass $pass;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->pass = new AddCommandsCompilerPass();
+    }
 
     public function testNoTaggedServicesAvailable(): void
     {
         $containerBuilder = $this->createMock(ContainerBuilder::class);
         $containerBuilder
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('findTaggedServiceIds')
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
-        $containerBuilder->expects(self::never())->method('findDefinition');
+        $containerBuilder->expects(static::never())->method('findDefinition');
 
         $this->pass->process($containerBuilder);
     }
@@ -40,9 +50,10 @@ class AddCommandsCompilerPassTest extends TestCase
 
         $containerBuilder = $this->createMock(ContainerBuilder::class);
         $containerBuilder
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('findTaggedServiceIds')
-            ->willReturn($taggedServices);
+            ->willReturn($taggedServices)
+        ;
 
         $applicationDefinition = $this->createMock(Definition::class);
         $containerBuilder->method('findDefinition')->willReturnMap([['dca.application', $applicationDefinition]]);
@@ -58,20 +69,14 @@ class AddCommandsCompilerPassTest extends TestCase
         };
 
         $applicationDefinition
-            ->expects(self::exactly(count($taggedServices)))
+            ->expects(static::exactly(\count($taggedServices)))
             ->method('addMethodCall')
             ->withConsecutive(
                 ['add', $assertExpression('id2')],
                 ['add', $assertExpression('id1')],
-            );
+            )
+        ;
 
         $this->pass->process($containerBuilder);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->pass = new AddCommandsCompilerPass();
     }
 }

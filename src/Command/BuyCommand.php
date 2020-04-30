@@ -39,11 +39,20 @@ class BuyCommand extends Command
     {
         $this
             ->addArgument('amount', InputArgument::REQUIRED, 'The amount of EUR to use for the BUY order')
-            ->addOption('yes', 'y', InputOption::VALUE_NONE,
-                'If supplied, will not confirm the amount and place the order immediately')
-            ->addOption('tag', 't', InputOption::VALUE_REQUIRED,
-                'If supplied, this will increase the balance in the database for this tag with the purchased amount of Bitcoin')
-            ->setDescription('Places a buy order on the exchange');
+            ->addOption(
+                'yes',
+                'y',
+                InputOption::VALUE_NONE,
+                'If supplied, will not confirm the amount and place the order immediately'
+            )
+            ->addOption(
+                'tag',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'If supplied, this will increase the balance in the database for this tag with the purchased amount of Bitcoin'
+            )
+            ->setDescription('Places a buy order on the exchange')
+        ;
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -59,8 +68,10 @@ class BuyCommand extends Command
 
         if (!$input->getOption('yes')) {
             $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion('Are you sure you want to place an order for EUR '.$amount.'? [y/N] ',
-                false);
+            $question = new ConfirmationQuestion(
+                'Are you sure you want to place an order for EUR '.$amount.'? [y/N] ',
+                false
+            );
             if (!$helper->ask($input, $output, $question)) {
                 return 0;
             }
@@ -87,7 +98,8 @@ class BuyCommand extends Command
                 break;
             }
 
-            $this->logger->info('order still open, waiting a maximum of {seconds} for it to fill',
+            $this->logger->info(
+                'order still open, waiting a maximum of {seconds} for it to fill',
                 [
                     'seconds' => self::ORDER_TIMEOUT,
                     'order_data' => $orderInfo['data'],
@@ -107,8 +119,10 @@ class BuyCommand extends Command
                 $orderInfo['data']['total_fee']['display']
             ));
 
-            $this->logger->info('order filled, successfully bought bitcoin',
-                ['tag' => $tag, 'order_data' => $orderInfo['data']]);
+            $this->logger->info(
+                'order filled, successfully bought bitcoin',
+                ['tag' => $tag, 'order_data' => $orderInfo['data']]
+            );
 
             if ($tag) {
                 $subtractFees = 'BTC' === $orderInfo['data']['total_fee']['currency']
@@ -133,8 +147,10 @@ class BuyCommand extends Command
 
         $io->error('Was not able to fill a MARKET order within the specified timeout ('.self::ORDER_TIMEOUT.' seconds). The order was cancelled.');
 
-        $this->logger->error('was not able to fill a MARKET order within the specified timeout, the order was cancelled',
-            ['tag' => $tag, 'order_data' => $orderInfo['data']]);
+        $this->logger->error(
+            'was not able to fill a MARKET order within the specified timeout, the order was cancelled',
+            ['tag' => $tag, 'order_data' => $orderInfo['data']]
+        );
 
         return 1;
     }

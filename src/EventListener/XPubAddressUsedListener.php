@@ -56,7 +56,7 @@ class XPubAddressUsedListener
         } catch (\Throwable $exception) {
             $this->logger->error('failed to determine / increase xpub index', [
                 'xpub' => $this->configuredXPub,
-                'reason' => $exception->getMessage() ?: get_class($exception),
+                'reason' => $exception->getMessage() ?: \get_class($exception),
             ]);
 
             throw $exception;

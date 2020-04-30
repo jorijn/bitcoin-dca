@@ -32,17 +32,21 @@ class AddressFromMasterPublicKeyFactory
             case 'x':
                 $pubPrefix = $slip132->p2pkh($bitcoin_prefixes);
                 $pub = $masterPublicKey;
+
                 break;
             case 'y':
                 $pubPrefix = $slip132->p2shP2wpkh($bitcoin_prefixes);
                 $pub = $masterPublicKey;
+
                 break;
             case 'z':
                 $pubPrefix = $slip132->p2wpkh($bitcoin_prefixes);
                 $pub = $masterPublicKey;
+
                 break;
             default:
                 throw new \RuntimeException('no master public key available');
+
                 break;
         }
 

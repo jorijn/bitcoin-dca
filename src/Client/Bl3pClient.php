@@ -43,10 +43,10 @@ class Bl3pClient implements Bl3pClientInterface
 
         // generate the POST data string
         $post_data = http_build_query($params, '', '&');
-        $body = $path.chr(0).$post_data;
+        $body = $path.\chr(0).$post_data;
 
         // build signature for Rest-Sign
-        $sign = base64_encode(hash_hmac('sha512', $body, base64_decode($this->privateKey), true));
+        $sign = base64_encode(hash_hmac('sha512', $body, base64_decode($this->privateKey, true), true));
 
         // combine the url and the desired path
         $fullPath = $this->url.$path;
@@ -60,8 +60,11 @@ class Bl3pClient implements Bl3pClientInterface
         // build curl call
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERAGENT,
-            'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/Bl3pDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')');
+        curl_setopt(
+            $ch,
+            CURLOPT_USERAGENT,
+            'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/Bl3pDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')'
+        );
         curl_setopt($ch, CURLOPT_URL, $fullPath);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -92,7 +95,7 @@ class Bl3pClient implements Bl3pClientInterface
             throw new Exception('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
         }
 
-        if (!array_key_exists('result', $result)) {
+        if (!\array_key_exists('result', $result)) {
             // note that data now is the first element in the array.
             $result['data'] = $result;
             $result['result'] = 'success';

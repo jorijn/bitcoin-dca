@@ -11,12 +11,14 @@ use ReflectionClass;
 
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\Factory\Bl3pClientFactory
+ *
+ * @internal
  */
-class Bl3pClientFactoryTest extends TestCase
+final class Bl3pClientFactoryTest extends TestCase
 {
     /**
-     * @covers ::createApi
      * @covers ::__construct
+     * @covers ::createApi
      */
     public function testApiIsCreatedWithCorrectProperties(): void
     {
@@ -36,8 +38,8 @@ class Bl3pClientFactoryTest extends TestCase
         $propertyPublicKey->setAccessible(true);
         $propertyPrivateKey->setAccessible(true);
 
-        self::assertSame($url, $propertyUrl->getValue($client));
-        self::assertSame($publicKey, $propertyPublicKey->getValue($client));
-        self::assertSame($privateKey, $propertyPrivateKey->getValue($client));
+        static::assertSame($url, $propertyUrl->getValue($client));
+        static::assertSame($publicKey, $propertyPublicKey->getValue($client));
+        static::assertSame($privateKey, $propertyPrivateKey->getValue($client));
     }
 }

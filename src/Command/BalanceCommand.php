@@ -26,7 +26,8 @@ class BalanceCommand extends Command
     public function configure(): void
     {
         $this
-            ->setDescription('Gets the balance from the exchange and tests the API key');
+            ->setDescription('Gets the balance from the exchange and tests the API key')
+        ;
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

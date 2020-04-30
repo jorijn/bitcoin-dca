@@ -36,7 +36,8 @@ class VerifyXPubCommand extends Command
     public function configure(): void
     {
         $this
-            ->setDescription('If configured, this command displays derived address from your master public key');
+            ->setDescription('If configured, this command displays derived address from your master public key')
+        ;
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
