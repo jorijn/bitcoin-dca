@@ -77,6 +77,7 @@ class BuyCommand extends Command
 
         // fetch the order info and wait until the order has been filled
         $failureAt = time() + self::ORDER_TIMEOUT;
+        $tag = $input->getOption('tag');
         do {
             $orderInfo = $this->client->apiCall('BTCEUR/money/order/result', [
                 'order_id' => $result['data']['order_id'],
@@ -85,6 +86,14 @@ class BuyCommand extends Command
             if ('closed' === $orderInfo['data']['status']) {
                 break;
             }
+
+            $this->logger->info('order still open, waiting a maximum of {seconds} for it to fill',
+                [
+                    'seconds' => self::ORDER_TIMEOUT,
+                    'order_data' => $orderInfo['data'],
+                    'tag' => $tag,
+                ]
+            );
 
             sleep(1);
         } while (time() < $failureAt);
@@ -98,15 +107,23 @@ class BuyCommand extends Command
                 $orderInfo['data']['total_fee']['display']
             ));
 
-            if ($tagValue = $input->getOption('tag')) {
+            $this->logger->info('order filled, successfully bought bitcoin',
+                ['tag' => $tag, 'order_data' => $orderInfo['data']]);
+
+            if ($tag) {
                 $subtractFees = 'BTC' === $orderInfo['data']['total_fee']['currency']
                     ? (int) $orderInfo['data']['total_fee']['value_int']
                     : 0;
 
                 $this->balanceRepository->increase(
-                    $tagValue,
+                    $tag,
                     ((int) $orderInfo['data']['total_amount']['value_int']) - $subtractFees
                 );
+
+                $this->logger->info('increased balance for tag {tag} with {balance} satoshis', [
+                    'tag' => $tag,
+                    'balance' => ((int) $orderInfo['data']['total_amount']['value_int']) - $subtractFees,
+                ]);
             }
 
             return 0;
@@ -115,6 +132,9 @@ class BuyCommand extends Command
         $this->client->apiCall('BTCEUR/money/order/cancel', ['order_id' => $result['data']['order_id']]);
 
         $io->error('Was not able to fill a MARKET order within the specified timeout ('.self::ORDER_TIMEOUT.' seconds). The order was cancelled.');
+
+        $this->logger->error('was not able to fill a MARKET order within the specified timeout, the order was cancelled',
+            ['tag' => $tag, 'order_data' => $orderInfo['data']]);
 
         return 1;
     }

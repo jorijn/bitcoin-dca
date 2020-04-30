@@ -26,6 +26,7 @@ services:
       - !tagged_iterator bl3p-address_provider
       - '@repository.tag_integer.balance'
       - '@event_dispatcher'
+      - '@logger'
     tags:
       - { name: console.command, command: 'withdraw' }
 

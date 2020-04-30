@@ -9,6 +9,7 @@ use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
 use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,12 +27,14 @@ class WithdrawCommand extends Command
     protected Bl3pClientInterface $client;
     protected TaggedIntegerRepositoryInterface $balanceRepository;
     protected EventDispatcherInterface $dispatcher;
+    protected LoggerInterface $logger;
 
     public function __construct(
         Bl3pClientInterface $client,
         iterable $addressProviders,
         TaggedIntegerRepositoryInterface $balanceRepository,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        LoggerInterface $logger
     ) {
         parent::__construct(null);
 
@@ -39,6 +42,7 @@ class WithdrawCommand extends Command
         $this->addressProviders = $addressProviders;
         $this->balanceRepository = $balanceRepository;
         $this->dispatcher = $dispatcher;
+        $this->logger = $logger;
     }
 
     public function configure(): void
@@ -53,8 +57,10 @@ class WithdrawCommand extends Command
             ->setDescription('Withdraw Bitcoin from Bl3P');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $io = new SymfonyStyle($input, $output);
 
         if (!$input->getOption('all')) {
@@ -65,6 +71,12 @@ class WithdrawCommand extends Command
 
         $balanceToWithdraw = $this->getBalanceToWithdraw($input);
         $addressToWithdrawTo = $this->getAddressToWithdrawTo();
+
+        $this->logger->info('preparing withdraw to {address} for {balance} satoshis', [
+            'tag' => $input->getOption('tag'),
+            'balance' => $balanceToWithdraw,
+            'address' => $addressToWithdrawTo,
+        ]);
 
         if (0 === $balanceToWithdraw) {
             $io->error('No balance available, better start saving something!');
@@ -103,13 +115,21 @@ class WithdrawCommand extends Command
             new WithdrawSuccessEvent($addressToWithdrawTo, $netAmountToWithdraw, $eventContext)
         );
 
+        $this->logger->info('withdraw to {address} successful, processing as ID {data.id}', [
+            'tag' => $input->getOption('tag'),
+            'balance' => $balanceToWithdraw,
+            'address' => $addressToWithdrawTo,
+            'data' => $response['data'],
+        ]);
+
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
 
         return 0;
     }
 
-    protected function getBalanceToWithdraw(InputInterface $input): int
-    {
+    protected function getBalanceToWithdraw(
+        InputInterface $input
+    ): int {
         if ($input->getOption('all')) {
             $response = $this->client->apiCall('GENMKT/money/info');
             $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);

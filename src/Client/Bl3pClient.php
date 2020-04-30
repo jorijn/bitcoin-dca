@@ -20,10 +20,9 @@ class Bl3pClient implements Bl3pClientInterface
     /**
      * Set the url to call, the public key and the private key.
      *
-     * @param string          $url        Url to call (https://api.bl3p.eu)
-     * @param string          $publicKey  Your Public API key
-     * @param string          $privateKey Your Private API key
-     * @param LoggerInterface $logger
+     * @param string $url        Url to call (https://api.bl3p.eu)
+     * @param string $publicKey  Your Public API key
+     * @param string $privateKey Your Private API key
      */
     public function __construct(string $url, string $publicKey, string $privateKey, LoggerInterface $logger)
     {
@@ -93,8 +92,6 @@ class Bl3pClient implements Bl3pClientInterface
             throw new Exception('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
         }
 
-        $this->logger->info('API call success: {url}', ['url' => $fullPath, 'parameters' => $params]);
-
         if (!array_key_exists('result', $result)) {
             // note that data now is the first element in the array.
             $result['data'] = $result;
@@ -107,13 +104,26 @@ class Bl3pClient implements Bl3pClientInterface
         // check returned result of call, if not success then throw an exception with additional information
         if ('success' !== $result['result']) {
             if (!isset($result['data']['code'], $result['data']['message'])) {
-                throw new Exception(sprintf('Received unsuccessful state, and additionally a malformed response: %s',
-                    var_export($result['data'], true)));
+                $this->logger->error('API call failed: {url}', [
+                    'url' => $fullPath,
+                    'parameters' => $params,
+                    'response' => var_export($result['data'], true),
+                ]);
+
+                throw new Exception(sprintf('Received unsuccessful state, and additionally a malformed response: %s', var_export($result['data'], true)));
             }
 
-            throw new Exception(sprintf('API request unsuccessful: [%s] %s', $result['data']['code'],
-                $result['data']['message']));
+            $this->logger->error('API call failed: {url}', [
+                'url' => $fullPath,
+                'parameters' => $params,
+                'code' => $result['data']['code'],
+                'message' => $result['data']['message'],
+            ]);
+
+            throw new Exception(sprintf('API request unsuccessful: [%s] %s', $result['data']['code'], $result['data']['message']));
         }
+
+        $this->logger->info('API call success: {url}', ['url' => $fullPath, 'parameters' => $params]);
 
         return $result;
     }
