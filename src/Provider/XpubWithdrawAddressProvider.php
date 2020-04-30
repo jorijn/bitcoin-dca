@@ -12,9 +12,8 @@ class XpubWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {
     protected ValidationInterface $validation;
     protected AddressFromMasterPublicKeyFactory $keyFactory;
-    protected ?string $configuredXPub;
-    /** @var TaggedIntegerRepositoryInterface */
     protected TaggedIntegerRepositoryInterface $xpubRepository;
+    protected ?string $configuredXPub;
 
     public function __construct(
         ValidationInterface $validation,
