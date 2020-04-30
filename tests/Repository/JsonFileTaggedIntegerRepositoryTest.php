@@ -4,77 +4,77 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bl3pDca\Repository;
 
-use Jorijn\Bl3pDca\Repository\FileTaggedBalanceRepository;
+use Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Repository\FileTaggedBalanceRepository
+ * @coversDefaultClass \Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
  * @covers ::__construct
  */
-class FileTaggedBalanceRepositoryTest extends TestCase
+class JsonFileTaggedIntegerRepositoryTest extends TestCase
 {
     private string $file;
-    private FileTaggedBalanceRepository $repository;
+    private JsonFileTaggedIntegerRepository $repository;
 
     /**
-     * @covers ::setTagBalance
+     * @covers ::set
      * @covers ::read
      * @covers ::write
      */
     public function testSetTagBalance(): void
     {
-        $this->repository->setTagBalance('test1', 500);
-        $this->repository->setTagBalance('test2', 1000);
+        $this->repository->set('test1', 500);
+        $this->repository->set('test2', 1000);
 
         $this->assertFileContents(['test1' => 500, 'test2' => 1000]);
     }
 
     /**
-     * @covers ::decreaseTagBalance
+     * @covers ::decrease
      * @covers ::read
      * @covers ::write
      */
     public function testDecreaseTagBalance(): void
     {
-        $this->repository->setTagBalance('test1', 500);
-        $this->repository->setTagBalance('test2', 1000);
+        $this->repository->set('test1', 500);
+        $this->repository->set('test2', 1000);
 
-        $this->repository->decreaseTagBalance('test1', 250);
-        $this->repository->decreaseTagBalance('test2', 200);
-        $this->repository->decreaseTagBalance('test3', 100);
+        $this->repository->decrease('test1', 250);
+        $this->repository->decrease('test2', 200);
+        $this->repository->decrease('test3', 100);
 
         $this->assertFileContents(['test1' => 250, 'test2' => 800, 'test3' => -100]);
     }
 
     /**
-     * @covers ::getTagBalance
+     * @covers ::get
      * @covers ::read
      * @covers ::write
      */
     public function testGetTagBalance(): void
     {
-        $this->repository->setTagBalance('test1', 500);
-        $this->repository->setTagBalance('test2', 1000);
+        $this->repository->set('test1', 500);
+        $this->repository->set('test2', 1000);
 
         $this->assertFileContents(['test1' => 500, 'test2' => 1000]);
 
-        self::assertSame(500, $this->repository->getTagBalance('test1'));
-        self::assertSame(1000, $this->repository->getTagBalance('test2'));
+        self::assertSame(500, $this->repository->get('test1'));
+        self::assertSame(1000, $this->repository->get('test2'));
     }
 
     /**
-     * @covers ::increaseTagBalance
+     * @covers ::increase
      * @covers ::read
      * @covers ::write
      */
     public function testIncreaseTagBalance(): void
     {
-        $this->repository->setTagBalance('test1', 500);
-        $this->repository->setTagBalance('test2', 1000);
+        $this->repository->set('test1', 500);
+        $this->repository->set('test2', 1000);
 
-        $this->repository->increaseTagBalance('test1', 250);
-        $this->repository->increaseTagBalance('test2', 200);
-        $this->repository->increaseTagBalance('test3', 100);
+        $this->repository->increase('test1', 250);
+        $this->repository->increase('test2', 200);
+        $this->repository->increase('test3', 100);
 
         $this->assertFileContents(['test1' => 750, 'test2' => 1200, 'test3' => 100]);
     }
@@ -84,8 +84,8 @@ class FileTaggedBalanceRepositoryTest extends TestCase
      */
     public function testNonExistingFileReturnsEmpty(): void
     {
-        $this->repository = new FileTaggedBalanceRepository('file'.mt_rand());
-        self::assertSame(0, $this->repository->getTagBalance('test'));
+        $this->repository = new JsonFileTaggedIntegerRepository('file'.mt_rand());
+        self::assertSame(0, $this->repository->get('test'));
     }
 
     /**
@@ -94,7 +94,7 @@ class FileTaggedBalanceRepositoryTest extends TestCase
     public function testCorruptJsonGetsReset(): void
     {
         file_put_contents($this->file, 'cor,,ru..ptjson'.mt_rand());
-        self::assertSame(0, $this->repository->getTagBalance('test'));
+        self::assertSame(0, $this->repository->get('test'));
     }
 
     protected function setUp(): void
@@ -102,7 +102,7 @@ class FileTaggedBalanceRepositoryTest extends TestCase
         parent::setUp();
 
         $this->file = __CLASS__.'.db';
-        $this->repository = new FileTaggedBalanceRepository($this->file);
+        $this->repository = new JsonFileTaggedIntegerRepository($this->file);
     }
 
     protected function tearDown(): void

@@ -6,7 +6,7 @@ namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
+use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,13 +22,13 @@ class WithdrawCommand extends Command
     /** @var WithdrawAddressProviderInterface[] */
     protected iterable $addressProviders;
     protected Bl3pClientInterface $client;
-    protected TaggedBalanceRepositoryInterface $balanceRepository;
+    protected TaggedIntegerRepositoryInterface $balanceRepository;
 
     public function __construct(
         string $name,
         Bl3pClientInterface $client,
         iterable $addressProviders,
-        TaggedBalanceRepositoryInterface $balanceRepository
+        TaggedIntegerRepositoryInterface $balanceRepository
     ) {
         parent::__construct($name);
 
@@ -89,7 +89,7 @@ class WithdrawCommand extends Command
         ]);
 
         if ($tagValue = $input->getOption('tag')) {
-            $this->balanceRepository->setTagBalance($tagValue, 0);
+            $this->balanceRepository->set($tagValue, 0);
         }
 
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
@@ -104,7 +104,7 @@ class WithdrawCommand extends Command
             $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
 
             if ($tagValue = $input->getOption('tag')) {
-                $tagBalance = $this->balanceRepository->getTagBalance($tagValue);
+                $tagBalance = $this->balanceRepository->get($tagValue);
 
                 // limit the balance to what comes first: the tagged balance, or the maximum balance
                 return $tagBalance <= $maxAvailableBalance ? $tagBalance : $maxAvailableBalance;

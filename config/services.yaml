@@ -12,7 +12,7 @@ services:
     arguments:
       - 'buy'
       - '@dca.api.client'
-      - '@dca.repository.tag_balance.file'
+      - '@dca.repository.tag_integer.balance'
     tags:
       - bl3p-dca.cli
 
@@ -22,7 +22,7 @@ services:
       - 'withdraw'
       - '@dca.api.client'
       - !tagged_iterator bl3p-dca.address_provider
-      - '@dca.repository.tag_balance.file'
+      - '@dca.repository.tag_integer.balance'
     tags:
       - bl3p-dca.cli
 
@@ -91,10 +91,15 @@ services:
     arguments:
       - '%dca.application_title%'
 
-  dca.repository.tag_balance.file:
-    class: Jorijn\Bl3pDca\Repository\FileTaggedBalanceRepository
+  dca.repository.tag_integer.balance:
+    class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
     arguments:
-      - '%dca.application.path%/var/storage/tags.db'
+      - '%dca.application.path%/var/storage/balance.db'
+
+  dca.repository.tag_integer.xpub_index:
+    class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
+    arguments:
+      - '%dca.application.path%/var/storage/xpub_index.db'
 
   dca.bitwasp.address.creator:
     class: BitWasp\Bitcoin\Address\AddressCreator

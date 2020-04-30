@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Repository\TaggedBalanceRepositoryInterface;
+use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,13 +19,13 @@ class BuyCommand extends Command
     public const ORDER_TIMEOUT = 30;
 
     protected Bl3pClientInterface $client;
-    /** @var TaggedBalanceRepositoryInterface */
-    protected TaggedBalanceRepositoryInterface $balanceRepository;
+    /** @var TaggedIntegerRepositoryInterface */
+    protected TaggedIntegerRepositoryInterface $balanceRepository;
 
     public function __construct(
         string $name,
         Bl3pClientInterface $client,
-        TaggedBalanceRepositoryInterface $balanceRepository
+        TaggedIntegerRepositoryInterface $balanceRepository
     ) {
         parent::__construct($name);
 
@@ -101,7 +101,7 @@ class BuyCommand extends Command
                     ? (int) $orderInfo['data']['total_fee']['value_int']
                     : 0;
 
-                $this->balanceRepository->increaseTagBalance(
+                $this->balanceRepository->increase(
                     $tagValue,
                     ((int) $orderInfo['data']['total_amount']['value_int']) - $subtractFees
                 );
