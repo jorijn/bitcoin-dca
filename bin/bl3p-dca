@@ -3,13 +3,14 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Jorijn\Bl3pDca\DependencyInjection\AddCommandsCompilerPass;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
 if (file_exists(__DIR__.'/../.env')) {
     $dotenv = new Dotenv();
@@ -26,8 +27,9 @@ if (!$containerConfigCache->isFresh()) {
     $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../config/'));
     $loader->load('services.yaml');
 
-    $containerBuilder->addCompilerPass(new AddCommandsCompilerPass());
-    $containerBuilder->setParameter('dca.application.path', dirname(__DIR__));
+    $containerBuilder->addCompilerPass(new AddConsoleCommandPass());
+    $containerBuilder->addCompilerPass(new RegisterListenersPass());
+    $containerBuilder->setParameter('application.path', dirname(__DIR__));
     $containerBuilder->compile();
 
     // write the compiled container to file
@@ -40,4 +42,7 @@ if (!$containerConfigCache->isFresh()) {
 
 require_once $containerCache;
 $container = new Bl3pDcaContainer();
-$container->get('dca.application')->run();
+
+$application = $container->get('application');
+$application->setCommandLoader($container->get('console.command_loader'));
+$application->run();

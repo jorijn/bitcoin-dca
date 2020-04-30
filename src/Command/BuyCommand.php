@@ -6,6 +6,7 @@ namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,18 +20,19 @@ class BuyCommand extends Command
     public const ORDER_TIMEOUT = 30;
 
     protected Bl3pClientInterface $client;
-    /** @var TaggedIntegerRepositoryInterface */
     protected TaggedIntegerRepositoryInterface $balanceRepository;
+    protected LoggerInterface $logger;
 
     public function __construct(
-        string $name,
         Bl3pClientInterface $client,
-        TaggedIntegerRepositoryInterface $balanceRepository
+        TaggedIntegerRepositoryInterface $balanceRepository,
+        LoggerInterface $logger
     ) {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
         $this->balanceRepository = $balanceRepository;
+        $this->logger = $logger;
     }
 
     public function configure(): void

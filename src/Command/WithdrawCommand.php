@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Jorijn\Bl3pDca\Command;
 
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
 use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
 use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,18 +25,20 @@ class WithdrawCommand extends Command
     protected iterable $addressProviders;
     protected Bl3pClientInterface $client;
     protected TaggedIntegerRepositoryInterface $balanceRepository;
+    protected EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        string $name,
         Bl3pClientInterface $client,
         iterable $addressProviders,
-        TaggedIntegerRepositoryInterface $balanceRepository
+        TaggedIntegerRepositoryInterface $balanceRepository,
+        EventDispatcherInterface $dispatcher
     ) {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
         $this->addressProviders = $addressProviders;
         $this->balanceRepository = $balanceRepository;
+        $this->dispatcher = $dispatcher;
     }
 
     public function configure(): void
@@ -82,15 +86,22 @@ class WithdrawCommand extends Command
             }
         }
 
+        $netAmountToWithdraw = $balanceToWithdraw - self::WITHDRAW_FEE;
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
             'address' => $addressToWithdrawTo,
-            'amount_int' => ($balanceToWithdraw - self::WITHDRAW_FEE),
+            'amount_int' => $netAmountToWithdraw,
         ]);
 
+        $eventContext = [];
         if ($tagValue = $input->getOption('tag')) {
             $this->balanceRepository->set($tagValue, 0);
+            $eventContext['tag'] = $tagValue;
         }
+
+        $this->dispatcher->dispatch(
+            new WithdrawSuccessEvent($addressToWithdrawTo, $netAmountToWithdraw, $eventContext)
+        );
 
         $io->success('Withdraw is being processed as ID '.$response['data']['id']);
 

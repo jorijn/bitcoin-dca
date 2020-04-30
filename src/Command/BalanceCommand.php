@@ -16,9 +16,9 @@ class BalanceCommand extends Command
 {
     protected Bl3pClientInterface $client;
 
-    public function __construct(string $name, Bl3pClientInterface $client)
+    public function __construct(Bl3pClientInterface $client)
     {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
     }

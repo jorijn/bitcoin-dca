@@ -1,5 +1,5 @@
 parameters:
-  dca.application_title: 'BL3P Bitcoin DCA Tool'
+  application_title: 'BL3P Bitcoin DCA Tool'
   env(BL3P_API_URL): ''
   env(BL3P_PUBLIC_KEY): ''
   env(BL3P_PRIVATE_KEY): ''
@@ -7,99 +7,149 @@ parameters:
   env(BL3P_WITHDRAW_XPUB): ~
 
 services:
-  dca.command.buy:
+  ######################################################################
+  # CLI Commands
+  ######################################################################
+  command.buy:
     class: Jorijn\Bl3pDca\Command\BuyCommand
     arguments:
-      - 'buy'
-      - '@dca.api.client'
-      - '@dca.repository.tag_integer.balance'
+      - '@api.client'
+      - '@repository.tag_integer.balance'
+      - '@logger'
     tags:
-      - bl3p-dca.cli
+      - { name: console.command, command: 'buy' }
 
-  dca.command.withdraw:
+  command.withdraw:
     class: Jorijn\Bl3pDca\Command\WithdrawCommand
     arguments:
-      - 'withdraw'
-      - '@dca.api.client'
-      - !tagged_iterator bl3p-dca.address_provider
-      - '@dca.repository.tag_integer.balance'
+      - '@api.client'
+      - !tagged_iterator bl3p-address_provider
+      - '@repository.tag_integer.balance'
+      - '@event_dispatcher'
     tags:
-      - bl3p-dca.cli
+      - { name: console.command, command: 'withdraw' }
 
-  dca.command.balance:
+  command.balance:
     class: Jorijn\Bl3pDca\Command\BalanceCommand
     arguments:
-      - 'balance'
-      - '@dca.api.client'
+      - '@api.client'
     tags:
-      - bl3p-dca.cli
+      - { name: console.command, command: 'balance' }
 
-  dca.command.verify_xpub:
+  command.verify_xpub:
     class: Jorijn\Bl3pDca\Command\VerifyXPubCommand
     arguments:
-      - 'verify-xpub'
-      - '@dca.factory.derive_from_master_public_key'
+      - '@factory.derive_from_master_public_key'
+      - '@repository.tag_integer.xpub_index'
       - '%env(BL3P_WITHDRAW_XPUB)%'
       - 'BL3P_WITHDRAW_XPUB'
     tags:
-      - bl3p-dca.cli
+      - { name: console.command, command: 'verify-xpub' }
 
-  dca.factory.api_client:
+  ######################################################################
+  # Factories
+  ######################################################################
+  factory.api_client:
     class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
     arguments:
       - '%env(string:BL3P_API_URL)%'
       - '%env(string:BL3P_PUBLIC_KEY)%'
       - '%env(string:BL3P_PRIVATE_KEY)%'
+      - '@logger'
 
-  dca.factory.derive_from_master_public_key:
+  factory.derive_from_master_public_key:
     class: Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory
 
-  dca.api.client:
+  ######################################################################
+  # API Clients
+  ######################################################################
+  api.client:
     class: Jorijn\Bl3pDca\Client\Bl3pClient
     factory:
-      - '@dca.factory.api_client'
+      - '@factory.api_client'
       - 'createApi'
 
-  # this is the default address provider, new ones with special capabilities can be configured with more priority
-  dca.address_provider.simple:
+  ######################################################################
+  # Address Providers
+  ######################################################################
+  address_provider.simple:
     class: Jorijn\Bl3pDca\Provider\SimpleWithdrawAddressProvider
     arguments:
-      - '@dca.validator.bitcoin_address'
+      - '@validator.bitcoin_address'
       - '%env(string:BL3P_WITHDRAW_ADDRESS)%'
     tags:
-      - { name: 'bl3p-dca.address_provider', priority: -1000 }
+      - { name: 'bl3p-address_provider', priority: -1000 }
 
-  # this address provider parses the configured xpub and returns a fresh address for each transaction
-  # DISABLED FOR NOW, WORK IN PROGRESS
-  dca.address_provider.xpub:
+  address_provider.xpub:
     class: Jorijn\Bl3pDca\Provider\XpubWithdrawAddressProvider
     arguments:
-      - '@dca.validator.bitcoin_address'
-      - '@dca.factory.derive_from_master_public_key'
+      - '@validator.bitcoin_address'
+      - '@factory.derive_from_master_public_key'
+      - '@repository.tag_integer.xpub_index'
       - '%env(BL3P_WITHDRAW_XPUB)%'
-  #    tags:
-  #      - { name: 'bl3p-dca.address_provider', priority: -500 }
+    tags:
+      - { name: bl3p-address_provider, priority: -500 }
 
-  dca.validator.bitcoin_address:
+  ######################################################################
+  # Validators
+  ######################################################################
+  validator.bitcoin_address:
     class: Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
     arguments:
-      - '@dca.bitwasp.address.creator'
+      - '@bitwasp.address.creator'
 
-  dca.application:
+  ######################################################################
+  # The CLI application
+  ######################################################################
+  application:
     class: Symfony\Component\Console\Application
     public: true
     arguments:
-      - '%dca.application_title%'
+      - '%application_title%'
 
-  dca.repository.tag_integer.balance:
+  ######################################################################
+  # Repositories
+  ######################################################################
+  repository.tag_integer.balance:
     class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
     arguments:
-      - '%dca.application.path%/var/storage/balance.db'
+      - '%application.path%/var/storage/balance.db'
 
-  dca.repository.tag_integer.xpub_index:
+  repository.tag_integer.xpub_index:
     class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
     arguments:
-      - '%dca.application.path%/var/storage/xpub_index.db'
+      - '%application.path%/var/storage/xpub_index.db'
 
-  dca.bitwasp.address.creator:
+  ######################################################################
+  # Event Listeners
+  ######################################################################
+  event_listener.xpub_address_used:
+    class: Jorijn\Bl3pDca\EventListener\XPubAddressUsedListener
+    arguments:
+      - '@repository.tag_integer.xpub_index'
+      - '@factory.derive_from_master_public_key'
+      - '@logger'
+      - '%env(BL3P_WITHDRAW_XPUB)%'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
+
+  ######################################################################
+  # Third Party Components
+  ######################################################################
+  bitwasp.address.creator:
     class: BitWasp\Bitcoin\Address\AddressCreator
+
+  event_dispatcher:
+    class: Symfony\Component\EventDispatcher\EventDispatcher
+    public: true
+
+  logger.stream_handler:
+    class: Monolog\Handler\StreamHandler
+    arguments:
+      - '%application.path%/var/logs/bl3p-dca.log'
+
+  logger:
+    class: Monolog\Logger
+    arguments:
+      - 'bl3p-dca'
+      - ['@logger.stream_handler']

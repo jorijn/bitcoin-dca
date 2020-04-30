@@ -5,28 +5,32 @@ declare(strict_types=1);
 namespace Jorijn\Bl3pDca\Client;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  * @source https://github.com/BitonicNL/bl3p-api/blob/master/examples/php/example.php
  */
 class Bl3pClient implements Bl3pClientInterface
 {
-    private string $publicKey;
-    private string $privateKey;
-    private string $url;
+    protected LoggerInterface $logger;
+    protected string $publicKey;
+    protected string $privateKey;
+    protected string $url;
 
     /**
      * Set the url to call, the public key and the private key.
      *
-     * @param string $url        Url to call (https://api.bl3p.eu)
-     * @param string $publicKey  Your Public API key
-     * @param string $privateKey Your Private API key
+     * @param string          $url        Url to call (https://api.bl3p.eu)
+     * @param string          $publicKey  Your Public API key
+     * @param string          $privateKey Your Private API key
+     * @param LoggerInterface $logger
      */
-    public function __construct(string $url, string $publicKey, string $privateKey)
+    public function __construct(string $url, string $publicKey, string $privateKey, LoggerInterface $logger)
     {
         $this->url = $url;
         $this->publicKey = $publicKey;
         $this->privateKey = $privateKey;
+        $this->logger = $logger;
     }
 
     /**
@@ -84,8 +88,12 @@ class Bl3pClient implements Bl3pClientInterface
 
         // check json convert result and throw an exception if invalid
         if (!$result) {
+            $this->logger->error('API call failed: {url}', ['url' => $fullPath, 'parameters' => $params]);
+
             throw new Exception('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
         }
+
+        $this->logger->info('API call success: {url}', ['url' => $fullPath, 'parameters' => $params]);
 
         if (!array_key_exists('result', $result)) {
             // note that data now is the first element in the array.
@@ -99,10 +107,12 @@ class Bl3pClient implements Bl3pClientInterface
         // check returned result of call, if not success then throw an exception with additional information
         if ('success' !== $result['result']) {
             if (!isset($result['data']['code'], $result['data']['message'])) {
-                throw new Exception(sprintf('Received unsuccessful state, and additionally a malformed response: %s', var_export($result['data'], true)));
+                throw new Exception(sprintf('Received unsuccessful state, and additionally a malformed response: %s',
+                    var_export($result['data'], true)));
             }
 
-            throw new Exception(sprintf('API request unsuccessful: [%s] %s', $result['data']['code'], $result['data']['message']));
+            throw new Exception(sprintf('API request unsuccessful: [%s] %s', $result['data']['code'],
+                $result['data']['message']));
         }
 
         return $result;
