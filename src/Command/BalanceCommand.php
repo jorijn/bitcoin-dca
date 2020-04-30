@@ -16,9 +16,9 @@ class BalanceCommand extends Command
 {
     protected Bl3pClientInterface $client;
 
-    public function __construct(string $name, Bl3pClientInterface $client)
+    public function __construct(Bl3pClientInterface $client)
     {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
     }
@@ -26,7 +26,8 @@ class BalanceCommand extends Command
     public function configure(): void
     {
         $this
-            ->setDescription('Gets the balance from the exchange and tests the API key');
+            ->setDescription('Gets the balance from the exchange and tests the API key')
+        ;
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

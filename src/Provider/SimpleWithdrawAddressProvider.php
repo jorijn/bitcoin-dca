@@ -8,11 +8,10 @@ use Jorijn\Bl3pDca\Validator\ValidationInterface;
 
 class SimpleWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {
-    protected string $configuredAddress;
-    /** @var ValidationInterface */
+    protected ?string $configuredAddress;
     protected ValidationInterface $validation;
 
-    public function __construct(ValidationInterface $validation, string $configuredAddress)
+    public function __construct(ValidationInterface $validation, ?string $configuredAddress)
     {
         $this->configuredAddress = $configuredAddress;
         $this->validation = $validation;
