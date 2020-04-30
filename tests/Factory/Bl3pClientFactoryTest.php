@@ -7,6 +7,7 @@ namespace Tests\Jorijn\Bl3pDca\Factory;
 use Jorijn\Bl3pDca\Client\Bl3pClient;
 use Jorijn\Bl3pDca\Factory\Bl3pClientFactory;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use ReflectionClass;
 
 /**
@@ -26,7 +27,7 @@ final class Bl3pClientFactoryTest extends TestCase
         $publicKey = 'pubkey'.mt_rand();
         $privateKey = 'privatekey'.mt_rand();
 
-        $factory = new Bl3pClientFactory($url, $publicKey, $privateKey);
+        $factory = new Bl3pClientFactory($url, $publicKey, $privateKey, $this->createMock(LoggerInterface::class));
         $client = $factory->createApi();
 
         $reflection = new ReflectionClass(Bl3pClient::class);
