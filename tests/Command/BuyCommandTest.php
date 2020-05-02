@@ -16,7 +16,32 @@ final class BuyCommandTest extends TestCase
     /**
      * @covers ::execute
      */
-    public function testExecute()
+    public function testAmountIsNotNumeric(): void
     {
+    }
+
+    public function testNotUnattendedAndNotConfirming(): void
+    {
+
+    }
+
+    public function testNotUnattendedAndConfirmsBuy(): void
+    {
+
+    }
+
+    public function testUnattendedBuy(): void
+    {
+
+    }
+
+    public function testOrderIsNotFilledImmediatelyButEventuallyFills(): void
+    {
+
+    }
+
+    public function testOrderFailsToFillWithinTimeoutParameter(): void
+    {
+
     }
 }
