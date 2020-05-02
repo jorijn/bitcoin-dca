@@ -8,7 +8,6 @@ use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Command\BalanceCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -28,7 +27,7 @@ final class BalanceCommandTest extends TestCase
     {
         parent::setUp();
 
-        $this->client = $this->createMock(Bl3pClientInterface::class);;
+        $this->client = $this->createMock(Bl3pClientInterface::class);
         $this->commandTester = new CommandTester(new BalanceCommand($this->client));
     }
 
