@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Event;
 
+use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
+
 class BuySuccessEvent
 {
-    protected int $amount;
+    protected CompletedBuyOrder $buyOrder;
     protected ?string $tag;
 
-    public function __construct(int $amount, string $tag = null)
+    public function __construct(CompletedBuyOrder $buyOrder, string $tag = null)
     {
-        $this->amount = $amount;
         $this->tag = $tag;
-    }
-
-    public function getAmount(): int
-    {
-        return $this->amount;
+        $this->buyOrder = $buyOrder;
     }
 
     public function getTag(): ?string
     {
         return $this->tag;
+    }
+
+    public function getBuyOrder(): CompletedBuyOrder
+    {
+        return $this->buyOrder;
     }
 }

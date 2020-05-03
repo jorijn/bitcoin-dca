@@ -109,7 +109,7 @@ final class VerifyXPubCommandTest extends TestCase
 
         // test each derived address is printed back to the user
         foreach ($derivedAddresses as $derivedAddress) {
-            self::assertStringContainsString($derivedAddress, $output);
+            static::assertStringContainsString($derivedAddress, $output);
         }
 
         // test the active derivation is marked with a "<"

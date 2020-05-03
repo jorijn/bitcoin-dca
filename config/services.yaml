@@ -132,6 +132,17 @@ services:
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
 
+  event_listener.increase_tagged_balance:
+    class: Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener
+    arguments:
+      - '@repository.tag_integer.balance'
+      - '@logger'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\BuySuccessEvent, method: onBalanceIncrease }
+
+  ######################################################################
+  # Services
+  ######################################################################
   service.buy:
     class: Jorijn\Bl3pDca\Service\BuyService
     arguments:

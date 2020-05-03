@@ -7,7 +7,7 @@ namespace Jorijn\Bl3pDca\Service;
 use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
 use Jorijn\Bl3pDca\Event\BuySuccessEvent;
 use Jorijn\Bl3pDca\Exception\BuyTimeoutException;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
@@ -23,14 +23,13 @@ class BuyService
         Bl3pClientInterface $client,
         EventDispatcherInterface $dispatcher,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->client = $client;
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
     }
 
-    public function buy(int $amount, string $tag = null)
+    public function buy(int $amount, string $tag = null): CompletedBuyOrder
     {
         $params = [
             'type' => 'bid',
@@ -71,23 +70,20 @@ class BuyService
                 ['tag' => $tag, 'order_data' => $orderInfo['data']]
             );
 
-            $amountBought = (int) $orderInfo['data']['total_amount']['value_int'];
-            $subtractedFees = 'BTC' === $orderInfo['data']['total_fee']['currency']
-                ? (int) $orderInfo['data']['total_fee']['value_int']
-                : 0;
+            $buyOrder = (new CompletedBuyOrder())
+                ->setAmountInSatoshis((int) $orderInfo['data']['total_amount']['value_int'])
+                ->setFeesInSatoshis('BTC' === $orderInfo['data']['total_fee']['currency']
+                    ? (int) $orderInfo['data']['total_fee']['value_int']
+                    : 0)
+                ->setDisplayAmountBought($orderInfo['data']['total_amount']['display'])
+                ->setDisplayAmountSpent($orderInfo['data']['total_spent']['display_short'])
+                ->setDisplayAveragePrice($orderInfo['data']['avg_cost']['display_short'])
+                ->setDisplayFeesSpent($orderInfo['data']['total_fee']['display'])
+            ;
 
-            $this->dispatcher->dispatch(new BuySuccessEvent(
-                $amountBought - $subtractedFees,
-                $tag
-            ));
+            $this->dispatcher->dispatch(new BuySuccessEvent($buyOrder, $tag));
 
-            return [
-                // TODO: see what can be added here for future interfacing, create a DTO for the result
-                'display_amount_bought' => $orderInfo['data']['total_amount']['display'],
-                'display_amount_spent' =>$orderInfo['data']['total_spent']['display_short'],
-                'display_average_price' => $orderInfo['data']['avg_cost']['display_short'],
-                'display_fees_spent' => $orderInfo['data']['total_fee']['display'],
-            ];
+            return $buyOrder;
         }
 
         $this->client->apiCall('BTCEUR/money/order/cancel', ['order_id' => $result['data']['order_id']]);

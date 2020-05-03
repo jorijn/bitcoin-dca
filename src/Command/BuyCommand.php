@@ -47,7 +47,7 @@ class BuyCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $amount = $input->getArgument('amount');
+        $amount = (string) $input->getArgument('amount');
         if (!preg_match('/^\d+$/', $amount)) {
             $io->error('Amount should be numeric, e.g. 10');
 
@@ -66,17 +66,17 @@ class BuyCommand extends Command
 
             $io->success(sprintf(
                 'Bought: %s, EUR: %s, price: %s, spent fees: %s',
-                $orderInformation['display_amount_bought'],
-                $orderInformation['display_amount_spent'],
-                $orderInformation['display_average_price'],
-                $orderInformation['display_fees_spent']
+                $orderInformation->getDisplayAmountBought(),
+                $orderInformation->getDisplayAmountSpent(),
+                $orderInformation->getDisplayAveragePrice(),
+                $orderInformation->getDisplayFeesSpent()
             ));
 
             return 0;
         } catch (\Throwable $exception) {
             $io->error($exception->getMessage());
-
-            return 1;
         }
+
+        return 1;
     }
 }
