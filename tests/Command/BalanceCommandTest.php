@@ -36,7 +36,7 @@ final class BalanceCommandTest extends TestCase
      */
     public function testApiFailure(): void
     {
-        $errorMessage = 'message'.mt_rand();
+        $errorMessage = 'message'.random_int(1000, 2000);
         $apiException = new \Exception($errorMessage);
 
         $this->client
@@ -57,8 +57,8 @@ final class BalanceCommandTest extends TestCase
      */
     public function testDisplaysBalanceFromApi(): void
     {
-        $btcBalance = mt_rand();
-        $euroBalance = mt_rand();
+        $btcBalance = random_int(1000, 2000);
+        $euroBalance = random_int(1000, 2000);
 
         $this->client
             ->expects(static::once())

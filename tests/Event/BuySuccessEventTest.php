@@ -23,7 +23,7 @@ final class BuySuccessEventTest extends TestCase
     public function testGetters(): void
     {
         $dto = new CompletedBuyOrder();
-        $tag = 'tag'.mt_rand();
+        $tag = 'tag'.random_int(1000, 2000);
 
         $event = new BuySuccessEvent($dto, $tag);
 

@@ -28,7 +28,7 @@ final class SimpleWithdrawAddressProviderTest extends TestCase
     {
         parent::setUp();
 
-        $this->configuredAddress = 'ca'.mt_rand();
+        $this->configuredAddress = 'ca'.random_int(1000, 2000);
         $this->validation = $this->createMock(ValidationInterface::class);
         $this->provider = new SimpleWithdrawAddressProvider($this->validation, $this->configuredAddress);
     }
@@ -38,7 +38,7 @@ final class SimpleWithdrawAddressProviderTest extends TestCase
      */
     public function testExpectExceptionWhenValidationFails(): void
     {
-        $validationException = new ValidationException('error'.mt_rand());
+        $validationException = new ValidationException('error'.random_int(1000, 2000));
 
         $this->validation
             ->expects(static::once())

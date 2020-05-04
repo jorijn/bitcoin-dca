@@ -35,7 +35,7 @@ final class VerifyXPubCommandTest extends TestCase
 
         $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
-        $this->configuredKey = 'xpub'.mt_rand();
+        $this->configuredKey = 'xpub'.random_int(1000, 2000);
         $this->environmentKey = 'CONFIG_KEY_HERE';
         $this->command = new VerifyXPubCommand(
             $this->keyFactory,

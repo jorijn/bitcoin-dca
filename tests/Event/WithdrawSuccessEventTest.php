@@ -22,9 +22,9 @@ final class WithdrawSuccessEventTest extends TestCase
      */
     public function testGetters(): void
     {
-        $address = 'a'.mt_rand();
-        $amount = mt_rand();
-        $context = ['c'.mt_rand()];
+        $address = 'a'.random_int(1000, 2000);
+        $amount = random_int(1000, 2000);
+        $context = ['c'.random_int(1000, 2000)];
 
         $event = new WithdrawSuccessEvent($address, $amount, $context);
 

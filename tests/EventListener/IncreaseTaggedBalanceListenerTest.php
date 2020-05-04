@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener
+ * @covers ::__construct
  *
  * @internal
  */
@@ -39,7 +40,7 @@ final class IncreaseTaggedBalanceListenerTest extends TestCase
      */
     public function testBalanceIsIncreasedForTag(): void
     {
-        $tag = 'tag'.mt_rand();
+        $tag = 'tag'.random_int(1000, 2000);
         $amount = random_int(1000, 2000);
         $fees = random_int(0, 999);
 

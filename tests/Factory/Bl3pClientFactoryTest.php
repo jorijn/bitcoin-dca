@@ -23,9 +23,9 @@ final class Bl3pClientFactoryTest extends TestCase
      */
     public function testApiIsCreatedWithCorrectProperties(): void
     {
-        $url = 'url'.mt_rand();
-        $publicKey = 'pubkey'.mt_rand();
-        $privateKey = 'privatekey'.mt_rand();
+        $url = 'url'.random_int(1000, 2000);
+        $publicKey = 'pubkey'.random_int(1000, 2000);
+        $privateKey = 'privatekey'.random_int(1000, 2000);
 
         $factory = new Bl3pClientFactory($url, $publicKey, $privateKey, $this->createMock(LoggerInterface::class));
         $client = $factory->createApi();

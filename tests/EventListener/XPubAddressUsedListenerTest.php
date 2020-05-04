@@ -39,7 +39,7 @@ final class XPubAddressUsedListenerTest extends TestCase
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
         $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->configuredXPub = 'xpub'.mt_rand();
+        $this->configuredXPub = 'xpub'.random_int(1000, 2000);
         $this->listener = new XPubAddressUsedListener(
             $this->xpubRepository,
             $this->keyFactory,
@@ -47,8 +47,8 @@ final class XPubAddressUsedListenerTest extends TestCase
             $this->configuredXPub
         );
 
-        $this->addressUsed = 'address'.mt_rand();
-        $this->amount = mt_rand();
+        $this->addressUsed = 'address'.random_int(1000, 2000);
+        $this->amount = random_int(1000, 2000);
         $this->event = new WithdrawSuccessEvent($this->addressUsed, $this->amount);
     }
 
@@ -77,8 +77,8 @@ final class XPubAddressUsedListenerTest extends TestCase
      */
     public function testDerivedAddressDoesNotMatchesWithdrawalAddress(): void
     {
-        $activeIndex = mt_rand();
-        $otherAddress = 'da'.mt_rand();
+        $activeIndex = random_int(1000, 2000);
+        $otherAddress = 'da'.random_int(1000, 2000);
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())
@@ -107,7 +107,7 @@ final class XPubAddressUsedListenerTest extends TestCase
      */
     public function testXpubIndexIsIncreasedOnWithdraw(): void
     {
-        $activeIndex = mt_rand();
+        $activeIndex = random_int(1000, 2000);
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())
@@ -137,8 +137,8 @@ final class XPubAddressUsedListenerTest extends TestCase
      */
     public function testFailureIsLogged(): void
     {
-        $activeIndex = mt_rand();
-        $exception = new \Exception('error'.mt_rand());
+        $activeIndex = random_int(1000, 2000);
+        $exception = new \Exception('error'.random_int(1000, 2000));
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())
