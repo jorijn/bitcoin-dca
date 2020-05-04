@@ -102,28 +102,21 @@ Ready to withdraw 0.00412087 BTC to Bitcoin Address bc1abcdefghijklmopqrstuvwxuz
 ## Automating buying and withdrawing
 The `buy` and `withdraw` command both allow skipping the confirmation questions with the `--yes` option. By leveraging the system's cron daemon on Linux, you can create flexible setups. Use the command `crontab -e` to edit periodic tasks for your user:
 
-On most systems its best to supply the full absolute path to the Docker program in the crontab. If you don't know, you can find out where the Docker binary is installed by running `which docker` on the terminal.
-
-```bash
-$ which docker
-/usr/local/bin/docker
-```
-
 ### Example: Buying €50.00 of Bitcoin and withdrawing every monday. Buy at 3am and withdraw at 3:30am.
 ```
-0 3 * * mon /usr/local/bin/docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
-30 3 * * mon /usr/local/bin/docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+0 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+30 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
 ```
 
 ### Example: Buying €50.00 of Bitcoin every week on monday, withdrawing everything on the 1st of every month.
 ```
-0 3 * * mon /usr/local/bin/docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
-0 0 1 * * /usr/local/bin/docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
+0 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi
+0 0 1 * * $(command -v docker) run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all --yes --no-ansi
 ```
 
 ### Example: Send out an email when Bitcoin was bought
 ```
-0 3 * * mon /usr/local/bin/docker run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi 2>&1 |mail -s "You just bought more Bitcoin!" youremail@here.com
+0 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 50 --yes --no-ansi 2>&1 |mail -s "You just bought more Bitcoin!" youremail@here.com
 ```
 
 You can use the great tool at https://crontab.guru/ to try more combinations. 
