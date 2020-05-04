@@ -76,7 +76,7 @@ final class VerifyXPubCommandTest extends TestCase
     public function testDisplaysRelevantWithdrawalAddresses(): void
     {
         $derivedAddresses = [];
-        $activeIndex = mt_rand(0, 10);
+        $activeIndex = random_int(0, 10);
 
         $this->xpubRepository
             ->expects(static::once())
@@ -96,7 +96,8 @@ final class VerifyXPubCommandTest extends TestCase
                     $matches
                 ) && $matches[0] ?? null > 0)
             )
-            ->willReturnCallback(static function (string $configuredKey, string $derivation) use (&$derivedAddresses) {
+            ->willReturnCallback(function (string $configuredKey, string $derivation) use (&$derivedAddresses) {
+                self::assertSame($configuredKey, $this->configuredKey);
                 preg_match('/^0\/(\d+)$/', $derivation, $matches);
 
                 return $derivedAddresses[$matches[0]] = sprintf('address_%s', $matches[0]);

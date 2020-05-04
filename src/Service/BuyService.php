@@ -50,7 +50,6 @@ class BuyService
             'fee_currency' => 'BTC',
         ];
 
-        // TODO: be more defensive about this part, stuff could break here and no one likes error messages when it comes to money
         $result = $this->client->apiCall('BTCEUR/money/order/add', $params);
 
         // fetch the order info and wait until the order has been filled
@@ -84,14 +83,15 @@ class BuyService
             );
 
             $buyOrder = (new CompletedBuyOrder())
-                ->setAmountInSatoshis((int)$orderInfo[self::DATA][self::TOTAL_AMOUNT][self::VALUE_INT])
+                ->setAmountInSatoshis((int) $orderInfo[self::DATA][self::TOTAL_AMOUNT][self::VALUE_INT])
                 ->setFeesInSatoshis('BTC' === $orderInfo[self::DATA][self::TOTAL_FEE][self::CURRENCY]
-                    ? (int)$orderInfo[self::DATA][self::TOTAL_FEE][self::VALUE_INT]
+                    ? (int) $orderInfo[self::DATA][self::TOTAL_FEE][self::VALUE_INT]
                     : 0)
                 ->setDisplayAmountBought($orderInfo[self::DATA][self::TOTAL_AMOUNT][self::DISPLAY])
                 ->setDisplayAmountSpent($orderInfo[self::DATA][self::TOTAL_SPENT][self::DISPLAY_SHORT])
                 ->setDisplayAveragePrice($orderInfo[self::DATA][self::AVG_COST][self::DISPLAY_SHORT])
-                ->setDisplayFeesSpent($orderInfo[self::DATA][self::TOTAL_FEE][self::DISPLAY]);
+                ->setDisplayFeesSpent($orderInfo[self::DATA][self::TOTAL_FEE][self::DISPLAY])
+            ;
 
             $this->dispatcher->dispatch(new BuySuccessEvent($buyOrder, $tag));
 
