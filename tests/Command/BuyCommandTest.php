@@ -24,6 +24,7 @@ final class BuyCommandTest extends TestCase
 {
     public const AMOUNT = 'amount';
     public const COMMAND = 'command';
+
     /** @var BuyService|MockObject */
     private $buyService;
     /** @var BuyCommand */
@@ -51,7 +52,10 @@ final class BuyCommandTest extends TestCase
     public function testAmountIsNotNumeric(): void
     {
         $commandTester = $this->createCommandTester();
-        $commandTester->execute([self::COMMAND => $this->command->getName(), self::AMOUNT => 'string'.random_int(1000, 2000)]);
+        $commandTester->execute([
+            self::COMMAND => $this->command->getName(),
+            self::AMOUNT => 'string'.random_int(1000, 2000),
+        ]);
 
         static::assertStringContainsString('Amount should be numeric, e.g. 10', $commandTester->getDisplay(true));
         static::assertSame(1, $commandTester->getStatusCode());
@@ -80,26 +84,7 @@ final class BuyCommandTest extends TestCase
      */
     public function testNotUnattendedAndConfirmsBuy(string $tag = null): void
     {
-        $amount = random_int(1000, 2000);
-
-        $orderInformation = (new CompletedBuyOrder())
-            ->setDisplayAmountBought(random_int(1000, 2000).' BTC')
-            ->setDisplayAmountSpent(random_int(1000, 2000).' EUR')
-            ->setDisplayAveragePrice(random_int(1000, 2000).' EUR')
-            ->setDisplayFeesSpent('0.'.random_int(1000, 2000).' BTC')
-        ;
-
-        $invocationMocker = $this->buyService
-            ->expects(static::once())
-            ->method('buy')
-            ->willReturn($orderInformation)
-        ;
-
-        if (!empty($tag)) {
-            $invocationMocker->with($amount, $tag);
-        } else {
-            $invocationMocker->with($amount);
-        }
+        [$amount, $orderInformation] = $this->prepareBuyTest($tag);
 
         $commandTester = $this->createCommandTester();
         $commandTester->setInputs(['yes']);
@@ -120,26 +105,7 @@ final class BuyCommandTest extends TestCase
 
     public function testUnattendedBuy(string $tag = null): void
     {
-        $amount = random_int(1000, 2000);
-
-        $orderInformation = (new CompletedBuyOrder())
-            ->setDisplayAmountBought(random_int(1000, 2000).' BTC')
-            ->setDisplayAmountSpent(random_int(1000, 2000).' EUR')
-            ->setDisplayAveragePrice(random_int(1000, 2000).' EUR')
-            ->setDisplayFeesSpent('0.'.random_int(1000, 2000).' BTC')
-        ;
-
-        $invocationMocker = $this->buyService
-            ->expects(static::once())
-            ->method('buy')
-            ->willReturn($orderInformation)
-        ;
-
-        if (!empty($tag)) {
-            $invocationMocker->with($amount, $tag);
-        } else {
-            $invocationMocker->with($amount);
-        }
+        [$amount, $orderInformation] = $this->prepareBuyTest($tag);
 
         $commandTester = $this->createCommandTester();
         $commandTester->execute([
@@ -186,5 +152,34 @@ final class BuyCommandTest extends TestCase
         $application->add($this->command->setName('buy'));
 
         return new CommandTester($this->command);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function prepareBuyTest(?string $tag): array
+    {
+        $amount = random_int(1000, 2000);
+
+        $orderInformation = (new CompletedBuyOrder())
+            ->setDisplayAmountBought(random_int(1000, 2000).' BTC')
+            ->setDisplayAmountSpent(random_int(1000, 2000).' EUR')
+            ->setDisplayAveragePrice(random_int(1000, 2000).' EUR')
+            ->setDisplayFeesSpent('0.'.random_int(1000, 2000).' BTC')
+        ;
+
+        $invocationMocker = $this->buyService
+            ->expects(static::once())
+            ->method('buy')
+            ->willReturn($orderInformation)
+        ;
+
+        if (!empty($tag)) {
+            $invocationMocker->with($amount, $tag);
+        } else {
+            $invocationMocker->with($amount);
+        }
+
+        return [$amount, $orderInformation];
     }
 }
