@@ -28,6 +28,9 @@ class BuyService
     public const ORDER_STATUS_CLOSED = 'closed';
     public const STATUS = 'status';
     public const SECONDS = 'seconds';
+    public const TYPE = 'type';
+    public const AMOUNT_FUNDS_INT = 'amount_funds_int';
+    public const FEE_CURRENCY = 'fee_currency';
 
     protected Bl3pClientInterface $client;
     protected LoggerInterface $logger;
@@ -49,9 +52,9 @@ class BuyService
     public function buy(int $amount, string $tag = null): CompletedBuyOrder
     {
         $params = [
-            'type' => 'bid',
-            'amount_funds_int' => $amount * 100000,
-            'fee_currency' => 'BTC',
+            self::TYPE => 'bid',
+            self::AMOUNT_FUNDS_INT => $amount * 100000,
+            self::FEE_CURRENCY => 'BTC',
         ];
 
         $result = $this->client->apiCall('BTCEUR/money/order/add', $params);

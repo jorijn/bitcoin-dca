@@ -103,18 +103,25 @@ final class BuyServiceTest extends TestCase
                 &$attemptedResultCall,
                 &$attemptedCancellation
             ) {
+                $returnValue = [];
+
                 switch ($url) {
                     case 'BTCEUR/money/order/add':
                         $attemptedBuy = true;
 
-                        self::assertArrayHasKey('type', $parameters);
-                        self::assertSame($buyParams['type'], $parameters['type']);
-                        self::assertArrayHasKey('amount_funds_int', $parameters);
-                        self::assertSame($buyParams['amount_funds_int'], $parameters['amount_funds_int']);
-                        self::assertArrayHasKey('fee_currency', $parameters);
-                        self::assertSame($buyParams['fee_currency'], $parameters['fee_currency']);
+                        self::assertArrayHasKey(BuyService::TYPE, $parameters);
+                        self::assertSame($buyParams[BuyService::TYPE], $parameters[BuyService::TYPE]);
+                        self::assertArrayHasKey(BuyService::AMOUNT_FUNDS_INT, $parameters);
+                        self::assertSame(
+                            $buyParams[BuyService::AMOUNT_FUNDS_INT],
+                            $parameters[BuyService::AMOUNT_FUNDS_INT]
+                        );
+                        self::assertArrayHasKey(BuyService::FEE_CURRENCY, $parameters);
+                        self::assertSame($buyParams[BuyService::FEE_CURRENCY], $parameters[BuyService::FEE_CURRENCY]);
 
-                        return $buyResult;
+                        $returnValue = $buyResult;
+
+                        break;
                     case 'BTCEUR/money/order/result':
                         self::assertArrayHasKey(BuyService::ORDER_ID, $parameters);
                         self::assertSame($orderId, $parameters[BuyService::ORDER_ID]);
@@ -127,19 +134,23 @@ final class BuyServiceTest extends TestCase
 
                         $attemptedResultCall = true;
 
-                        return $closedResult;
+                        $returnValue = $closedResult;
+
+                        break;
                     case 'BTCEUR/money/order/cancel':
                         $attemptedCancellation = true;
 
                         self::assertArrayHasKey(BuyService::ORDER_ID, $parameters);
                         self::assertSame($orderId, $parameters[BuyService::ORDER_ID]);
 
-                        return []; // if the code should ever act on cancellation result, this would be the place to add
+                        break;
                     default:
                         $this->addToAssertionCount(1);
 
-                        throw new \Exception('did not expect call to location '.$url);
+                        throw new BuyServiceTestException('did not expect call to location '.$url);
                 }
+
+                return $returnValue;
             })
         ;
 
@@ -180,9 +191,9 @@ final class BuyServiceTest extends TestCase
     protected function createBuy(int $amount): array
     {
         return [
-            'type' => 'bid',
-            'amount_funds_int' => $amount * 100000,
-            'fee_currency' => 'BTC',
+            BuyService::TYPE => 'bid',
+            BuyService::AMOUNT_FUNDS_INT => $amount * 100000,
+            BuyService::FEE_CURRENCY => 'BTC',
         ];
     }
 
