@@ -13,6 +13,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @coversDefaultClass \Jorijn\Bl3pDca\Command\WithdrawCommand
+ * @covers ::__construct
+ * @covers ::configure
  *
  * @internal
  */
