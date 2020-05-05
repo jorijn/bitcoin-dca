@@ -13,7 +13,6 @@ use Psr\Log\LoggerInterface;
 
 class BuyService
 {
-    public const ORDER_TIMEOUT = 30;
     public const ORDER_ID = 'order_id';
     public const ORDER_DATA = 'order_data';
     public const TAG = 'tag';
@@ -27,19 +26,24 @@ class BuyService
     public const DISPLAY_SHORT = 'display_short';
     public const AVG_COST = 'avg_cost';
     public const ORDER_STATUS_CLOSED = 'closed';
+    public const STATUS = 'status';
+    public const SECONDS = 'seconds';
 
     protected Bl3pClientInterface $client;
     protected LoggerInterface $logger;
     protected EventDispatcherInterface $dispatcher;
+    protected int $timeout;
 
     public function __construct(
         Bl3pClientInterface $client,
         EventDispatcherInterface $dispatcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        int $timeout = 30
     ) {
         $this->client = $client;
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
+        $this->timeout = $timeout;
     }
 
     public function buy(int $amount, string $tag = null): CompletedBuyOrder
@@ -53,21 +57,21 @@ class BuyService
         $result = $this->client->apiCall('BTCEUR/money/order/add', $params);
 
         // fetch the order info and wait until the order has been filled
-        $failureAt = time() + self::ORDER_TIMEOUT;
+        $failureAt = time() + $this->timeout;
 
         do {
             $orderInfo = $this->client->apiCall('BTCEUR/money/order/result', [
                 self::ORDER_ID => $result[self::DATA][self::ORDER_ID],
             ]);
 
-            if (self::ORDER_STATUS_CLOSED === $orderInfo[self::DATA]['status']) {
+            if (self::ORDER_STATUS_CLOSED === $orderInfo[self::DATA][self::STATUS]) {
                 break;
             }
 
             $this->logger->info(
                 'order still open, waiting a maximum of {seconds} for it to fill',
                 [
-                    'seconds' => self::ORDER_TIMEOUT,
+                    self::SECONDS => $this->timeout,
                     self::ORDER_DATA => $orderInfo[self::DATA],
                     self::TAG => $tag,
                 ]
@@ -76,7 +80,7 @@ class BuyService
             sleep(1);
         } while (time() < $failureAt);
 
-        if (self::ORDER_STATUS_CLOSED === $orderInfo[self::DATA]['status']) {
+        if (self::ORDER_STATUS_CLOSED === $orderInfo[self::DATA][self::STATUS]) {
             $this->logger->info(
                 'order filled, successfully bought bitcoin',
                 [self::TAG => $tag, self::ORDER_DATA => $orderInfo[self::DATA]]
