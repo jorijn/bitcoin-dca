@@ -188,6 +188,7 @@ final class WithdrawServiceTest extends TestCase
 
     /**
      * @dataProvider providerOfTags
+     * @covers ::withdraw
      *
      * @throws \Exception
      */
