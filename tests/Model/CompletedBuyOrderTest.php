@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class CompletedBuyOrderTest extends TestCase
 {
     /**
-     * @covers ::setDisplayAveragePrice
+     * @covers ::<public>
      */
     public function testGettersAndSetters(): void
     {
