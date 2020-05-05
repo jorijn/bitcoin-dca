@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class CompletedWithdrawTest extends TestCase
 {
     /**
-     * @covers ::construct
+     * @covers ::__construct
      * @covers ::getId
      * @covers ::getNetAmount
      * @covers ::getRecipientAddress
