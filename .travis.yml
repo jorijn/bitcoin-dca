@@ -4,6 +4,9 @@ dist: trusty
 
 os: linux
 
+git:
+  depth: false
+
 php:
   - 7.4
 
