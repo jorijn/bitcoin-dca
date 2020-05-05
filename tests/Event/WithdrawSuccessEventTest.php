@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bl3pDca\Event;
 
 use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
+use Jorijn\Bl3pDca\Model\CompletedWithdraw;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,20 +17,20 @@ final class WithdrawSuccessEventTest extends TestCase
 {
     /**
      * @covers ::__construct
-     * @covers ::getAddress
-     * @covers ::getAmountInSatoshis
-     * @covers ::getContext
+     * @covers ::getCompletedWithdraw
+     * @covers ::getTag
      */
     public function testGetters(): void
     {
-        $address = 'a'.mt_rand();
-        $amount = mt_rand();
-        $context = ['c'.mt_rand()];
+        $address = 'a'.random_int(1000, 2000);
+        $amount = random_int(1000, 2000);
+        $id = (string) random_int(1000, 2000);
+        $tag = 'tag'.random_int(1000, 2000);
 
-        $event = new WithdrawSuccessEvent($address, $amount, $context);
+        $completedWithdraw = new CompletedWithdraw($address, $amount, $id);
+        $event = new WithdrawSuccessEvent($completedWithdraw, $tag);
 
-        static::assertSame($address, $event->getAddress());
-        static::assertSame($amount, $event->getAmountInSatoshis());
-        static::assertSame($context, $event->getContext());
+        static::assertSame($completedWithdraw, $event->getCompletedWithdraw());
+        static::assertSame($tag, $event->getTag());
     }
 }

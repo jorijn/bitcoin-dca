@@ -1,8 +1,11 @@
 # Bitcoin DCA using the BL3P Exchange
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bl3p-dca)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jorijn/bl3p-dca)
-![GitHub](https://img.shields.io/github/license/jorijn/bl3p-dca)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=coverage)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=ncloc)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=security_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
 
 _Please be aware this is beta software. Test thoroughly with small amounts of money at first. This software is provided "as is" and comes without warranty. See [LICENSE](LICENSE)._
 

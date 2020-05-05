@@ -1,5 +1,6 @@
 parameters:
   application_title: 'BL3P Bitcoin DCA Tool'
+  buy_fill_timeout: 30
   env(BL3P_API_URL): ''
   env(BL3P_PUBLIC_KEY): ''
   env(BL3P_PRIVATE_KEY): ''
@@ -13,20 +14,14 @@ services:
   command.buy:
     class: Jorijn\Bl3pDca\Command\BuyCommand
     arguments:
-      - '@api.client'
-      - '@repository.tag_integer.balance'
-      - '@logger'
+      - '@service.buy'
     tags:
       - { name: console.command, command: 'buy' }
 
   command.withdraw:
     class: Jorijn\Bl3pDca\Command\WithdrawCommand
     arguments:
-      - '@api.client'
-      - !tagged_iterator bl3p-address_provider
-      - '@repository.tag_integer.balance'
-      - '@event_dispatcher'
-      - '@logger'
+      - '@service.withdraw'
     tags:
       - { name: console.command, command: 'withdraw' }
 
@@ -133,6 +128,42 @@ services:
       - '%env(BL3P_WITHDRAW_XPUB)%'
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
+
+  event_listener.increase_tagged_balance:
+    class: Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener
+    arguments:
+      - '@repository.tag_integer.balance'
+      - '@logger'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\BuySuccessEvent, method: onBalanceIncrease }
+
+  event_listener.reset_tagged_balance:
+    class: Jorijn\Bl3pDca\EventListener\ResetTaggedBalanceListener
+    arguments:
+      - '@repository.tag_integer.balance'
+      - '@logger'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
+
+  ######################################################################
+  # Services
+  ######################################################################
+  service.buy:
+    class: Jorijn\Bl3pDca\Service\BuyService
+    arguments:
+      - '@api.client'
+      - '@event_dispatcher'
+      - '@logger'
+      - '%buy_fill_timeout%'
+
+  service.withdraw:
+    class: Jorijn\Bl3pDca\Service\WithdrawService
+    arguments:
+      - '@api.client'
+      - !tagged_iterator bl3p-address_provider
+      - '@repository.tag_integer.balance'
+      - '@event_dispatcher'
+      - '@logger'
 
   ######################################################################
   # Third Party Components

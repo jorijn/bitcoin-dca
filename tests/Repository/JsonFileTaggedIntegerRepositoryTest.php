@@ -103,7 +103,7 @@ final class JsonFileTaggedIntegerRepositoryTest extends TestCase
      */
     public function testNonExistingFileReturnsEmpty(): void
     {
-        $this->repository = new JsonFileTaggedIntegerRepository('file'.mt_rand());
+        $this->repository = new JsonFileTaggedIntegerRepository('file'.random_int(1000, 2000));
         static::assertSame(0, $this->repository->get('test'));
     }
 
@@ -112,7 +112,7 @@ final class JsonFileTaggedIntegerRepositoryTest extends TestCase
      */
     public function testCorruptJsonGetsReset(): void
     {
-        file_put_contents($this->file, 'cor,,ru..ptjson'.mt_rand());
+        file_put_contents($this->file, 'cor,,ru..ptjson'.random_int(1000, 2000));
         static::assertSame(0, $this->repository->get('test'));
     }
 
