@@ -64,7 +64,7 @@ final class VerifyXPubCommandTest extends TestCase
         $commandTester->execute(['command' => $this->command->getName()]);
 
         static::assertStringContainsString(
-            '[ERROR] Unable to find any configured X/Z/Y-pub. Did you configure '.$this->environmentKey.'?',
+            '[ERROR] Unable to find any configured X/Z/Y-pub.',
             $commandTester->getDisplay()
         );
         static::assertSame(1, $commandTester->getStatusCode());
