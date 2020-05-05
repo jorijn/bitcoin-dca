@@ -24,6 +24,10 @@ use Psr\Log\LoggerInterface;
  */
 final class WithdrawServiceTest extends TestCase
 {
+    public const ADDRESS = 'address';
+    public const API_CALL = 'apiCall';
+    public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
+
     /** @var Bl3pClientInterface|MockObject */
     private $client;
     /** @var MockObject|TaggedIntegerRepositoryInterface */
@@ -66,7 +70,7 @@ final class WithdrawServiceTest extends TestCase
      */
     public function testGetRecipientAddressFromActiveAddressProvider(): void
     {
-        $recipientAddress = 'address'.random_int(1000, 2000);
+        $recipientAddress = self::ADDRESS.random_int(1000, 2000);
         $failingProvider = $this->createMock(WithdrawAddressProviderInterface::class);
         $workingProvider = $this->createMock(WithdrawAddressProviderInterface::class);
 
@@ -108,8 +112,8 @@ final class WithdrawServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('GENMKT/money/info')
+            ->method(self::API_CALL)
+            ->with(self::GENMKT_MONEY_INFO)
             ->willReturn($this->createBalanceStructure($balance))
         ;
 
@@ -134,8 +138,8 @@ final class WithdrawServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('GENMKT/money/info')
+            ->method(self::API_CALL)
+            ->with(self::GENMKT_MONEY_INFO)
             ->willReturn($this->createBalanceStructure($balanceAvailable))
         ;
 
@@ -171,8 +175,8 @@ final class WithdrawServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('GENMKT/money/info')
+            ->method(self::API_CALL)
+            ->with(self::GENMKT_MONEY_INFO)
             ->willReturn($this->createBalanceStructure($balanceAvailable))
         ;
 
@@ -194,7 +198,7 @@ final class WithdrawServiceTest extends TestCase
      */
     public function testWithdraw(string $tag = null): void
     {
-        $address = 'address'.random_int(1000, 2000);
+        $address = self::ADDRESS.random_int(1000, 2000);
         $amount = random_int(100000, 300000);
         $netAmount = $amount - WithdrawService::WITHDRAW_FEE;
         $withdrawID = 'id'.random_int(1000, 2000);
@@ -202,14 +206,14 @@ final class WithdrawServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->with(
                 'GENMKT/money/withdraw',
-                static::callback(function (array $parameters) use ($netAmount, $amount, $address) {
+                static::callback(function (array $parameters) use ($netAmount, $address) {
                     self::assertArrayHasKey('currency', $parameters);
                     self::assertSame('BTC', $parameters['currency']);
-                    self::assertArrayHasKey('address', $parameters);
-                    self::assertSame($address, $parameters['address']);
+                    self::assertArrayHasKey(self::ADDRESS, $parameters);
+                    self::assertSame($address, $parameters[self::ADDRESS]);
                     self::assertArrayHasKey('amount_int', $parameters);
                     self::assertSame($netAmount, $parameters['amount_int']);
 
