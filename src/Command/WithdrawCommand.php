@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerInterface;
+use Jorijn\Bl3pDca\Service\WithdrawService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,30 +13,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class WithdrawCommand extends Command
 {
-    /** @var int withdraw fee in satoshis */
-    public const WITHDRAW_FEE = 30000;
+    protected WithdrawService $withdrawService;
 
-    /** @var WithdrawAddressProviderInterface[] */
-    protected iterable $addressProviders;
-    protected Bl3pClientInterface $client;
-    protected TaggedIntegerRepositoryInterface $balanceRepository;
-    protected EventDispatcherInterface $dispatcher;
-    protected LoggerInterface $logger;
-
-    public function __construct(
-        Bl3pClientInterface $client,
-        iterable $addressProviders,
-        TaggedIntegerRepositoryInterface $balanceRepository,
-        EventDispatcherInterface $dispatcher,
-        LoggerInterface $logger
-    ) {
+    public function __construct(WithdrawService $withdrawService)
+    {
         parent::__construct(null);
 
-        $this->client = $client;
-        $this->addressProviders = $addressProviders;
-        $this->balanceRepository = $balanceRepository;
-        $this->dispatcher = $dispatcher;
-        $this->logger = $logger;
+        $this->withdrawService = $withdrawService;
     }
 
     public function configure(): void
@@ -81,14 +59,8 @@ class WithdrawCommand extends Command
             return 1;
         }
 
-        $balanceToWithdraw = $this->getBalanceToWithdraw($input);
-        $addressToWithdrawTo = $this->getAddressToWithdrawTo();
-
-        $this->logger->info('preparing withdraw to {address} for {balance} satoshis', [
-            'tag' => $input->getOption('tag'),
-            'balance' => $balanceToWithdraw,
-            'address' => $addressToWithdrawTo,
-        ]);
+        $balanceToWithdraw = $this->withdrawService->getBalance($input->getOption('all'), $input->getOption('tag'));
+        $addressToWithdrawTo = $this->withdrawService->getRecipientAddress();
 
         if (0 === $balanceToWithdraw) {
             $io->error('No balance available, better start saving something!');
@@ -101,7 +73,7 @@ class WithdrawCommand extends Command
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee.',
                 $balanceToWithdraw / 100000000,
                 $addressToWithdrawTo,
-                self::WITHDRAW_FEE / 100000000
+                WithdrawService::WITHDRAW_FEE / 100000000
             );
 
             if (!$io->confirm($question, false)) {
@@ -109,65 +81,14 @@ class WithdrawCommand extends Command
             }
         }
 
-        $netAmountToWithdraw = $balanceToWithdraw - self::WITHDRAW_FEE;
-        $response = $this->client->apiCall('GENMKT/money/withdraw', [
-            'currency' => 'BTC',
-            'address' => $addressToWithdrawTo,
-            'amount_int' => $netAmountToWithdraw,
-        ]);
-
-        $eventContext = [];
-        if ($tagValue = $input->getOption('tag')) {
-            $this->balanceRepository->set($tagValue, 0);
-            $eventContext['tag'] = $tagValue;
-        }
-
-        $this->dispatcher->dispatch(
-            new WithdrawSuccessEvent($addressToWithdrawTo, $netAmountToWithdraw, $eventContext)
+        $completedWithdraw = $this->withdrawService->withdraw(
+            $balanceToWithdraw,
+            $addressToWithdrawTo,
+            $input->getOption('tag')
         );
 
-        $this->logger->info('withdraw to {address} successful, processing as ID {data.id}', [
-            'tag' => $input->getOption('tag'),
-            'balance' => $balanceToWithdraw,
-            'address' => $addressToWithdrawTo,
-            'data' => $response['data'],
-        ]);
-
-        $io->success('Withdraw is being processed as ID '.$response['data']['id']);
+        $io->success('Withdraw is being processed as ID '.$completedWithdraw->getId());
 
         return 0;
-    }
-
-    protected function getBalanceToWithdraw(
-        InputInterface $input
-    ): int {
-        if ($input->getOption('all')) {
-            $response = $this->client->apiCall('GENMKT/money/info');
-            $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
-
-            if ($tagValue = $input->getOption('tag')) {
-                $tagBalance = $this->balanceRepository->get($tagValue);
-
-                // limit the balance to what comes first: the tagged balance, or the maximum balance
-                return $tagBalance <= $maxAvailableBalance ? $tagBalance : $maxAvailableBalance;
-            }
-
-            return $maxAvailableBalance;
-        }
-
-        return 0;
-    }
-
-    protected function getAddressToWithdrawTo(): string
-    {
-        foreach ($this->addressProviders as $addressProvider) {
-            try {
-                return $addressProvider->provide();
-            } catch (\Throwable $exception) {
-                // allowed to fail
-            }
-        }
-
-        throw new \RuntimeException('Unable to determine address to withdraw to, did you configure any?');
     }
 }

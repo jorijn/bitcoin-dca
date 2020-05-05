@@ -21,11 +21,7 @@ services:
   command.withdraw:
     class: Jorijn\Bl3pDca\Command\WithdrawCommand
     arguments:
-      - '@api.client'
-      - !tagged_iterator bl3p-address_provider
-      - '@repository.tag_integer.balance'
-      - '@event_dispatcher'
-      - '@logger'
+      - '@service.withdraw'
     tags:
       - { name: console.command, command: 'withdraw' }
 
@@ -141,6 +137,14 @@ services:
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\BuySuccessEvent, method: onBalanceIncrease }
 
+  event_listener.reset_tagged_balance:
+    class: Jorijn\Bl3pDca\EventListener\ResetTaggedBalanceListener
+    arguments:
+      - '@repository.tag_integer.balance'
+      - '@logger'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
+
   ######################################################################
   # Services
   ######################################################################
@@ -151,6 +155,15 @@ services:
       - '@event_dispatcher'
       - '@logger'
       - '%buy_fill_timeout%'
+
+  service.withdraw:
+    class: Jorijn\Bl3pDca\Service\WithdrawService
+    arguments:
+      - '@api.client'
+      - !tagged_iterator bl3p-address_provider
+      - '@repository.tag_integer.balance'
+      - '@event_dispatcher'
+      - '@logger'
 
   ######################################################################
   # Third Party Components

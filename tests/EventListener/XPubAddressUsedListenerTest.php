@@ -7,6 +7,7 @@ namespace Tests\Jorijn\Bl3pDca\EventListener;
 use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
 use Jorijn\Bl3pDca\EventListener\XPubAddressUsedListener;
 use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bl3pDca\Model\CompletedWithdraw;
 use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,6 @@ final class XPubAddressUsedListenerTest extends TestCase
     private WithdrawSuccessEvent $event;
     private string $configuredXPub;
     private string $addressUsed;
-    private int $amount;
 
     protected function setUp(): void
     {
@@ -48,8 +48,14 @@ final class XPubAddressUsedListenerTest extends TestCase
         );
 
         $this->addressUsed = 'address'.random_int(1000, 2000);
-        $this->amount = random_int(1000, 2000);
-        $this->event = new WithdrawSuccessEvent($this->addressUsed, $this->amount);
+
+        $completedWithdrawDTO = new CompletedWithdraw(
+            $this->addressUsed,
+            random_int(1000, 2000),
+            'id'.random_int(1000, 2000)
+        );
+
+        $this->event = new WithdrawSuccessEvent($completedWithdrawDTO);
     }
 
     /**
