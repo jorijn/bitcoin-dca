@@ -12,7 +12,7 @@ cache:
   directories:
     - $HOME/.composer/cache
 before_script:
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+  - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
 script:
   - vendor/bin/phpunit --testdox --coverage-clover test_coverage.xml
   - sonar-scanner
