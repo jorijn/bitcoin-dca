@@ -73,7 +73,7 @@ class WithdrawService
             $response = $this->client->apiCall('GENMKT/money/info');
             $maxAvailableBalance = (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
 
-            if (!empty($tag)) {
+            if ($tag) {
                 $tagBalance = $this->balanceRepository->get($tag);
 
                 // limit the balance to what comes first: the tagged balance, or the maximum balance
