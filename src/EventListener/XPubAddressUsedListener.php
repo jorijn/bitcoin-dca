@@ -38,9 +38,10 @@ class XPubAddressUsedListener
             $activeIndex = $this->xpubRepository->get($this->configuredXPub);
             $activeDerivationPath = sprintf('0/%d', $activeIndex);
             $derivedAddress = $this->keyFactory->derive($this->configuredXPub, $activeDerivationPath);
+            $completedWithdraw = $event->getCompletedWithdraw();
 
             // validate that given address matches the one derived from the xpub
-            if ($derivedAddress !== $event->getAddress()) {
+            if ($derivedAddress !== $completedWithdraw->getRecipientAddress()) {
                 return;
             }
 

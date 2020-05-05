@@ -38,7 +38,6 @@ class BalanceCommand extends Command
             $response = $this->client->apiCall('GENMKT/money/info');
             $rows = [];
 
-            // FIXME: be more defensive, what happens when these keys don't exist?
             foreach ($response['data']['wallets'] ?? [] as $currency => $wallet) {
                 $rows[] = [$currency, $wallet['balance']['display'], $wallet['available']['display']];
             }

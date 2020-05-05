@@ -34,7 +34,7 @@ final class XpubWithdrawAddressProviderTest extends TestCase
 
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
         $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
-        $this->configuredXPub = 'xpub'.mt_rand();
+        $this->configuredXPub = 'xpub'.random_int(1000, 2000);
         $this->validation = $this->createMock(ValidationInterface::class);
         $this->provider = new XpubWithdrawAddressProvider(
             $this->validation,
@@ -49,8 +49,8 @@ final class XpubWithdrawAddressProviderTest extends TestCase
      */
     public function testProvideResultsInDerivedAddress(): void
     {
-        $activeIndex = mt_rand();
-        $generatedAddress = 'address'.mt_rand();
+        $activeIndex = random_int(1000, 2000);
+        $generatedAddress = 'address'.random_int(1000, 2000);
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())
