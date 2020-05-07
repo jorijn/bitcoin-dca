@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bl3pDca\Client;
 
-use Exception;
+use Jorijn\Bl3pDca\Exception\Bl3pClientException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -12,6 +12,13 @@ use Psr\Log\LoggerInterface;
  */
 class Bl3pClient implements Bl3pClientInterface
 {
+    public const LOG_API_CALL_FAILED = 'API call failed: {url}';
+    public const API_KEY_RESULT = 'result';
+    public const API_KEY_DATA = 'data';
+    public const LOG_CONTEXT_PARAMETERS = 'parameters';
+    public const LOG_CONTEXT_URL = 'url';
+    public const API_KEY_MESSAGE = 'message';
+
     protected LoggerInterface $logger;
     protected string $publicKey;
     protected string $privateKey;
@@ -79,7 +86,7 @@ class Bl3pClient implements Bl3pClientInterface
 
         // throw exception with additional information when curl request returns false
         if (false === $res) {
-            throw new Exception('API request failed: Could not get reply from API: '.curl_error($ch));
+            throw new Bl3pClientException('API request failed: Could not get reply from API: '.curl_error($ch));
         }
 
         // close curl connection
@@ -90,43 +97,56 @@ class Bl3pClient implements Bl3pClientInterface
 
         // check json convert result and throw an exception if invalid
         if (!$result) {
-            $this->logger->error('API call failed: {url}', ['url' => $fullPath, 'parameters' => $params]);
+            $this->logger->error(
+                self::LOG_API_CALL_FAILED,
+                [self::LOG_CONTEXT_URL => $fullPath, self::LOG_CONTEXT_PARAMETERS => $params]
+            );
 
-            throw new Exception('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
+            throw new Bl3pClientException('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
         }
 
-        if (!\array_key_exists('result', $result)) {
+        if (!\array_key_exists(self::API_KEY_RESULT, $result)) {
             // note that data now is the first element in the array.
-            $result['data'] = $result;
-            $result['result'] = 'success';
+            $result[self::API_KEY_DATA] = $result;
+            $result[self::API_KEY_RESULT] = 'success';
 
             // remove all the keys in $result except 'result'  and 'data'
-            return array_intersect_key($result, array_flip(['result', 'data']));
+            return array_intersect_key($result, array_flip([self::API_KEY_RESULT, self::API_KEY_DATA]));
         }
 
         // check returned result of call, if not success then throw an exception with additional information
-        if ('success' !== $result['result']) {
-            if (!isset($result['data']['code'], $result['data']['message'])) {
-                $this->logger->error('API call failed: {url}', [
-                    'url' => $fullPath,
-                    'parameters' => $params,
-                    'response' => var_export($result['data'], true),
+        if ('success' !== $result[self::API_KEY_RESULT]) {
+            if (!isset($result[self::API_KEY_DATA]['code'], $result[self::API_KEY_DATA][self::API_KEY_MESSAGE])) {
+                $this->logger->error(self::LOG_API_CALL_FAILED, [
+                    self::LOG_CONTEXT_URL => $fullPath,
+                    self::LOG_CONTEXT_PARAMETERS => $params,
+                    'response' => var_export($result[self::API_KEY_DATA], true),
                 ]);
 
-                throw new Exception(sprintf('Received unsuccessful state, and additionally a malformed response: %s', var_export($result['data'], true)));
+                throw new Bl3pClientException(sprintf(
+                    'Received unsuccessful state, and additionally a malformed response: %s',
+                    var_export($result[self::API_KEY_DATA], true)
+                ));
             }
 
-            $this->logger->error('API call failed: {url}', [
-                'url' => $fullPath,
-                'parameters' => $params,
-                'code' => $result['data']['code'],
-                'message' => $result['data']['message'],
+            $this->logger->error(self::LOG_API_CALL_FAILED, [
+                self::LOG_CONTEXT_URL => $fullPath,
+                self::LOG_CONTEXT_PARAMETERS => $params,
+                'code' => $result[self::API_KEY_DATA]['code'],
+                self::API_KEY_MESSAGE => $result[self::API_KEY_DATA][self::API_KEY_MESSAGE],
             ]);
 
-            throw new Exception(sprintf('API request unsuccessful: [%s] %s', $result['data']['code'], $result['data']['message']));
+            throw new Bl3pClientException(sprintf(
+                'API request unsuccessful: [%s] %s',
+                $result[self::API_KEY_DATA]['code'],
+                $result[self::API_KEY_DATA][self::API_KEY_MESSAGE]
+            ));
         }
 
-        $this->logger->info('API call success: {url}', ['url' => $fullPath, 'parameters' => $params]);
+        $this->logger->info(
+            'API call success: {url}',
+            [self::LOG_CONTEXT_URL => $fullPath, self::LOG_CONTEXT_PARAMETERS => $params]
+        );
 
         return $result;
     }

@@ -46,8 +46,8 @@ final class BitcoinAddressValidatorTest extends TestCase
      */
     public function testExpectFailureOnAddressCreatorFailure(): void
     {
-        $address = 'address'.mt_rand();
-        $addressCreatorException = new Exception('error'.mt_rand());
+        $address = 'address'.random_int(1000, 2000);
+        $addressCreatorException = new Exception('error'.random_int(1000, 2000));
 
         $this->addressCreator
             ->expects(static::once())
@@ -65,7 +65,7 @@ final class BitcoinAddressValidatorTest extends TestCase
      */
     public function testExpectTrueWhenAddressIsValid(): void
     {
-        $address = 'address'.mt_rand();
+        $address = 'address'.random_int(1000, 2000);
 
         $this->addressCreator
             ->expects(static::once())
