@@ -13,6 +13,7 @@ Welcome to BL3P-DCA's documentation!
    persistent-storage
    xpub-withdraw
    tagged-balance
+   faq
 
 About this software
 -------------------
