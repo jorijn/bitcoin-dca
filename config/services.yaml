@@ -1,7 +1,7 @@
 parameters:
   application_title: 'BL3P Bitcoin DCA Tool'
   buy_fill_timeout: 30
-  env(BL3P_API_URL): ''
+  env(BL3P_API_URL): 'https://api.bl3p.eu/1/'
   env(BL3P_PUBLIC_KEY): ''
   env(BL3P_PRIVATE_KEY): ''
   env(BL3P_WITHDRAW_ADDRESS): ''
