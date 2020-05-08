@@ -1,14 +1,14 @@
 .. _configuration:
 
 Configuration
-============
+=============
 
-.. include:: ./includes/beta_warning.rst
+.. include:: ./includes/beta-warning.rst
 
 BL3P-DCA uses `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ to configure the inner workings of the tool. An environment variable looks like this: ``SOME_CONFIGURATION_KEY=valuehere``.
 
 Available Configuration
-------------------------------
+-----------------------
 
 BL3P_PUBLIC_KEY
 ^^^^^^^^^^^^^^^
@@ -49,8 +49,7 @@ When handling multiple environment variables, things can get messy. For manageme
 
 For example, creating a new configuration file in your home directory: ``nano /home/username/.bl3p-dca``
 
-.. note::
-    You can find out where your home directory is using ``echo $HOME``.
+.. include:: ./includes/finding-home-directory.rst
 
 .. code-block:: bash
 

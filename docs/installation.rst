@@ -3,7 +3,7 @@
 Installation
 ============
 
-.. include:: ./includes/beta_warning.rst
+.. include:: ./includes/beta-warning.rst
 
 Requirements
 ------------

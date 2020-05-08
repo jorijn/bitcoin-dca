@@ -1,7 +1,7 @@
 Welcome to BL3P-DCA's documentation!
 ====================================
 
-.. include:: ./includes/beta_warning.rst
+.. include:: ./includes/beta-warning.rst
 
 .. toctree::
    :maxdepth: 1
@@ -11,8 +11,8 @@ Welcome to BL3P-DCA's documentation!
    configuration
    scheduling
    persistent-storage
+   xpub-withdraw
    tagged-balance
-   deriving-bitcoin-addresses
 
 About this software
 -------------------
