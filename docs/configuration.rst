@@ -45,7 +45,7 @@ Feeding configuration into the DCA tool
 
 Using a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-When handling multiple environment variables, things can get messy. For management sake, you can create a simple configuration file somewhere on your disk and use that to provide the tool with the right configuration.
+When handling multiple environment variables, things can get messy. For easier management you can create a simple configuration file somewhere on your disk and use that to provide the tool with the correct configuration.
 
 For example, creating a new configuration file in your home directory: ``nano /home/username/.bl3p-dca``
 
@@ -66,6 +66,9 @@ Now, when running the tool you can use ``--env-file`` like this:
 Using inline arguments
 ^^^^^^^^^^^^^^^^^^^^^^
 For maximum control, you can also feed configuration into the tool like this:
+
+.. note::
+   While this gives you more control, it will also allow other people who have access your machine to see the arguments with which you've started the Docker container, thus releaving your API keys.
 
 .. code-block:: bash
 

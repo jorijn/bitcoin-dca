@@ -17,8 +17,10 @@ Welcome to BL3P-DCA's documentation!
 
 About this software
 -------------------
-The DCA tool is built with flexibility in mind, allowing you to specify your own schedule of buying and withdrawing. A few examples that are possible:
+This DCA (Dollar Cost Averaging) tool is built with flexibility in mind, allowing you to specify your own schedule for buying and withdrawing. 
 
-* Buy each week, never withdraw.
-* Buy monthly and withdraw at the same time to reduce exchange risk.
+A few examples of possible scenario's: 
+
+* Buy each week, never withdraw;
+* Buy monthly and withdraw at the same time to reduce exchange risk;
 * Buy each week but withdraw only at the end of the month to save on withdrawal fees.
