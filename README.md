@@ -21,4 +21,10 @@ The DCA tool is built with flexibility in mind, allowing you to specify your own
 * Buy monthly and withdraw at the same time to reduce exchange risk.
 * Buy each week but withdraw only at the end of the month to save on withdrawal fees.
 
-[Documentation on Read The Docs](https://bl3p-dca.readthedocs.io/en/latest/)
+## Documentation
+| Format | Location | 
+|------|------|
+| Online |  https://bl3p-dca.readthedocs.io/en/latest/ |
+| PDF | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/pdf/ |
+| ZIP | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/htmlzip/ |
+| ePub | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/epub/ |
