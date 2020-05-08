@@ -68,7 +68,7 @@ Using inline arguments
 For maximum control, you can also feed configuration into the tool like this:
 
 .. note::
-   While this gives you more control, it will also allow other people who have access your machine to see the arguments with which you've started the Docker container, thus releaving your API keys.
+   While this gives you more control, it will also allow other people who have access your machine to see the arguments with which you've started the Docker container, thus revealing your API keys.
 
 .. code-block:: bash
 
