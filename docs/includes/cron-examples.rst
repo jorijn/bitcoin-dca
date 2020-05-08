@@ -3,6 +3,7 @@ The ``buy`` and ``withdraw`` command both allow skipping the confirmation questi
 Since it's best to use absolute paths in crontabs, we'll be using ``$(command -v docker)`` to have it automatically determined for you.
 
 .. code-block:: bash
+   :caption: Finding out where Docker is located
 
    $ command -v docker
      -> /usr/bin/docker

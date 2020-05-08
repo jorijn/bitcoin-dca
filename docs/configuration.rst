@@ -52,6 +52,7 @@ For example, creating a new configuration file in your home directory: ``nano /h
 .. include:: ./includes/finding-home-directory.rst
 
 .. code-block:: bash
+   :caption: /home/username/.bl3p-dca
 
    BL3P_PUBLIC_KEY=....
    BL3P_PRIVATE_KEY=....
@@ -60,6 +61,7 @@ For example, creating a new configuration file in your home directory: ``nano /h
 Now, when running the tool you can use ``--env-file`` like this:
 
 .. code-block:: bash
+   :caption: Providing configuration with Docker's --env-file
 
    $ docker run --rm -it --env-file=/home/username/.bl3p-dca jorijn/bl3p-dca:latest balance
 
@@ -71,5 +73,6 @@ For maximum control, you can also feed configuration into the tool like this:
    While this gives you more control, it will also allow other people who have access your machine to see the arguments with which you've started the Docker container, thus revealing your API keys.
 
 .. code-block:: bash
+   :caption: Providing configuration by specifying each configuration item separately
 
    $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd BL3P_WITHDRAW_ADDRESS=abcd jorijn/bl3p-dca:latest balance

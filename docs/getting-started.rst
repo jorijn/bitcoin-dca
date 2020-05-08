@@ -13,6 +13,7 @@ Configuration
 Create a new file somewhere that will contain the configuration needed for the tool to operate. If your account is called ``bob`` and your home directory is `/home/bob` lets create a new file in ``/home/bob/.bl3p-dca``:
 
 .. code-block::
+   :caption: /home/bob/.bl3p-dca
 
    BL3P_PRIVATE_KEY=bl3p private key here
    BL3P_PUBLIC_KEY=bl3p identifier key here
@@ -24,6 +25,7 @@ Create a new file somewhere that will contain the configuration needed for the t
 You can test that it work with:
 
 .. code-block:: bash
+   :caption: Checking the Exchange balance
 
    $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest balance
 

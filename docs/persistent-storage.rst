@@ -30,5 +30,6 @@ Running with a mounted volume
 Now, when running this tool you need to mount the new storage directory onto the container using argument ``-v /home/bob/applications/bl3p-dca:/var/storage``. A typical command could look like this:
 
 .. code-block:: bash
+   :caption: Running withdraw with a persistent storage directory
 
    $ docker run --rm -it --env-file=/home/bob/.bl3p-dca -v /home/bob/applications/bl3p-dca:/var/storage jorijn/bl3p-dca:latest withdraw --all
