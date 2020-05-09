@@ -28,7 +28,7 @@ services:
   command.balance:
     class: Jorijn\Bl3pDca\Command\BalanceCommand
     arguments:
-      - '@api.client'
+      - '@api_client.bl3p'
     tags:
       - { name: console.command, command: 'balance' }
 
@@ -45,25 +45,27 @@ services:
   ######################################################################
   # Factories
   ######################################################################
-  factory.api_client:
-    class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
-    arguments:
-      - '%env(string:BL3P_API_URL)%'
-      - '%env(string:BL3P_PUBLIC_KEY)%'
-      - '%env(string:BL3P_PRIVATE_KEY)%'
-      - '@logger'
-
   factory.derive_from_master_public_key:
     class: Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory
 
   ######################################################################
   # API Clients
   ######################################################################
-  api.client:
+  api_client.bl3p:
     class: Jorijn\Bl3pDca\Client\Bl3pClient
+    arguments:
+      - '@http_client.bl3p'
+      - '@logger'
+      - '%env(string:BL3P_PUBLIC_KEY)%'
+      - '%env(string:BL3P_PRIVATE_KEY)%'
+
+  http_client.bl3p:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
     factory:
-      - '@factory.api_client'
-      - 'createApi'
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:BL3P_API_URL)%'
 
   ######################################################################
   # Address Providers
@@ -151,7 +153,7 @@ services:
   service.buy:
     class: Jorijn\Bl3pDca\Service\BuyService
     arguments:
-      - '@api.client'
+      - '@api_client.bl3p'
       - '@event_dispatcher'
       - '@logger'
       - '%buy_fill_timeout%'
@@ -159,7 +161,7 @@ services:
   service.withdraw:
     class: Jorijn\Bl3pDca\Service\WithdrawService
     arguments:
-      - '@api.client'
+      - '@api_client.bl3p'
       - !tagged_iterator bl3p-address_provider
       - '@repository.tag_integer.balance'
       - '@event_dispatcher'
