@@ -1,4 +1,5 @@
 vendor
+docs
 var/cache/*
 .env
 .env.dist
