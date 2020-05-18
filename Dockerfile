@@ -33,7 +33,7 @@ COPY --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app/vendor/ /app/vendor/
 
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
-RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi
+RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
 RUN composer run-script test
 
 FROM base_image as production_build
