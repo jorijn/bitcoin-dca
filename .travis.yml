@@ -41,7 +41,7 @@ jobs:
         - sonar-scanner
     - stage: build
       before_install:
-        - curl -sf https://test.docker.com | sh
+#        - curl -sf https://test.docker.com | sh
         - docker --version
       install:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
