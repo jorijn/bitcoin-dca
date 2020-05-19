@@ -25,6 +25,11 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+env:
+  global:
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+    - PLATFORMS=linux/amd64,linux/arm/v7,linux/arm64
+
 jobs:
   include:
     - stage: test
@@ -36,13 +41,10 @@ jobs:
         - sonar-scanner
     - stage: build
       before_install:
-        - curl -fsSL https://get.docker.com | sh
-        - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
-        - mkdir -p $HOME/.docker
-        - echo '{"experimental":"enabled"}' | sudo tee $HOME/.docker/config.json
-        - sudo service docker start
+        - curl -sf https://test.docker.com | sh
+        - docker --version
       install:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
-        - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-        - docker buildx create --name bl3p-dca --use
-        - docker buildx build --progress plain --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6,linux/ppc64le,linux/s390x -t jorijn/bl3p-dca:testmultiplatform --push .
+        - docker run --privileged linuxkit/binfmt:v0.8
+        - docker buildx create --use
+        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bl3p-dca:testmultiplatform --push .
