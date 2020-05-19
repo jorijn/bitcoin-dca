@@ -1,6 +1,6 @@
 language: php
 
-dist: trusty
+dist: bionic
 
 os: linux
 
@@ -9,6 +9,11 @@ git:
 
 php:
   - 7.4
+
+stages:
+  - test
+  - name: build
+    if: branch = master AND type = push
 
 addons:
   sonarcloud:
@@ -20,10 +25,28 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_script:
-  - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+env:
+  global:
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+    - PLATFORMS=linux/amd64,linux/arm/v7,linux/arm64
 
-script:
-  - vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
-  - ./sonarphp-xml-patcher.py
-  - sonar-scanner
+jobs:
+  include:
+    - stage: test
+      language: php
+      before_script:
+        - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+      script:
+        - vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
+        - ./sonarphp-xml-patcher.py
+        - sonar-scanner
+    - stage: build
+      language: bash
+      before_install:
+        - curl -sf https://test.docker.com | sh
+        - docker --version
+      install:
+        - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
+        - docker run --privileged linuxkit/binfmt:v0.8
+        - docker buildx create --use
+        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bl3p-dca:latest --push .
