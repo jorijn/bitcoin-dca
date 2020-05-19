@@ -1,6 +1,6 @@
 language: php
 
-dist: trusty
+dist: bionic
 
 os: linux
 
@@ -33,6 +33,7 @@ env:
 jobs:
   include:
     - stage: test
+      language: php
       before_script:
         - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
       script:
@@ -40,8 +41,9 @@ jobs:
         - ./sonarphp-xml-patcher.py
         - sonar-scanner
     - stage: build
+      language: bash
       before_install:
-#        - curl -sf https://test.docker.com | sh
+        - curl -sf https://test.docker.com | sh
         - docker --version
       install:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
