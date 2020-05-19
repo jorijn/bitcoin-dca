@@ -13,7 +13,7 @@ php:
 stages:
   - test
   - name: build
-    if: branch = feature/docker-build-multi-platform
+    if: branch = master
 
 addons:
   sonarcloud:
@@ -49,4 +49,4 @@ jobs:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
         - docker run --privileged linuxkit/binfmt:v0.8
         - docker buildx create --use
-        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bl3p-dca:testmultiplatform --push .
+        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bl3p-dca:latest --push .
