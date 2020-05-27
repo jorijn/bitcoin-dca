@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Repository;
+namespace Tests\Jorijn\Bitcoin\Dca\Repository;
 
-use Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository;
+use Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository
  * @covers ::__construct
  *
  * @internal

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Client;
+namespace Jorijn\Bitcoin\Dca\Client;
 
-use Jorijn\Bl3pDca\Exception\Bl3pClientException;
+use Jorijn\Bitcoin\Dca\Exception\Bl3pClientException;
 use Psr\Log\LoggerInterface;
 
 /**

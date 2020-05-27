@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Jorijn\\Bl3pDca\\": "src/"
+            "Jorijn\\Bitcoin\\Dca\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Jorijn\\Bl3pDca\\": "tests/"
+            "Tests\\Jorijn\\Bitcoin\\Dca\\": "tests/"
         }
     },
     "scripts": {

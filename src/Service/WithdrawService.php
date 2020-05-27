@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Service;
+namespace Jorijn\Bitcoin\Dca\Service;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Exception\NoRecipientAddressAvailableException;
-use Jorijn\Bl3pDca\Model\CompletedWithdraw;
-use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\NoRecipientAddressAvailableException;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
+use Jorijn\Bitcoin\Dca\Provider\WithdrawAddressProviderInterface;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 

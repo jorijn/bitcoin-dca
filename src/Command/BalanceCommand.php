@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Command;
+namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;

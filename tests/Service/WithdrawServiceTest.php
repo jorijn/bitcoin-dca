@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Service;
+namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Exception\NoRecipientAddressAvailableException;
-use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
-use Jorijn\Bl3pDca\Service\WithdrawService;
-use Jorijn\Bl3pDca\Validator\ValidationException;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\NoRecipientAddressAvailableException;
+use Jorijn\Bitcoin\Dca\Provider\WithdrawAddressProviderInterface;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Service\WithdrawService;
+use Jorijn\Bitcoin\Dca\Validator\ValidationException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Service\WithdrawService
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\WithdrawService
  * @covers ::__construct
  *
  * @internal

@@ -12,28 +12,28 @@ services:
   # CLI Commands
   ######################################################################
   command.buy:
-    class: Jorijn\Bl3pDca\Command\BuyCommand
+    class: Jorijn\Bitcoin\Dca\Command\BuyCommand
     arguments:
       - '@service.buy'
     tags:
       - { name: console.command, command: 'buy' }
 
   command.withdraw:
-    class: Jorijn\Bl3pDca\Command\WithdrawCommand
+    class: Jorijn\Bitcoin\Dca\Command\WithdrawCommand
     arguments:
       - '@service.withdraw'
     tags:
       - { name: console.command, command: 'withdraw' }
 
   command.balance:
-    class: Jorijn\Bl3pDca\Command\BalanceCommand
+    class: Jorijn\Bitcoin\Dca\Command\BalanceCommand
     arguments:
       - '@api.client'
     tags:
       - { name: console.command, command: 'balance' }
 
   command.verify_xpub:
-    class: Jorijn\Bl3pDca\Command\VerifyXPubCommand
+    class: Jorijn\Bitcoin\Dca\Command\VerifyXPubCommand
     arguments:
       - '@factory.derive_from_master_public_key'
       - '@repository.tag_integer.xpub_index'
@@ -46,7 +46,7 @@ services:
   # Factories
   ######################################################################
   factory.api_client:
-    class: Jorijn\Bl3pDca\Factory\Bl3pClientFactory
+    class: Jorijn\Bitcoin\Dca\Factory\Bl3pClientFactory
     arguments:
       - '%env(string:BL3P_API_URL)%'
       - '%env(string:BL3P_PUBLIC_KEY)%'
@@ -54,13 +54,13 @@ services:
       - '@logger'
 
   factory.derive_from_master_public_key:
-    class: Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory
+    class: Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
 
   ######################################################################
   # API Clients
   ######################################################################
   api.client:
-    class: Jorijn\Bl3pDca\Client\Bl3pClient
+    class: Jorijn\Bitcoin\Dca\Client\Bl3pClient
     factory:
       - '@factory.api_client'
       - 'createApi'
@@ -69,7 +69,7 @@ services:
   # Address Providers
   ######################################################################
   address_provider.simple:
-    class: Jorijn\Bl3pDca\Provider\SimpleWithdrawAddressProvider
+    class: Jorijn\Bitcoin\Dca\Provider\SimpleWithdrawAddressProvider
     arguments:
       - '@validator.bitcoin_address'
       - '%env(string:BL3P_WITHDRAW_ADDRESS)%'
@@ -77,7 +77,7 @@ services:
       - { name: 'bl3p-address_provider', priority: -1000 }
 
   address_provider.xpub:
-    class: Jorijn\Bl3pDca\Provider\XpubWithdrawAddressProvider
+    class: Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider
     arguments:
       - '@validator.bitcoin_address'
       - '@factory.derive_from_master_public_key'
@@ -90,7 +90,7 @@ services:
   # Validators
   ######################################################################
   validator.bitcoin_address:
-    class: Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
+    class: Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidator
     arguments:
       - '@bitwasp.address.creator'
 
@@ -107,12 +107,12 @@ services:
   # Repositories
   ######################################################################
   repository.tag_integer.balance:
-    class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
+    class: Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository
     arguments:
       - '%application.path%/var/storage/balance.db'
 
   repository.tag_integer.xpub_index:
-    class: Jorijn\Bl3pDca\Repository\JsonFileTaggedIntegerRepository
+    class: Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository
     arguments:
       - '%application.path%/var/storage/xpub_index.db'
 
@@ -120,36 +120,36 @@ services:
   # Event Listeners
   ######################################################################
   event_listener.xpub_address_used:
-    class: Jorijn\Bl3pDca\EventListener\XPubAddressUsedListener
+    class: Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener
     arguments:
       - '@repository.tag_integer.xpub_index'
       - '@factory.derive_from_master_public_key'
       - '@logger'
       - '%env(BL3P_WITHDRAW_XPUB)%'
     tags:
-      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
 
   event_listener.increase_tagged_balance:
-    class: Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener
+    class: Jorijn\Bitcoin\Dca\EventListener\IncreaseTaggedBalanceListener
     arguments:
       - '@repository.tag_integer.balance'
       - '@logger'
     tags:
-      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\BuySuccessEvent, method: onBalanceIncrease }
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBalanceIncrease }
 
   event_listener.reset_tagged_balance:
-    class: Jorijn\Bl3pDca\EventListener\ResetTaggedBalanceListener
+    class: Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener
     arguments:
       - '@repository.tag_integer.balance'
       - '@logger'
     tags:
-      - { name: kernel.event_listener, event: Jorijn\Bl3pDca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
 
   ######################################################################
   # Services
   ######################################################################
   service.buy:
-    class: Jorijn\Bl3pDca\Service\BuyService
+    class: Jorijn\Bitcoin\Dca\Service\BuyService
     arguments:
       - '@api.client'
       - '@event_dispatcher'
@@ -157,7 +157,7 @@ services:
       - '%buy_fill_timeout%'
 
   service.withdraw:
-    class: Jorijn\Bl3pDca\Service\WithdrawService
+    class: Jorijn\Bitcoin\Dca\Service\WithdrawService
     arguments:
       - '@api.client'
       - !tagged_iterator bl3p-address_provider

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Command;
+namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;

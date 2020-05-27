@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Event;
+namespace Tests\Jorijn\Bitcoin\Dca\Event;
 
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Model\CompletedWithdraw;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Event\WithdrawSuccessEvent
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent
  *
  * @internal
  */

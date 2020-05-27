@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Command;
+namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Service\BuyService;
+use Jorijn\Bitcoin\Dca\Service\BuyService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

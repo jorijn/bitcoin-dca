@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Provider;
+namespace Jorijn\Bitcoin\Dca\Provider;
 
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
-use Jorijn\Bl3pDca\Validator\ValidationInterface;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 
 class XpubWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {

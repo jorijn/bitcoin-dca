@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Provider;
+namespace Jorijn\Bitcoin\Dca\Provider;
 
-use Jorijn\Bl3pDca\Validator\ValidationInterface;
+use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 
 class SimpleWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {

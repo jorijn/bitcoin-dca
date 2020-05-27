@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Service;
+namespace Jorijn\Bitcoin\Dca\Service;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\BuySuccessEvent;
-use Jorijn\Bl3pDca\Exception\BuyTimeoutException;
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 

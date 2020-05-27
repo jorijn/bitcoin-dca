@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Event;
+namespace Jorijn\Bitcoin\Dca\Event;
 
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 
 class BuySuccessEvent
 {

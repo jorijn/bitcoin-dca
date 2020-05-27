@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Command;
+namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Service\WithdrawService;
+use Jorijn\Bitcoin\Dca\Service\WithdrawService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

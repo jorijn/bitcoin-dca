@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\EventListener;
+namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\EventListener\ResetTaggedBalanceListener;
-use Jorijn\Bl3pDca\Model\CompletedWithdraw;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\EventListener\ResetTaggedBalanceListener
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener
  * @covers ::__construct
  *
  * @internal

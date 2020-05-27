@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Client;
+namespace Jorijn\Bitcoin\Dca\Client;
 
 interface Bl3pClientInterface
 {

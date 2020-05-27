@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\EventListener;
+namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bl3pDca\Event\BuySuccessEvent;
-use Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener;
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\EventListener\IncreaseTaggedBalanceListener;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\EventListener\IncreaseTaggedBalanceListener
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\IncreaseTaggedBalanceListener
  * @covers ::__construct
  *
  * @internal

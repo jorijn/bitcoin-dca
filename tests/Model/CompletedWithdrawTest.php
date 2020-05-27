@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Model;
+namespace Tests\Jorijn\Bitcoin\Dca\Model;
 
-use Jorijn\Bl3pDca\Model\CompletedWithdraw;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Model\CompletedWithdraw
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Model\CompletedWithdraw
  *
  * @internal
  */

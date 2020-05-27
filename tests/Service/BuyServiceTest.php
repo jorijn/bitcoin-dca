@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Service;
+namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\BuySuccessEvent;
-use Jorijn\Bl3pDca\Exception\BuyTimeoutException;
-use Jorijn\Bl3pDca\Service\BuyService;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
+use Jorijn\Bitcoin\Dca\Service\BuyService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Service\BuyService
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\BuyService
  * @covers ::__construct
  *
  * @internal

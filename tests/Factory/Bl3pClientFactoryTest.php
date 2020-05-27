@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Factory;
+namespace Tests\Jorijn\Bitcoin\Dca\Factory;
 
-use Jorijn\Bl3pDca\Client\Bl3pClient;
-use Jorijn\Bl3pDca\Factory\Bl3pClientFactory;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClient;
+use Jorijn\Bitcoin\Dca\Factory\Bl3pClientFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Factory\Bl3pClientFactory
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Factory\Bl3pClientFactory
  *
  * @internal
  */

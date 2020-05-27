@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Command;
+namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Command\BalanceCommand;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Command\BalanceCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Command\BalanceCommand
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BalanceCommand
  * @covers ::__construct
  * @covers ::configure
  *

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Provider;
+namespace Jorijn\Bitcoin\Dca\Provider;
 
 interface WithdrawAddressProviderInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Repository;
+namespace Jorijn\Bitcoin\Dca\Repository;
 
 use JsonException;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Factory;
+namespace Jorijn\Bitcoin\Dca\Factory;
 
-use Jorijn\Bl3pDca\Client\Bl3pClient;
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClient;
+use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Psr\Log\LoggerInterface;
 
 class Bl3pClientFactory
