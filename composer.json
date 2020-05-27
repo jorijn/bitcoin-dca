@@ -1,5 +1,5 @@
 {
-    "name": "jorijn/bl3p-dca",
+    "name": "jorijn/bitcoin-dca",
     "description": "Tool for automatically buying and withdrawing Bitcoin on Bl3P",
     "type": "project",
     "license": "MIT",

@@ -5,7 +5,7 @@ Configuration
 
 .. include:: ./includes/beta-warning.rst
 
-BL3P-DCA uses `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ to configure the inner workings of the tool. An environment variable looks like this: ``SOME_CONFIGURATION_KEY=valuehere``.
+Bitcoin DCA uses `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ to configure the inner workings of the tool. An environment variable looks like this: ``SOME_CONFIGURATION_KEY=valuehere``.
 
 Available Configuration
 -----------------------
@@ -47,12 +47,12 @@ Using a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 When handling multiple environment variables, things can get messy. For easier management you can create a simple configuration file somewhere on your disk and use that to provide the tool with the correct configuration.
 
-For example, creating a new configuration file in your home directory: ``nano /home/username/.bl3p-dca``
+For example, creating a new configuration file in your home directory: ``nano /home/username/.bitcoin-dca``
 
 .. include:: ./includes/finding-home-directory.rst
 
 .. code-block:: bash
-   :caption: /home/username/.bl3p-dca
+   :caption: /home/username/.bitcoin-dca
 
    BL3P_PUBLIC_KEY=....
    BL3P_PRIVATE_KEY=....
@@ -63,7 +63,7 @@ Now, when running the tool you can use ``--env-file`` like this:
 .. code-block:: bash
    :caption: Providing configuration with Docker's --env-file
 
-   $ docker run --rm -it --env-file=/home/username/.bl3p-dca jorijn/bl3p-dca:latest balance
+   $ docker run --rm -it --env-file=/home/username/.bitcoin-dca jorijn/bitcoin-dca:latest balance
 
 Using inline arguments
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -75,4 +75,4 @@ For maximum control, you can also feed configuration into the tool like this:
 .. code-block:: bash
    :caption: Providing configuration by specifying each configuration item separately
 
-   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd BL3P_WITHDRAW_ADDRESS=abcd jorijn/bl3p-dca:latest balance
+   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd BL3P_WITHDRAW_ADDRESS=abcd jorijn/bitcoin-dca:latest balance

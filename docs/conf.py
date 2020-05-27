@@ -1,6 +1,6 @@
 import sphinx_rtd_theme
 
-project = 'BL3P-DCA'
+project = 'Bitcoin DCA'
 copyright = '2020, Jorijn Schrijvershof'
 author = 'Jorijn Schrijvershof'
 extensions = []

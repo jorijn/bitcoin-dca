@@ -6,16 +6,16 @@ Deriving new Bitcoin addresses from your XPUB
 .. note::
    You need persistent storage to keep track of which address index the tool should use. See :ref:`persistent-storage`
 
-Instead of withdrawing to the same static Bitcoin address every time you make a withdrawal, it's also possible to supply a Master Public Key to BL3P-DCA.
+Instead of withdrawing to the same static Bitcoin address every time you make a withdrawal, it's also possible to supply a Master Public Key to Bitcoin DCA.
 
-After configuring, BL3P-DCA will start at the first address (index #0) it can derive from your XPUB.
+After configuring, Bitcoin DCA will start at the first address (index #0) it can derive from your XPUB.
 
 Configuring a XPUB
 ------------------
 For the sake of demonstration, we'll be using the following XPUB here:
 
 .. code-block::
-   :caption: /home/bob/.bl3p-dca
+   :caption: /home/bob/.bitcoin-dca
 
    BL3P_WITHDRAW_XPUB=zpub6rLtzSoXnXKPXHroRKGCwuRVHjgA5YL6oUkdZnCfbDLdtAKNXb1FX1EmPUYR1uYMRBpngvkdJwxqhLvM46trRy5MRb7oYdSLbb4w5VC4i3z
 
@@ -25,12 +25,12 @@ For the sake of demonstration, we'll be using the following XPUB here:
 Verifying the configured XPUB
 -----------------------------
 
-You can verify that BL3P-DCA will derive the correct addresses using the following command:
+You can verify that Bitcoin DCA will derive the correct addresses using the following command:
 
 .. code-block::
    :caption: Verifying the configured XPUB
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca-bobby jorijn/bl3p-dca:latest verify-xpub
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latest verify-xpub
    ┌───┬────────────────────────────────────────────┬───────────────┐
    │ # │ Address                                    │ Next Withdraw │
    ├───┼────────────────────────────────────────────┼───────────────┤
@@ -53,7 +53,7 @@ You can check that the correct address is being used when attempting to withdraw
 .. code-block::
    :caption: Here, it takes address #0 (bc1qvqatyv2xynyanrej2fcutj6w5yugy0gc9jx2nn) for withdrawal
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca-bobby jorijn/bl3p-dca:latestwithdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latestwithdraw --all
    Ready to withdraw 0.0013 BTC to Bitcoin Address bc1qvqatyv2xynyanrej2fcutj6w5yugy0gc9jx2nn? A fee of 0.0003 will be taken as withdraw fee. (yes/no) [no]:
 
 After successful withdrawal, the tool will increase the inner index and use address #1 the next time a withdrawal is being made.

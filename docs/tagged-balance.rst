@@ -19,14 +19,14 @@ Lets say I have a kid called Bobby, I'm a true believer Bitcoin will someday rul
 .. code-block:: bash
    :caption: Buying € 10,- of Bitcoin for Bobby
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 10 -t bobby
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest buy 10 -t bobby
 
 Then, when time comes to withdraw, you can withdraw his funds to a wallet of his own:
 
 .. code-block:: bash
    :caption: Withdrawing all Bitcoin specifically for Bobby
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca-bobby jorijn/bl3p-dca:latest withdraw --all -t bobby
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latest withdraw --all -t bobby
 
 .. note::
    Docker can't handle both ``-e`` and ``--file-file``, it's best to create a seperate configuration file containing another xpub or withdrawal address.

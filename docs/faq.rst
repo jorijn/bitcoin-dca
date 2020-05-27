@@ -12,7 +12,7 @@ Frequently Asked Questions
 I already have MyNode running, can I use this tool too?
 -------------------------------------------------------
 
-Yes! MyNode is based on Linux and has Docker already installed. You can use all features of BL3P-DCA.
+Yes! MyNode is based on Linux and has Docker already installed. You can use all features of Bitcoin DCA.
 
 Things you should keep in mind: The default user, ``admin`` doesn't have permission to run Docker by default.
 

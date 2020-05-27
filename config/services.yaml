@@ -178,10 +178,10 @@ services:
   logger.stream_handler:
     class: Monolog\Handler\StreamHandler
     arguments:
-      - '%application.path%/var/logs/bl3p-dca.log'
+      - '%application.path%/var/logs/bitcoin-dca.log'
 
   logger:
     class: Monolog\Logger
     arguments:
-      - 'bl3p-dca'
+      - 'bitcoin-dca'
       - ['@logger.stream_handler']

@@ -10,10 +10,10 @@ Getting started
 
 Configuration
 -------------
-Create a new file somewhere that will contain the configuration needed for the tool to operate. If your account is called ``bob`` and your home directory is `/home/bob` lets create a new file in ``/home/bob/.bl3p-dca``:
+Create a new file somewhere that will contain the configuration needed for the tool to operate. If your account is called ``bob`` and your home directory is `/home/bob` lets create a new file in ``/home/bob/.bitcoin-dca``:
 
 .. code-block::
-   :caption: /home/bob/.bl3p-dca
+   :caption: /home/bob/.bitcoin-dca
 
    BL3P_PRIVATE_KEY=bl3p private key here
    BL3P_PUBLIC_KEY=bl3p identifier key here
@@ -27,7 +27,7 @@ You can test that it work with:
 .. code-block:: bash
    :caption: Checking the Exchange balance
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest balance
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest balance
 
 If successful, you should see a table containing your balances on the exchange:
 
@@ -50,19 +50,19 @@ Buying €10,00 of Bitcoin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: bash
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest buy 10
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest buy 10
 
 Withdrawing to your hardware wallet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
-   $ docker run --rm -it --env-file=/home/bob/.bl3p-dca jorijn/bl3p-dca:latest withdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest withdraw --all
 
 **It will ask you:** Ready to withdraw 0.00412087 BTC to Bitcoin Address bc1abcdefghijklmopqrstuvwxuz123456? A fee of 0.0003 will be taken as withdraw fee [y/N]:
 
 .. warning::
-   **When testing, make sure to verify the displayed Bitcoin address matches the one configured in your `.bl3p-dca` configuration file. When confirming this question, withdrawal executes immediately.**
+   **When testing, make sure to verify the displayed Bitcoin address matches the one configured in your `.bitcoin-dca` configuration file. When confirming this question, withdrawal executes immediately.**
 
 Automating buying and withdrawing
 ---------------------------------
