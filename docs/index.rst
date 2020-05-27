@@ -1,4 +1,4 @@
-Welcome to BL3P-DCA's documentation!
+Welcome to Bitcoin DCA's documentation!
 ====================================
 
 .. include:: ./includes/beta-warning.rst
@@ -17,9 +17,9 @@ Welcome to BL3P-DCA's documentation!
 
 About this software
 -------------------
-This DCA (Dollar Cost Averaging) tool is built with flexibility in mind, allowing you to specify your own schedule for buying and withdrawing. 
+This DCA (Dollar Cost Averaging) tool is built with flexibility in mind, allowing you to specify your own schedule for buying and withdrawing.
 
-A few examples of possible scenario's: 
+A few examples of possible scenario's:
 
 * Buy each week, never withdraw;
 * Buy monthly and withdraw at the same time to reduce exchange risk;

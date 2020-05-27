@@ -22,7 +22,7 @@ Use these commands to download this tool from Docker Hub:
 
 .. code-block:: bash
 
-   $ docker pull jorijn/bl3p-dca:latest
+   $ docker pull jorijn/bitcoin-dca:latest
 
 Upgrading
 ^^^^^^^^^
@@ -30,19 +30,19 @@ Using these commands you can download the newest version from Docker Hub:
 
 .. code-block:: bash
 
-   $ docker image rm jorijn/bl3p-dca
-   $ docker pull jorijn/bl3p-dca:latest
+   $ docker image rm jorijn/bitcoin-dca
+   $ docker pull jorijn/bitcoin-dca:latest
 
 Build your own (more control)
 -----------------------------
-If you desire more control, pull this project from `GitHub <https://github.com/Jorijn/bl3p-dca>`_ and build it yourself. To do this, execute these commands:
+If you desire more control, pull this project from `GitHub <https://github.com/Jorijn/bitcoin-dca>`_ and build it yourself. To do this, execute these commands:
 
 .. code-block:: bash
 
    cd ~
-   git clone https://github.com/Jorijn/bl3p-dca.git
-   cd bl3p-dca
-   docker build . -t jorijn/bl3p-dca:latest
+   git clone https://github.com/Jorijn/bitcoin-dca.git
+   cd bitcoin-dca
+   docker build . -t jorijn/bitcoin-dca:latest
 
 When an upgrade is available, run ``git pull`` to fetch the latest changes and build the docker container again.
 

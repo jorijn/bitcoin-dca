@@ -1,11 +1,11 @@
 # Bitcoin DCA using the BL3P Exchange
 
-![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bl3p-dca)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=coverage)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=ncloc)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bl3p-dca&metric=security_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bl3p-dca)
+![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bitcoin-dca)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=coverage)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=ncloc)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=security_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
 
 _Please be aware this is beta software. Test thoroughly with small amounts of money at first. This software is provided "as is" and comes without warranty. See [LICENSE](LICENSE)._
 
@@ -24,7 +24,7 @@ The DCA tool is built with flexibility in mind, allowing you to specify your own
 ## Documentation
 | Format | Location | 
 |------|------|
-| Online |  https://bl3p-dca.readthedocs.io/en/latest/ |
-| PDF | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/pdf/ |
-| ZIP | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/htmlzip/ |
-| ePub | https://bl3p-dca.readthedocs.io/_/downloads/en/latest/epub/ |
+| Online |  https://bitcoin-dca.readthedocs.io/en/latest/ |
+| PDF | https://bitcoin-dca.readthedocs.io/_/downloads/en/latest/pdf/ |
+| ZIP | https://bitcoin-dca.readthedocs.io/_/downloads/en/latest/htmlzip/ |
+| ePub | https://bitcoin-dca.readthedocs.io/_/downloads/en/latest/epub/ |
