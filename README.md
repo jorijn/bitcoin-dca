@@ -1,3 +1,5 @@
+_May 27th: This project was originally called "bl3p-dca" since I launched with BL3P at first. I would like to expand the list of supported exchanges and because of that, I chose to continue development under a more generic name. Be sure to update your Docker container from `jorijn/bl3p-dca` to `jorijn/bitcoin-dca`._
+
 # Bitcoin DCA using the BL3P Exchange
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bitcoin-dca)
