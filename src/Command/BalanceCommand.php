@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
+use Jorijn\Bitcoin\Dca\Service\BalanceService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,13 +14,12 @@ use Throwable;
 
 class BalanceCommand extends Command
 {
-    protected Bl3pClientInterface $client;
+    protected BalanceService $balanceService;
 
-    public function __construct(Bl3pClientInterface $client)
+    public function __construct(BalanceService $balanceService)
     {
         parent::__construct(null);
-
-        $this->client = $client;
+        $this->balanceService = $balanceService;
     }
 
     public function configure(): void
@@ -35,12 +34,7 @@ class BalanceCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $response = $this->client->apiCall('GENMKT/money/info');
-            $rows = [];
-
-            foreach ($response['data']['wallets'] ?? [] as $currency => $wallet) {
-                $rows[] = [$currency, $wallet['balance']['display'], $wallet['available']['display']];
-            }
+            $rows = $this->balanceService->getBalances();
 
             $table = new Table($output);
             $table->setHeaders(['Currency', 'Balance', 'Available']);

@@ -40,7 +40,7 @@ services:
   command.balance:
     class: Jorijn\Bitcoin\Dca\Command\BalanceCommand
     arguments:
-      - '@api.client.bl3p'
+      - '@service.balance'
     tags:
       - { name: console.command, command: 'balance' }
 
@@ -174,6 +174,12 @@ services:
       - '@logger'
       - '%env(EXCHANGE)%'
 
+  service.balance:
+    class: Jorijn\Bitcoin\Dca\Service\BalanceService
+    arguments:
+      - !tagged_iterator exchange-balance-service
+      - '%env(EXCHANGE)%'
+
   ##
   ## BL3P
   ##
@@ -192,6 +198,13 @@ services:
       - '@logger'
     tags:
       - { name: exchange-withdraw-service }
+
+  service.balance.bl3p:
+    class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService
+    arguments:
+      - '@api.client.bl3p'
+    tags:
+      - { name: exchange-balance-service }
 
   ######################################################################
   # Third Party Components
