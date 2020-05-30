@@ -12,9 +12,9 @@ interface Bl3pClientInterface
      * @param string $path       path to call
      * @param array  $parameters parameters to add to the call
      *
-     * @return array result of call
      *@throws \Exception
      *
+     * @return array result of call
      */
     public function apiCall($path, $parameters = []): array;
 }
