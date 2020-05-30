@@ -11,6 +11,7 @@ parameters:
   env(BL3P_WITHDRAW_XPUB): ~
 
   # bitvavo settings
+  env(BITVAVO_API_URL): 'https://api.bitvavo.com/v2/'
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
 
@@ -78,6 +79,22 @@ services:
       - create
     arguments:
       - base_uri: '%env(string:BL3P_API_URL)%'
+
+  api.client.bitvavo:
+    class: Jorijn\Bitcoin\Dca\Client\BitvavoClient
+    arguments:
+      - '@http_client.bitvavo'
+      - '@logger'
+      - '%env(string:BITVAVO_API_KEY)%'
+      - '%env(string:BITVAVO_API_SECRET)%'
+
+  http_client.bitvavo:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:BITVAVO_API_URL)%'
 
   ######################################################################
   # Address Providers
@@ -211,6 +228,16 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService
     arguments:
       - '@api.client.bl3p'
+    tags:
+      - { name: exchange-balance-service }
+
+  ##
+  ## Bitvavo
+  ##
+  service.balance.bitvavo:
+    class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService
+    arguments:
+      - '@api.client.bitvavo'
     tags:
       - { name: exchange-balance-service }
 

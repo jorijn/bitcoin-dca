@@ -57,7 +57,7 @@ class Bl3pClient implements Bl3pClientInterface
         $headers = [
             'Rest-Key' => $this->publicKey,
             'Rest-Sign' => $signature,
-            'User-Agent' => 'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/Bl3pDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')',
+            'User-Agent' => 'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')',
         ];
 
         $serverResponse = $this->httpClient->request('POST', $path, [
