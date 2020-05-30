@@ -1,11 +1,23 @@
 parameters:
-  application_title: 'BL3P Bitcoin DCA Tool'
+  application_title: 'Bitcoin DCA Tool'
   buy_fill_timeout: 30
+  base_currency: EUR
+
+  # BL3P settings
   env(BL3P_API_URL): 'https://api.bl3p.eu/1/'
   env(BL3P_PUBLIC_KEY): ''
   env(BL3P_PRIVATE_KEY): ''
   env(BL3P_WITHDRAW_ADDRESS): ''
   env(BL3P_WITHDRAW_XPUB): ~
+
+  # bitvavo settings
+  env(BITVAVO_API_KEY): ~
+  env(BITVAVO_API_SECRET): ~
+
+  # generic application settings
+  env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
+  env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
+  env(EXCHANGE): 'bl3p'
 
 services:
   ######################################################################
@@ -28,7 +40,7 @@ services:
   command.balance:
     class: Jorijn\Bitcoin\Dca\Command\BalanceCommand
     arguments:
-      - '@api.client'
+      - '@api.client.bl3p'
     tags:
       - { name: console.command, command: 'balance' }
 
@@ -37,33 +49,27 @@ services:
     arguments:
       - '@factory.derive_from_master_public_key'
       - '@repository.tag_integer.xpub_index'
-      - '%env(BL3P_WITHDRAW_XPUB)%'
-      - 'BL3P_WITHDRAW_XPUB'
+      - '%env(WITHDRAW_XPUB)%'
+      - 'WITHDRAW_XPUB'
     tags:
       - { name: console.command, command: 'verify-xpub' }
 
   ######################################################################
   # Factories
   ######################################################################
-  factory.api_client:
-    class: Jorijn\Bitcoin\Dca\Factory\Bl3pClientFactory
-    arguments:
-      - '%env(string:BL3P_API_URL)%'
-      - '%env(string:BL3P_PUBLIC_KEY)%'
-      - '%env(string:BL3P_PRIVATE_KEY)%'
-      - '@logger'
-
   factory.derive_from_master_public_key:
     class: Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
 
   ######################################################################
   # API Clients
   ######################################################################
-  api.client:
+  api.client.bl3p:
     class: Jorijn\Bitcoin\Dca\Client\Bl3pClient
-    factory:
-      - '@factory.api_client'
-      - 'createApi'
+    arguments:
+      - '%env(string:BL3P_API_URL)%'
+      - '%env(string:BL3P_PUBLIC_KEY)%'
+      - '%env(string:BL3P_PRIVATE_KEY)%'
+      - '@logger'
 
   ######################################################################
   # Address Providers
@@ -72,9 +78,9 @@ services:
     class: Jorijn\Bitcoin\Dca\Provider\SimpleWithdrawAddressProvider
     arguments:
       - '@validator.bitcoin_address'
-      - '%env(string:BL3P_WITHDRAW_ADDRESS)%'
+      - '%env(string:WITHDRAW_ADDRESS)%'
     tags:
-      - { name: 'bl3p-address_provider', priority: -1000 }
+      - { name: 'withdraw-address-provider', priority: -1000 }
 
   address_provider.xpub:
     class: Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider
@@ -82,9 +88,9 @@ services:
       - '@validator.bitcoin_address'
       - '@factory.derive_from_master_public_key'
       - '@repository.tag_integer.xpub_index'
-      - '%env(BL3P_WITHDRAW_XPUB)%'
+      - '%env(WITHDRAW_XPUB)%'
     tags:
-      - { name: bl3p-address_provider, priority: -500 }
+      - { name: withdraw-address-provider, priority: -500 }
 
   ######################################################################
   # Validators
@@ -125,7 +131,7 @@ services:
       - '@repository.tag_integer.xpub_index'
       - '@factory.derive_from_master_public_key'
       - '@logger'
-      - '%env(BL3P_WITHDRAW_XPUB)%'
+      - '%env(WITHDRAW_XPUB)%'
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawAddressUsed }
 
@@ -151,19 +157,41 @@ services:
   service.buy:
     class: Jorijn\Bitcoin\Dca\Service\BuyService
     arguments:
-      - '@api.client'
       - '@event_dispatcher'
       - '@logger'
+      - '%env(EXCHANGE)%'
+      - !tagged_iterator exchange-buy-service
       - '%buy_fill_timeout%'
+      - '%base_currency%'
 
   service.withdraw:
     class: Jorijn\Bitcoin\Dca\Service\WithdrawService
     arguments:
-      - '@api.client'
-      - !tagged_iterator bl3p-address_provider
+      - !tagged_iterator withdraw-address-provider
+      - !tagged_iterator exchange-withdraw-service
       - '@repository.tag_integer.balance'
       - '@event_dispatcher'
       - '@logger'
+      - '%env(EXCHANGE)%'
+
+  ##
+  ## BL3P
+  ##
+  service.buy.bl3p:
+    class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService
+    arguments:
+      - '@api.client.bl3p'
+      - '@logger'
+    tags:
+      - { name: exchange-buy-service }
+
+  service.withdraw.bl3p:
+    class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pWithdrawService
+    arguments:
+      - '@api.client.bl3p'
+      - '@logger'
+    tags:
+      - { name: exchange-withdraw-service }
 
   ######################################################################
   # Third Party Components
