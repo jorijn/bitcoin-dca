@@ -66,10 +66,18 @@ services:
   api.client.bl3p:
     class: Jorijn\Bitcoin\Dca\Client\Bl3pClient
     arguments:
-      - '%env(string:BL3P_API_URL)%'
+      - '@http_client.bl3p'
+      - '@logger'
       - '%env(string:BL3P_PUBLIC_KEY)%'
       - '%env(string:BL3P_PRIVATE_KEY)%'
-      - '@logger'
+
+  http_client.bl3p:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:BL3P_API_URL)%'
 
   ######################################################################
   # Address Providers

@@ -6,6 +6,7 @@ namespace Jorijn\Bitcoin\Dca\Client;
 
 use Jorijn\Bitcoin\Dca\Exception\Bl3pClientException;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @source https://github.com/BitonicNL/bl3p-api/blob/master/examples/php/example.php
@@ -19,90 +20,65 @@ class Bl3pClient implements Bl3pClientInterface
     public const LOG_CONTEXT_URL = 'url';
     public const API_KEY_MESSAGE = 'message';
 
+    protected HttpClientInterface $httpClient;
     protected LoggerInterface $logger;
     protected string $publicKey;
     protected string $privateKey;
-    protected string $url;
 
-    /**
-     * Set the url to call, the public key and the private key.
-     *
-     * @param string $url        Url to call (https://api.bl3p.eu)
-     * @param string $publicKey  Your Public API key
-     * @param string $privateKey Your Private API key
-     */
-    public function __construct(string $url, string $publicKey, string $privateKey, LoggerInterface $logger)
-    {
-        $this->url = $url;
+    public function __construct(
+        HttpClientInterface $httpClient,
+        LoggerInterface $logger,
+        string $publicKey,
+        string $privateKey
+    ) {
+        $this->logger = $logger;
+        $this->httpClient = $httpClient;
         $this->publicKey = $publicKey;
         $this->privateKey = $privateKey;
-        $this->logger = $logger;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function apiCall($path, $params = []): array
+    public function apiCall($path, $parameters = []): array
     {
-        // generate a nonce as microtime, with as-string handling to avoid problems with 32bits systems
-        $mt = explode(' ', microtime());
-        $params['nonce'] = $mt[1].substr($mt[0], 2, 6);
+        // generate a nonce as micro time, with as-string handling to avoid problems with 32bits systems
+        $microtime = explode(' ', microtime());
+        $parameters['nonce'] = $microtime[1].substr($microtime[0], 2, 6);
 
         // generate the POST data string
-        $post_data = http_build_query($params, '', '&');
+        $post_data = http_build_query($parameters, '', '&');
         $body = $path.\chr(0).$post_data;
 
         // build signature for Rest-Sign
-        $sign = base64_encode(hash_hmac('sha512', $body, base64_decode($this->privateKey, true), true));
-
-        // combine the url and the desired path
-        $fullPath = $this->url.$path;
+        $signature = base64_encode(hash_hmac('sha512', $body, base64_decode($this->privateKey, true), true));
 
         // set headers
         $headers = [
-            'Rest-Key: '.$this->publicKey,
-            'Rest-Sign: '.$sign,
+            'Rest-Key' => $this->publicKey,
+            'Rest-Sign' => $signature,
+            'User-Agent' => 'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/Bl3pDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')',
         ];
 
-        // build curl call
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt(
-            $ch,
-            CURLOPT_USERAGENT,
-            'Mozilla/4.0 (compatible; BL3P PHP client; Jorijn/Bl3pDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')'
-        );
-        curl_setopt($ch, CURLOPT_URL, $fullPath);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $serverResponse = $this->httpClient->request('POST', $path, [
+            'headers' => $headers,
+            'body' => $parameters,
+        ]);
 
-        // execute curl request
-        $res = curl_exec($ch);
-
-        // throw exception with additional information when curl request returns false
-        if (false === $res) {
-            throw new Bl3pClientException('API request failed: Could not get reply from API: '.curl_error($ch));
-        }
-
-        // close curl connection
-        curl_close($ch);
-
-        // convert json into an array
-        $result = json_decode($res, true, 512, JSON_THROW_ON_ERROR);
-
-        // check json convert result and throw an exception if invalid
-        if (!$result) {
+        try {
+            // convert json into an array
+            $result = $serverResponse->toArray(true);
+        } catch (\Throwable $exception) {
             $this->logger->error(
                 self::LOG_API_CALL_FAILED,
-                [self::LOG_CONTEXT_URL => $fullPath, self::LOG_CONTEXT_PARAMETERS => $params]
+                [self::LOG_CONTEXT_URL => $path, self::LOG_CONTEXT_PARAMETERS => $parameters]
             );
 
-            throw new Bl3pClientException('API request failed: Invalid JSON-data received: '.substr($res, 0, 100));
+            throw new Bl3pClientException(
+                'API request failed: '.$exception->getMessage(),
+                $exception->getCode(),
+                $exception
+            );
         }
 
         if (!\array_key_exists(self::API_KEY_RESULT, $result)) {
@@ -118,8 +94,8 @@ class Bl3pClient implements Bl3pClientInterface
         if ('success' !== $result[self::API_KEY_RESULT]) {
             if (!isset($result[self::API_KEY_DATA]['code'], $result[self::API_KEY_DATA][self::API_KEY_MESSAGE])) {
                 $this->logger->error(self::LOG_API_CALL_FAILED, [
-                    self::LOG_CONTEXT_URL => $fullPath,
-                    self::LOG_CONTEXT_PARAMETERS => $params,
+                    self::LOG_CONTEXT_URL => $path,
+                    self::LOG_CONTEXT_PARAMETERS => $parameters,
                     'response' => var_export($result[self::API_KEY_DATA], true),
                 ]);
 
@@ -130,8 +106,8 @@ class Bl3pClient implements Bl3pClientInterface
             }
 
             $this->logger->error(self::LOG_API_CALL_FAILED, [
-                self::LOG_CONTEXT_URL => $fullPath,
-                self::LOG_CONTEXT_PARAMETERS => $params,
+                self::LOG_CONTEXT_URL => $path,
+                self::LOG_CONTEXT_PARAMETERS => $parameters,
                 'code' => $result[self::API_KEY_DATA]['code'],
                 self::API_KEY_MESSAGE => $result[self::API_KEY_DATA][self::API_KEY_MESSAGE],
             ]);
@@ -145,7 +121,7 @@ class Bl3pClient implements Bl3pClientInterface
 
         $this->logger->info(
             'API call success: {url}',
-            [self::LOG_CONTEXT_URL => $fullPath, self::LOG_CONTEXT_PARAMETERS => $params]
+            [self::LOG_CONTEXT_URL => $path, self::LOG_CONTEXT_PARAMETERS => $parameters]
         );
 
         return $result;
