@@ -218,6 +218,15 @@ final class Bl3pBuyServiceTest extends TestCase
     }
 
     /**
+     * @covers ::supportsExchange
+     */
+    public function testSupportsExchange(): void
+    {
+        self::assertTrue($this->service->supportsExchange('bl3p'));
+        self::assertFalse($this->service->supportsExchange('bl4p'));
+    }
+
+    /**
      * @return \string[][]
      */
     protected function getDelayedOrderResult(): array
