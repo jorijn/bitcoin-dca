@@ -15,6 +15,8 @@ class BitvavoBuyService implements BuyServiceInterface
     public const MARKET = 'market';
     public const FILLED_AMOUNT = 'filledAmount';
     public const ORDER_DATA = 'order_data';
+    public const ORDER = 'order';
+    public const ORDER_ID = 'orderId';
 
     protected BitvavoClientInterface $client;
     protected LoggerInterface $logger;
@@ -42,7 +44,7 @@ class BitvavoBuyService implements BuyServiceInterface
             'amountQuote' => (string) $amount,
         ];
 
-        $orderInfo = $this->client->apiCall('order', 'POST', [], $params);
+        $orderInfo = $this->client->apiCall(self::ORDER, 'POST', [], $params);
 
         // fetch the order info and wait until the order has been filled
         $failureAt = time() + $timeout;
@@ -53,9 +55,9 @@ class BitvavoBuyService implements BuyServiceInterface
             }
 
             // fetch the new information
-            $orderInfo = $this->client->apiCall('order', 'GET', [
+            $orderInfo = $this->client->apiCall(self::ORDER, 'GET', [
                 self::MARKET => $tradingPair,
-                'orderId' => $orderInfo['orderId'],
+                self::ORDER_ID => $orderInfo[self::ORDER_ID],
             ]);
 
             $this->logger->info(
@@ -87,9 +89,9 @@ class BitvavoBuyService implements BuyServiceInterface
                 ;
         }
 
-        $this->client->apiCall('order', 'DELETE', [
+        $this->client->apiCall(self::ORDER, 'DELETE', [
             self::MARKET => $tradingPair,
-            'orderId' => $orderInfo['orderId'],
+            self::ORDER_ID => $orderInfo[self::ORDER_ID],
         ]);
 
         $error = 'was not able to fill a MARKET order within the specified timeout, the order was cancelled';
