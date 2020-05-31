@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bitcoin\Dca\Service;
+namespace Tests\Jorijn\Bitcoin\Dca\Service\Bl3p;
 
 use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
-use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
 use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
-use Jorijn\Bitcoin\Dca\Service\BuyService;
+use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
+use Tests\Jorijn\Bitcoin\Dca\Service\BuyServiceTestException;
 
 /**
- * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\BuyService
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService
  * @covers ::__construct
  *
  * @internal
  */
-final class BuyServiceTest extends TestCase
+final class Bl3pBuyServiceTest extends TestCase
 {
     /** @var Bl3pClientInterface|MockObject */
     private $client;
@@ -27,7 +27,7 @@ final class BuyServiceTest extends TestCase
     private $logger;
     /** @var EventDispatcherInterface|MockObject */
     private $dispatcher;
-    private BuyService $service;
+    private Bl3pBuyService $service;
 
     protected function setUp(): void
     {
@@ -37,12 +37,7 @@ final class BuyServiceTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $this->service = new BuyService(
-            $this->client,
-            $this->dispatcher,
-            $this->logger,
-            5
-        );
+        $this->service = new Bl3pBuyService($this->client, $this->logger);
     }
 
     public function providerOfBuyScenarios(): array
@@ -69,7 +64,7 @@ final class BuyServiceTest extends TestCase
         $amount = random_int(5, 10);
         $buyParams = $this->createBuy($amount);
         $orderId = random_int(1000, 2000);
-        $tag = 't'.random_int(1000, 2000);
+        $baseCurrency = 'E'.random_int(1000, 2000);
 
         $buyResult = $this->getNewOrderResult($orderId);
         $delayedResult = $this->getDelayedOrderResult();
@@ -92,6 +87,7 @@ final class BuyServiceTest extends TestCase
             ->expects(static::atLeastOnce())
             ->method('apiCall')
             ->willReturnCallback(function (string $url, array $parameters) use (
+                $baseCurrency,
                 $orderId,
                 $buyParams,
                 $closedResult,
@@ -106,25 +102,25 @@ final class BuyServiceTest extends TestCase
                 $returnValue = [];
 
                 switch ($url) {
-                    case 'BTCEUR/money/order/add':
+                    case 'BTC'.$baseCurrency.'/money/order/add':
                         $attemptedBuy = true;
 
-                        self::assertArrayHasKey(BuyService::TYPE, $parameters);
-                        self::assertSame($buyParams[BuyService::TYPE], $parameters[BuyService::TYPE]);
-                        self::assertArrayHasKey(BuyService::AMOUNT_FUNDS_INT, $parameters);
+                        self::assertArrayHasKey(Bl3pBuyService::TYPE, $parameters);
+                        self::assertSame($buyParams[Bl3pBuyService::TYPE], $parameters[Bl3pBuyService::TYPE]);
+                        self::assertArrayHasKey(Bl3pBuyService::AMOUNT_FUNDS_INT, $parameters);
                         self::assertSame(
-                            $buyParams[BuyService::AMOUNT_FUNDS_INT],
-                            $parameters[BuyService::AMOUNT_FUNDS_INT]
+                            $buyParams[Bl3pBuyService::AMOUNT_FUNDS_INT],
+                            $parameters[Bl3pBuyService::AMOUNT_FUNDS_INT]
                         );
-                        self::assertArrayHasKey(BuyService::FEE_CURRENCY, $parameters);
-                        self::assertSame($buyParams[BuyService::FEE_CURRENCY], $parameters[BuyService::FEE_CURRENCY]);
+                        self::assertArrayHasKey(Bl3pBuyService::FEE_CURRENCY, $parameters);
+                        self::assertSame($buyParams[Bl3pBuyService::FEE_CURRENCY], $parameters[Bl3pBuyService::FEE_CURRENCY]);
 
                         $returnValue = $buyResult;
 
                         break;
-                    case 'BTCEUR/money/order/result':
-                        self::assertArrayHasKey(BuyService::ORDER_ID, $parameters);
-                        self::assertSame($orderId, $parameters[BuyService::ORDER_ID]);
+                    case 'BTC'.$baseCurrency.'/money/order/result':
+                        self::assertArrayHasKey(Bl3pBuyService::ORDER_ID, $parameters);
+                        self::assertSame($orderId, $parameters[Bl3pBuyService::ORDER_ID]);
 
                         if (time() < $orderClosedAt) {
                             $attemptedDelayedCall = true;
@@ -137,11 +133,11 @@ final class BuyServiceTest extends TestCase
                         $returnValue = $closedResult;
 
                         break;
-                    case 'BTCEUR/money/order/cancel':
+                    case 'BTC'.$baseCurrency.'/money/order/cancel':
                         $attemptedCancellation = true;
 
-                        self::assertArrayHasKey(BuyService::ORDER_ID, $parameters);
-                        self::assertSame($orderId, $parameters[BuyService::ORDER_ID]);
+                        self::assertArrayHasKey(Bl3pBuyService::ORDER_ID, $parameters);
+                        self::assertSame($orderId, $parameters[Bl3pBuyService::ORDER_ID]);
 
                         break;
                     default:
@@ -154,23 +150,11 @@ final class BuyServiceTest extends TestCase
             })
         ;
 
-        $returnedBuyOrder = null;
-        $this->dispatcher
-            ->expects($expectCancellation ? static::never() : static::once())
-            ->method('dispatch')
-            ->with(static::callback(static function (BuySuccessEvent $event) use ($tag, &$returnedBuyOrder) {
-                self::assertSame($tag, $event->getTag());
-                $returnedBuyOrder = $event->getBuyOrder();
-
-                return true;
-            }))
-        ;
-
         if ($expectCancellation) {
             $this->expectException(BuyTimeoutException::class);
         }
 
-        $completedBuyOrder = $this->service->buy($amount, $tag);
+        $completedBuyOrder = $this->service->buy($amount, $baseCurrency, 5);
 
         static::assertTrue($attemptedBuy);
         static::assertSame($fillDelayed > 0, $attemptedDelayedCall);
@@ -178,7 +162,6 @@ final class BuyServiceTest extends TestCase
         static::assertSame($expectCancellation, $attemptedCancellation);
 
         if (!$expectCancellation) {
-            static::assertSame($returnedBuyOrder, $completedBuyOrder);
             static::assertSame($amountBought, $completedBuyOrder->getAmountInSatoshis());
             static::assertSame('BTC' === $feeCurrency ? $feeSpent : 0, $completedBuyOrder->getFeesInSatoshis());
             static::assertSame($amountBoughtDisplayed, $completedBuyOrder->getDisplayAmountBought());
@@ -191,9 +174,9 @@ final class BuyServiceTest extends TestCase
     protected function createBuy(int $amount): array
     {
         return [
-            BuyService::TYPE => 'bid',
-            BuyService::AMOUNT_FUNDS_INT => $amount * 100000,
-            BuyService::FEE_CURRENCY => 'BTC',
+            Bl3pBuyService::TYPE => 'bid',
+            Bl3pBuyService::AMOUNT_FUNDS_INT => $amount * 100000,
+            Bl3pBuyService::FEE_CURRENCY => 'BTC',
         ];
     }
 
@@ -203,22 +186,22 @@ final class BuyServiceTest extends TestCase
     protected function getClosedOrderResult(string $feeCurrency): array
     {
         $closedResult = [
-            BuyService::DATA => [
-                BuyService::STATUS => BuyService::ORDER_STATUS_CLOSED,
-                BuyService::TOTAL_AMOUNT => [
-                    BuyService::VALUE_INT => $amountBought = random_int(1000, 2000),
-                    BuyService::DISPLAY => $amountBoughtDisplayed = $amountBought.' BTC',
+            Bl3pBuyService::DATA => [
+                Bl3pBuyService::STATUS => Bl3pBuyService::ORDER_STATUS_CLOSED,
+                Bl3pBuyService::TOTAL_AMOUNT => [
+                    Bl3pBuyService::VALUE_INT => $amountBought = random_int(1000, 2000),
+                    Bl3pBuyService::DISPLAY => $amountBoughtDisplayed = $amountBought.' BTC',
                 ],
-                BuyService::TOTAL_FEE => [
-                    BuyService::CURRENCY => $feeCurrency,
-                    BuyService::DISPLAY => $feesDisplayed = random_int(1000, 2000).' '.$feeCurrency,
-                    BuyService::VALUE_INT => $feeSpent = random_int(1000, 2000),
+                Bl3pBuyService::TOTAL_FEE => [
+                    Bl3pBuyService::CURRENCY => $feeCurrency,
+                    Bl3pBuyService::DISPLAY => $feesDisplayed = random_int(1000, 2000).' '.$feeCurrency,
+                    Bl3pBuyService::VALUE_INT => $feeSpent = random_int(1000, 2000),
                 ],
-                BuyService::TOTAL_SPENT => [
-                    BuyService::DISPLAY_SHORT => $totalSpentDisplayed = random_int(1000, 2000).' EUR',
+                Bl3pBuyService::TOTAL_SPENT => [
+                    Bl3pBuyService::DISPLAY_SHORT => $totalSpentDisplayed = random_int(1000, 2000).' EUR',
                 ],
-                BuyService::AVG_COST => [
-                    BuyService::DISPLAY_SHORT => $averageCostDisplayed = random_int(1000, 2000).' EUR',
+                Bl3pBuyService::AVG_COST => [
+                    Bl3pBuyService::DISPLAY_SHORT => $averageCostDisplayed = random_int(1000, 2000).' EUR',
                 ],
             ],
         ];
@@ -240,8 +223,8 @@ final class BuyServiceTest extends TestCase
     protected function getDelayedOrderResult(): array
     {
         return [
-            BuyService::DATA => [
-                BuyService::STATUS => 'open',
+            Bl3pBuyService::DATA => [
+                Bl3pBuyService::STATUS => 'open',
             ],
         ];
     }
@@ -252,8 +235,8 @@ final class BuyServiceTest extends TestCase
     protected function getNewOrderResult(int $orderId): array
     {
         return [
-            BuyService::DATA => [
-                BuyService::ORDER_ID => $orderId,
+            Bl3pBuyService::DATA => [
+                Bl3pBuyService::ORDER_ID => $orderId,
             ],
         ];
     }

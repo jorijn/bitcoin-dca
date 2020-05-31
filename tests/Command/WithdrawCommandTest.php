@@ -90,7 +90,7 @@ final class WithdrawCommandTest extends TestCase
         $this->withdrawService
             ->expects(static::once())
             ->method('getBalance')
-            ->with(true, $tag)
+            ->with($tag)
             ->willReturn($simulatedBalance)
         ;
 

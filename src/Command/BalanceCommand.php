@@ -43,7 +43,7 @@ class BalanceCommand extends Command
 
             $io->success('Success!');
         } catch (Throwable $exception) {
-            $io->error('API failure: '.$exception->getMessage());
+            $io->error($exception->getMessage());
         }
 
         return 0;
