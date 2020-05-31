@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
-use Jorijn\Bitcoin\Dca\Client\BitvavoClient;
+use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Service\BalanceServiceInterface;
 
 class BitvavoBalanceService implements BalanceServiceInterface
 {
-    /** @var BitvavoClient */
-    protected BitvavoClient $client;
+    protected BitvavoClientInterface $client;
 
-    public function __construct(BitvavoClient $client)
+    public function __construct(BitvavoClientInterface $client)
     {
         $this->client = $client;
     }

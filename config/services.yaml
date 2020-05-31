@@ -234,6 +234,22 @@ services:
   ##
   ## Bitvavo
   ##
+  service.buy.bitvavo:
+    class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService
+    arguments:
+      - '@api.client.bitvavo'
+      - '@logger'
+    tags:
+      - { name: exchange-buy-service }
+
+  service.withdraw.bivavo:
+    class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService
+    arguments:
+      - '@api.client.bitvavo'
+      - '@logger'
+    tags:
+      - { name: exchange-withdraw-service }
+
   service.balance.bitvavo:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService
     arguments:

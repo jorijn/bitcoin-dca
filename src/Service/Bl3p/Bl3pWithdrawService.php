@@ -24,7 +24,7 @@ class Bl3pWithdrawService implements WithdrawServiceInterface
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
-        $netAmountToWithdraw = $balanceToWithdraw;
+        $netAmountToWithdraw = $balanceToWithdraw - $this->getWithdrawFeeInSatoshis();
         $response = $this->client->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
             'address' => $addressToWithdrawTo,

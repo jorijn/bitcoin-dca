@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Client;
 
+use Jorijn\Bitcoin\Dca\Exception\BitvavoClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class BitvavoClient
+class BitvavoClient implements BitvavoClientInterface
 {
     protected HttpClientInterface $httpClient;
     protected LoggerInterface $logger;
@@ -45,17 +46,21 @@ class BitvavoClient
             'Bitvavo-Access-Signature' => hash_hmac('sha256', $hashString, $this->apiSecret),
             'Bitvavo-Access-Timestamp' => $now,
             'Bitvavo-Access-Window' => $this->accessWindow,
-            'Content-Type' => 'application/json',
             'User-Agent' => 'Mozilla/4.0 (compatible; Bitvavo PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')',
+            'Content-Type' => 'application/json',
         ];
 
         $serverResponse = $this->httpClient->request($method, $path, [
             'headers' => $headers,
             'query' => $parameters,
-            'body' => $parameters,
-        ]);
+        ] + (\count($body) > 0 ? ['json' => $body] : []));
 
-        // TODO: make more robust
-        return $serverResponse->toArray();
+        $responseData = $serverResponse->toArray(false);
+
+        if (isset($responseData['errorCode'])) {
+            throw new BitvavoClientException($responseData['error'], $responseData['errorCode']);
+        }
+
+        return $responseData;
     }
 }
