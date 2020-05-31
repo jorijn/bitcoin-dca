@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService
+ * @covers ::__construct
  *
  * @internal
  */
