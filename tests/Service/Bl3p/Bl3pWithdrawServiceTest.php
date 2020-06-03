@@ -103,8 +103,8 @@ final class Bl3pWithdrawServiceTest extends TestCase
      */
     public function testSupportsExchange(): void
     {
-        self::assertTrue($this->service->supportsExchange('bl3p'));
-        self::assertFalse($this->service->supportsExchange('bl4p'));
+        static::assertTrue($this->service->supportsExchange('bl3p'));
+        static::assertFalse($this->service->supportsExchange('bl4p'));
     }
 
     /**
@@ -112,7 +112,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
      */
     public function testFeeCalculation(): void
     {
-        self::assertSame(30000, $this->service->getWithdrawFeeInSatoshis());
+        static::assertSame(30000, $this->service->getWithdrawFeeInSatoshis());
     }
 
     private function createBalanceStructure(int $balance): array

@@ -42,7 +42,7 @@ final class BalanceServiceTest extends TestCase
      * @covers ::__construct
      * @covers ::getBalances
      */
-    public function getNoServicesAvailable(): void
+    public function testGetNoServicesAvailable(): void
     {
         $exchange = 'configuredExchange'.random_int(1000, 2000);
 

@@ -171,6 +171,15 @@ final class Bl3pBuyServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers ::supportsExchange
+     */
+    public function testSupportsExchange(): void
+    {
+        static::assertTrue($this->service->supportsExchange('bl3p'));
+        static::assertFalse($this->service->supportsExchange('bl4p'));
+    }
+
     protected function createBuy(int $amount): array
     {
         return [
@@ -215,15 +224,6 @@ final class Bl3pBuyServiceTest extends TestCase
             $averageCostDisplayed,
             $closedResult,
         ];
-    }
-
-    /**
-     * @covers ::supportsExchange
-     */
-    public function testSupportsExchange(): void
-    {
-        self::assertTrue($this->service->supportsExchange('bl3p'));
-        self::assertFalse($this->service->supportsExchange('bl4p'));
     }
 
     /**
