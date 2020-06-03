@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Event;
 
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
+use Symfony\Contracts\EventDispatcher\Event;
 
-class BuySuccessEvent
+class BuySuccessEvent extends Event
 {
     protected CompletedBuyOrder $buyOrder;
     protected ?string $tag;
