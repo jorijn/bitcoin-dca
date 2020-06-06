@@ -86,7 +86,10 @@ class BuyService
 
             $service->cancelBuyOrder($exception->getOrderId());
 
-            throw new BuyTimeoutException('buy did not fill within given timeout');
+            $error = 'buy did not fill within given timeout';
+            $this->logger->error($error);
+
+            throw new BuyTimeoutException($error);
         }
 
         return $buyOrder;

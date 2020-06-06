@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
 use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
 use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
+use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyService;
 use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
@@ -26,9 +28,11 @@ final class BuyServiceTest extends TestCase
     private $dispatcher;
     /** @var LoggerInterface|MockObject */
     private $logger;
-    private string $baseCurrency;
-    private int $timeout;
     private string $configuredExchange;
+    /** @var BuyServiceInterface|MockObject */
+    private $supportedService;
+    private int $timeout;
+    private BuyService $service;
 
     protected function setUp(): void
     {
@@ -36,105 +40,123 @@ final class BuyServiceTest extends TestCase
 
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->baseCurrency = 'bc'.random_int(1000, 2000);
-        $this->timeout = 30;
-        $this->configuredExchange = 'ce'.random_int(1000, 2000);
+        $this->configuredExchange = 'cw'.random_int(1000, 2000);
+        $this->supportedService = $this->createMock(BuyServiceInterface::class);
+        $this->timeout = 5;
+
+        $this->supportedService->method('supportsExchange')->with($this->configuredExchange)->willReturn(true);
+
+        $this->service = new BuyService(
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange,
+            [$this->supportedService],
+            $this->timeout
+        );
+    }
+
+    public function providerOfBuyScenarios(): array
+    {
+        return [
+            'buy fills immediately' => [0, false],
+            'buy fills after three seconds' => [3, false],
+            'buy fills after seven seconds, but timeout is set at 5 -> timeout + cancellation' => [7, true],
+            'buy fills immediately but fees settled in EUR' => [0, false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerOfBuyScenarios
+     * @covers ::buy
+     * @covers ::buyAtService
+     */
+    public function testBuyWithVariousOptions(int $buyFillsAfter, bool $expectCancellation): void
+    {
+        $buyOrderDTO = new CompletedBuyOrder();
+        $amount = random_int(1000, 2000);
+        $orderId = 'oid'.random_int(1000, 2000);
+        $start = time();
+        $tag = 'tag'.random_int(1000, 2000);
+
+        $this->supportedService
+            ->expects(static::once())
+            ->method('initiateBuy')
+            ->with($amount)
+            ->willReturnCallback(static function () use ($orderId, $buyOrderDTO, $buyFillsAfter) {
+                if (0 === $buyFillsAfter) {
+                    return $buyOrderDTO;
+                }
+
+                throw new PendingBuyOrderException($orderId);
+            })
+        ;
+
+        $this->supportedService
+            ->expects($buyFillsAfter > 0 ? static::atLeastOnce() : static::never())
+            ->method('checkIfOrderIsFilled')
+            ->with($orderId)
+            ->willReturnCallback(static function () use ($orderId, $buyOrderDTO, $start, $buyFillsAfter) {
+                if (time() >= ($start + $buyFillsAfter)) {
+                    return $buyOrderDTO;
+                }
+
+                throw new PendingBuyOrderException($orderId);
+            })
+        ;
+
+        if ($expectCancellation) {
+            $this->supportedService
+                ->expects(static::once())
+                ->method('cancelBuyOrder')
+                ->with($orderId)
+            ;
+
+            $this->logger
+                ->expects(static::atLeastOnce())
+                ->method('error')
+            ;
+
+            $this->expectException(BuyTimeoutException::class);
+        } else {
+            $this->dispatcher
+                ->expects(static::once())
+                ->method('dispatch')
+                ->with(static::callback(static function (BuySuccessEvent $event) use ($tag, $buyOrderDTO) {
+                    self::assertSame($buyOrderDTO, $event->getBuyOrder());
+                    self::assertSame($tag, $event->getTag());
+
+                    return true;
+                }))
+            ;
+        }
+
+        static::assertSame($buyOrderDTO, $this->service->buy($amount, $tag));
     }
 
     /**
      * @covers ::buy
-     *
-     * @throws \Exception
      */
-    public function testNoSupportedExchanges(): void
+    public function testNoSupportedExchange(): void
     {
         $unsupportedService = $this->createMock(BuyServiceInterface::class);
+        $unsupportedService
+            ->expects(static::once())
+            ->method('supportsExchange')
+            ->with($this->configuredExchange)
+            ->willReturn(false)
+        ;
+
         $service = new BuyService(
             $this->dispatcher,
             $this->logger,
             $this->configuredExchange,
             [$unsupportedService],
-            $this->timeout,
-            $this->baseCurrency
+            $this->timeout
         );
-
-        $unsupportedService
-            ->expects(static::once())
-            ->method('supportsExchange')
-            ->with($this->configuredExchange)
-            ->willReturn(false)
-        ;
 
         $this->logger->expects(static::atLeastOnce())->method('error');
         $this->expectException(NoExchangeAvailableException::class);
 
-        $service->buy(random_int(1000, 2000));
-    }
-
-    /**
-     * @dataProvider providerOfTags
-     * @covers ::buy
-     *
-     * @throws \Exception
-     */
-    public function testBuyHappyFlow(string $tag = null): void
-    {
-        $supportedService = $this->createMock(BuyServiceInterface::class);
-        $unsupportedService = $this->createMock(BuyServiceInterface::class);
-        $amount = random_int(1000, 2000);
-
-        $service = new BuyService(
-            $this->dispatcher,
-            $this->logger,
-            $this->configuredExchange,
-            [$unsupportedService, $supportedService],
-            $this->timeout,
-            $this->baseCurrency
-        );
-
-        $unsupportedService
-            ->expects(static::once())
-            ->method('supportsExchange')
-            ->with($this->configuredExchange)
-            ->willReturn(false)
-        ;
-
-        $supportedService
-            ->expects(static::once())
-            ->method('supportsExchange')
-            ->with($this->configuredExchange)
-            ->willReturn(true)
-        ;
-
-        $orderDTO = new CompletedBuyOrder();
-        $supportedService
-            ->expects(static::once())
-            ->method('initiateBuy')
-            ->with($amount, $this->baseCurrency, $this->timeout)
-            ->willReturn($orderDTO)
-        ;
-
-        $this->logger->expects(static::atLeastOnce())->method('info');
-
-        $this->dispatcher
-            ->expects(static::once())
-            ->method('dispatch')
-            ->with(static::callback(static function (BuySuccessEvent $event) use ($orderDTO, $tag) {
-                self::assertSame($tag, $event->getTag());
-                self::assertSame($orderDTO, $event->getBuyOrder());
-
-                return true;
-            }))
-        ;
-
-        $service->buy($amount, $tag);
-    }
-
-    public function providerOfTags(): array
-    {
-        return [
-            'with tag' => ['tag'.random_int(1000, 2000)],
-            'without tag' => [null],
-        ];
+        $service->buy(10);
     }
 }
