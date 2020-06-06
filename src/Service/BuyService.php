@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Service;
 
 use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
 use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
+use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
+use SebastianBergmann\Invoker\TimeoutException;
 
 class BuyService
 {
     protected LoggerInterface $logger;
     protected EventDispatcherInterface $dispatcher;
     protected int $timeout;
-    protected string $baseCurrency;
     protected string $configuredExchange;
     /** @var BuyServiceInterface[]|iterable */
     protected $registeredServices;
@@ -25,13 +27,11 @@ class BuyService
         LoggerInterface $logger,
         string $configuredExchange,
         iterable $registeredServices = [],
-        int $timeout = 30,
-        string $baseCurrency = 'EUR'
+        int $timeout = 30
     ) {
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
         $this->timeout = $timeout;
-        $this->baseCurrency = $baseCurrency;
         $this->registeredServices = $registeredServices;
         $this->configuredExchange = $configuredExchange;
     }
@@ -50,7 +50,7 @@ class BuyService
             if ($registeredService->supportsExchange($this->configuredExchange)) {
                 $this->logger->info('found service that supports buying for {exchange}', $logContext);
 
-                $buyOrder = $registeredService->buy($amount, $this->baseCurrency, $this->timeout);
+                $buyOrder = $this->buyAtService($registeredService, $amount);
                 $this->dispatcher->dispatch(new BuySuccessEvent($buyOrder, $tag));
 
                 return $buyOrder;
@@ -61,5 +61,34 @@ class BuyService
         $this->logger->error($errorMessage, $logContext);
 
         throw new NoExchangeAvailableException($errorMessage);
+    }
+
+    protected function buyAtService(BuyServiceInterface $service, int $amount, int $try = 0, int $start = null, string $orderId = null): CompletedBuyOrder
+    {
+        if ($start === null) {
+            $start = time();
+        }
+
+        try {
+            if ($try === 0) {
+                $buyOrder = $service->initiateBuy($amount);
+            }
+            else {
+                $buyOrder = $service->checkIfOrderIsFilled($orderId);
+            }
+        }
+        catch (PendingBuyOrderException $exception) {
+            if (time() < ($start + $this->timeout)) {
+                sleep(1);
+
+                return $this->buyAtService($service, $amount, ++$try, $start, $exception->getOrderId());
+            }
+
+            $service->cancelBuyOrder($exception->getOrderId());
+
+            throw new BuyTimeoutException('buy did not fill within given timeout');
+        }
+
+        return $buyOrder;
     }
 }

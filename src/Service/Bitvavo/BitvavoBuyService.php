@@ -5,28 +5,26 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
-use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
+use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
-use Psr\Log\LoggerInterface;
 
 class BitvavoBuyService implements BuyServiceInterface
 {
     public const MARKET = 'market';
     public const FILLED_AMOUNT = 'filledAmount';
-    public const ORDER_DATA = 'order_data';
     public const ORDER = 'order';
     public const ORDER_ID = 'orderId';
 
     protected BitvavoClientInterface $client;
-    protected LoggerInterface $logger;
+    protected string $baseCurrency;
+    protected string $tradingPair;
 
-    public function __construct(
-        BitvavoClientInterface $client,
-        LoggerInterface $logger
-    ) {
+    public function __construct(BitvavoClientInterface $client, string $baseCurrency)
+    {
         $this->client = $client;
-        $this->logger = $logger;
+        $this->baseCurrency = $baseCurrency;
+        $this->tradingPair = sprintf('BTC-%s', $this->baseCurrency);
     }
 
     public function supportsExchange(string $exchange): bool
@@ -34,73 +32,56 @@ class BitvavoBuyService implements BuyServiceInterface
         return 'bitvavo' === $exchange;
     }
 
-    public function buy(int $amount, string $baseCurrency, int $timeout): CompletedBuyOrder
+    public function initiateBuy(int $amount): CompletedBuyOrder
     {
-        $tradingPair = sprintf('BTC-%s', $baseCurrency);
-        $params = [
-            self::MARKET => $tradingPair,
+        $orderInfo = $this->client->apiCall(self::ORDER, 'POST', [], [
+            self::MARKET => $this->tradingPair,
             'side' => 'buy',
             'orderType' => self::MARKET,
             'amountQuote' => (string) $amount,
-        ];
-
-        $orderInfo = $this->client->apiCall(self::ORDER, 'POST', [], $params);
-
-        // fetch the order info and wait until the order has been filled
-        $failureAt = time() + $timeout;
-
-        do {
-            if ('filled' === $orderInfo['status']) {
-                break;
-            }
-
-            // fetch the new information
-            $orderInfo = $this->client->apiCall(self::ORDER, 'GET', [
-                self::MARKET => $tradingPair,
-                self::ORDER_ID => $orderInfo[self::ORDER_ID],
-            ]);
-
-            $this->logger->info(
-                'order still open, waiting a maximum of {seconds} for it to fill',
-                [
-                    'seconds' => $timeout,
-                    self::ORDER_DATA => $orderInfo,
-                ]
-            );
-
-            sleep(1);
-        } while (time() < $failureAt);
-
-        if ('filled' === $orderInfo['status']) {
-            $this->logger->info(
-                'order filled, successfully bought bitcoin',
-                [self::ORDER_DATA => $orderInfo]
-            );
-
-            return (new CompletedBuyOrder())
-                ->setAmountInSatoshis((int) ($orderInfo[self::FILLED_AMOUNT] * 100000000))
-                ->setFeesInSatoshis('BTC' === $orderInfo['feeCurrency']
-                    ? (int) ($orderInfo['feePaid'] * 100000000)
-                    : 0)
-                ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
-                ->setDisplayAmountSpent($orderInfo['filledAmountQuote'].' '.$baseCurrency)
-                ->setDisplayAveragePrice($this->getAveragePrice($orderInfo).' '.$baseCurrency)
-                ->setDisplayFeesSpent($orderInfo['feePaid'].' '.$orderInfo['feeCurrency'])
-                ;
-        }
-
-        $this->client->apiCall(self::ORDER, 'DELETE', [
-            self::MARKET => $tradingPair,
-            self::ORDER_ID => $orderInfo[self::ORDER_ID],
         ]);
 
-        $error = 'was not able to fill a MARKET order within the specified timeout, the order was cancelled';
-        $this->logger->error(
-            $error,
-            [self::ORDER_DATA => $orderInfo]
-        );
+        if ('filled' !== $orderInfo['status']) {
+            throw new PendingBuyOrderException($orderInfo['orderId']);
+        }
 
-        throw new BuyTimeoutException($error);
+        return $this->getCompletedBuyOrderFromResponse($orderInfo);
+    }
+
+    public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
+    {
+        $orderInfo = $this->client->apiCall(self::ORDER, 'GET', [
+            self::MARKET => $this->tradingPair,
+            self::ORDER_ID => $orderId,
+        ]);
+
+        if ('filled' !== $orderInfo['status']) {
+            throw new PendingBuyOrderException($orderId);
+        }
+
+        return $this->getCompletedBuyOrderFromResponse($orderInfo);
+    }
+
+    public function cancelBuyOrder(string $orderId): void
+    {
+        $this->client->apiCall(self::ORDER, 'DELETE', [
+            self::MARKET => $this->tradingPair,
+            self::ORDER_ID => $orderId,
+        ]);
+    }
+
+    protected function getCompletedBuyOrderFromResponse(array $orderInfo): CompletedBuyOrder
+    {
+        return (new CompletedBuyOrder())
+            ->setAmountInSatoshis((int) ($orderInfo[self::FILLED_AMOUNT] * 100000000))
+            ->setFeesInSatoshis('BTC' === $orderInfo['feeCurrency']
+                ? (int) ($orderInfo['feePaid'] * 100000000)
+                : 0)
+            ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
+            ->setDisplayAmountSpent($orderInfo['filledAmountQuote'].' '.$this->baseCurrency)
+            ->setDisplayAveragePrice($this->getAveragePrice($orderInfo).' '.$this->baseCurrency)
+            ->setDisplayFeesSpent($orderInfo['feePaid'].' '.$orderInfo['feeCurrency'])
+        ;
     }
 
     protected function getAveragePrice($data): float

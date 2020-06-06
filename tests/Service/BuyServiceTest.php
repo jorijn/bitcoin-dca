@@ -109,7 +109,7 @@ final class BuyServiceTest extends TestCase
         $orderDTO = new CompletedBuyOrder();
         $supportedService
             ->expects(static::once())
-            ->method('buy')
+            ->method('initiateBuy')
             ->with($amount, $this->baseCurrency, $this->timeout)
             ->willReturn($orderDTO)
         ;

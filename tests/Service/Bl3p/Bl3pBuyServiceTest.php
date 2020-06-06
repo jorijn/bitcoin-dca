@@ -51,7 +51,7 @@ final class Bl3pBuyServiceTest extends TestCase
     }
 
     /**
-     * @covers ::buy
+     * @covers ::initiateBuy
      * @dataProvider providerOfBuyScenarios
      *
      * @throws \Exception
@@ -154,7 +154,7 @@ final class Bl3pBuyServiceTest extends TestCase
             $this->expectException(BuyTimeoutException::class);
         }
 
-        $completedBuyOrder = $this->service->buy($amount, $baseCurrency, 5);
+        $completedBuyOrder = $this->service->initiateBuy($amount, $baseCurrency, 5);
 
         static::assertTrue($attemptedBuy);
         static::assertSame($fillDelayed > 0, $attemptedDelayedCall);

@@ -187,7 +187,6 @@ services:
       - '%env(EXCHANGE)%'
       - !tagged_iterator exchange-buy-service
       - '%buy_fill_timeout%'
-      - '%base_currency%'
 
   service.withdraw:
     class: Jorijn\Bitcoin\Dca\Service\WithdrawService
@@ -212,7 +211,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService
     arguments:
       - '@api.client.bl3p'
-      - '@logger'
+      - '%base_currency%'
     tags:
       - { name: exchange-buy-service }
 
@@ -238,7 +237,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService
     arguments:
       - '@api.client.bitvavo'
-      - '@logger'
+      - '%base_currency%'
     tags:
       - { name: exchange-buy-service }
 
