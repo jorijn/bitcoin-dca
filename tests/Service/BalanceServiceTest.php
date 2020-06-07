@@ -16,6 +16,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class BalanceServiceTest extends TestCase
 {
+    public const SUPPORTS_EXCHANGE = 'supportsExchange';
+
     /**
      * @covers ::__construct
      * @covers ::getBalances
@@ -28,8 +30,8 @@ final class BalanceServiceTest extends TestCase
         $unsupportedExchange = $this->createMock(BalanceServiceInterface::class);
         $supportedExchange = $this->createMock(BalanceServiceInterface::class);
 
-        $unsupportedExchange->method('supportsExchange')->with($exchange)->willReturn(false);
-        $supportedExchange->method('supportsExchange')->with($exchange)->willReturn(true);
+        $unsupportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(false);
+        $supportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(true);
 
         $unsupportedExchange->expects(static::never())->method('getBalances');
         $supportedExchange->expects(static::once())->method('getBalances')->willReturn($balances);
@@ -47,7 +49,7 @@ final class BalanceServiceTest extends TestCase
         $exchange = 'configuredExchange'.random_int(1000, 2000);
 
         $unsupportedExchange = $this->createMock(BalanceServiceInterface::class);
-        $unsupportedExchange->method('supportsExchange')->with($exchange)->willReturn(false);
+        $unsupportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(false);
         $unsupportedExchange->expects(static::never())->method('getBalances');
 
         $this->expectException(NoExchangeAvailableException::class);

@@ -17,6 +17,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class Bl3pBalanceServiceTest extends TestCase
 {
+    private const ONE_BTC = '1 BTC';
+    private const TWO_EURO = '2 EUR';
+    private const BALANCE = 'balance';
+    private const DISPLAY = 'display';
+    private const VALUE_INT = 'value_int';
+    private const AVAILABLE = 'available';
+
     /** @var Bl3pClientInterface|MockObject */
     private $client;
     private Bl3pBalanceService $service;
@@ -53,8 +60,8 @@ final class Bl3pBalanceServiceTest extends TestCase
         $result = $this->service->getBalances();
 
         static::assertSame([
-            ['BTC', '1 BTC', '1 BTC'],
-            ['EUR', '2 EUR', '2 EUR'],
+            ['BTC', self::ONE_BTC, self::ONE_BTC],
+            ['EUR', self::TWO_EURO, self::TWO_EURO],
         ], $result);
     }
 
@@ -64,33 +71,33 @@ final class Bl3pBalanceServiceTest extends TestCase
             'data' => [
                 'wallets' => [
                     'BTC' => [
-                        'balance' => [
-                            'display' => '1 BTC',
-                            'value_int' => 1,
+                        self::BALANCE => [
+                            self::DISPLAY => self::ONE_BTC,
+                            self::VALUE_INT => 1,
                         ],
-                        'available' => [
-                            'display' => '1 BTC',
-                            'value_int' => 1,
+                        self::AVAILABLE => [
+                            self::DISPLAY => self::ONE_BTC,
+                            self::VALUE_INT => 1,
                         ],
                     ],
                     'EUR' => [
-                        'balance' => [
-                            'display' => '2 EUR',
-                            'value_int' => 2,
+                        self::BALANCE => [
+                            self::DISPLAY => self::TWO_EURO,
+                            self::VALUE_INT => 2,
                         ],
-                        'available' => [
-                            'display' => '2 EUR',
-                            'value_int' => 2,
+                        self::AVAILABLE => [
+                            self::DISPLAY => self::TWO_EURO,
+                            self::VALUE_INT => 2,
                         ],
                     ],
                     'LTC' => [
-                        'balance' => [
-                            'display' => '0 LTC',
-                            'value_int' => 0,
+                        self::BALANCE => [
+                            self::DISPLAY => '0 LTC',
+                            self::VALUE_INT => 0,
                         ],
-                        'available' => [
-                            'display' => '0 LTC',
-                            'value_int' => 0,
+                        self::AVAILABLE => [
+                            self::DISPLAY => '0 LTC',
+                            self::VALUE_INT => 0,
                         ],
                     ],
                 ],

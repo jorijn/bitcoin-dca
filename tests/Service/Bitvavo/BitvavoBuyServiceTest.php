@@ -18,6 +18,17 @@ use PHPUnit\Framework\TestCase;
  */
 final class BitvavoBuyServiceTest extends TestCase
 {
+    private const DATA = 'data';
+    private const FILLED_SATOSHIS = 'filledSatoshis';
+    private const FILLED_QUOTE = 'filledQuote';
+    private const FEE_PAID = 'feePaid';
+    private const FEE_CURRENCY = 'feeCurrency';
+    private const PRICE = 'price';
+    private const MARKET = 'market';
+    private const ORDER_ID = 'orderId';
+    private const API_CALL = 'apiCall';
+    private const ORDER = 'order';
+
     /** @var BitvavoClientInterface|MockObject */
     private $client;
     private string $baseCurrency;
@@ -42,21 +53,21 @@ final class BitvavoBuyServiceTest extends TestCase
         $amount = random_int(10, 20);
 
         [
-            'data' => $data,
-            'filledSatoshis' => $filledSatoshis,
-            'filledQuote' => $filledQuote,
-            'feePaid' => $feePaid,
-            'feeCurrency' => $feeCurrency,
-            'price' => $price,
+            self::DATA => $data,
+            self::FILLED_SATOSHIS => $filledSatoshis,
+            self::FILLED_QUOTE => $filledQuote,
+            self::FEE_PAID => $feePaid,
+            self::FEE_CURRENCY => $feeCurrency,
+            self::PRICE => $price,
         ] = $this->getSimpleResponseStructure();
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('order', 'POST', [], [
-                'market' => sprintf('BTC-'.$this->baseCurrency),
+            ->method(self::API_CALL)
+            ->with(self::ORDER, 'POST', [], [
+                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
                 'side' => 'buy',
-                'orderType' => 'market',
+                'orderType' => self::MARKET,
                 'amountQuote' => (string) $amount,
             ])
             ->willReturn($data)
@@ -80,11 +91,11 @@ final class BitvavoBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('order', 'POST', [], [
-                'market' => sprintf('BTC-'.$this->baseCurrency),
+            ->method(self::API_CALL)
+            ->with(self::ORDER, 'POST', [], [
+                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
                 'side' => 'buy',
-                'orderType' => 'market',
+                'orderType' => self::MARKET,
                 'amountQuote' => (string) 1,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
@@ -105,20 +116,20 @@ final class BitvavoBuyServiceTest extends TestCase
         $orderId = 'oid'.random_int(1000, 2000);
 
         [
-            'data' => $data,
-            'filledSatoshis' => $filledSatoshis,
-            'filledQuote' => $filledQuote,
-            'feePaid' => $feePaid,
-            'feeCurrency' => $feeCurrency,
-            'price' => $price,
+            self::DATA => $data,
+            self::FILLED_SATOSHIS => $filledSatoshis,
+            self::FILLED_QUOTE => $filledQuote,
+            self::FEE_PAID => $feePaid,
+            self::FEE_CURRENCY => $feeCurrency,
+            self::PRICE => $price,
         ] = $this->getSimpleResponseStructure();
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('order', 'GET', [
-                'market' => sprintf('BTC-'.$this->baseCurrency),
-                'orderId' => $orderId,
+            ->method(self::API_CALL)
+            ->with(self::ORDER, 'GET', [
+                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::ORDER_ID => $orderId,
             ])
             ->willReturn($data)
         ;
@@ -141,10 +152,10 @@ final class BitvavoBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('order', 'GET', [
-                'market' => sprintf('BTC-'.$this->baseCurrency),
-                'orderId' => $orderId,
+            ->method(self::API_CALL)
+            ->with(self::ORDER, 'GET', [
+                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::ORDER_ID => $orderId,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
         ;
@@ -163,10 +174,10 @@ final class BitvavoBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('order', 'DELETE', [
-                'market' => 'BTC-'.$this->baseCurrency,
-                'orderId' => $orderId,
+            ->method(self::API_CALL)
+            ->with(self::ORDER, 'DELETE', [
+                self::MARKET => 'BTC-'.$this->baseCurrency,
+                self::ORDER_ID => $orderId,
             ])
         ;
 
@@ -183,14 +194,14 @@ final class BitvavoBuyServiceTest extends TestCase
         $amount = random_int(10, 20);
 
         [
-            'data' => $data,
-            'feePaid' => $feePaid,
-            'feeCurrency' => $feeCurrency,
+            self::DATA => $data,
+            self::FEE_PAID => $feePaid,
+            self::FEE_CURRENCY => $feeCurrency,
         ] = $this->getSimpleResponseStructure('BTC');
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->willReturn($data)
         ;
 
@@ -218,8 +229,8 @@ final class BitvavoBuyServiceTest extends TestCase
             'filledAmountQuote' => $filledQuote = random_int(10, 20),
             'status' => 'filled',
             'amountQuote' => $filledQuote,
-            'feePaid' => $feePaid = random_int(1, 10),
-            'feeCurrency' => $feeCurrency,
+            self::FEE_PAID => $feePaid = random_int(1, 10),
+            self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
                 $this->createFill($filledSatoshis / 100000000, 50, $price - 1000),
                 $this->createFill($filledSatoshis / 100000000, 50, $price + 1000),
@@ -227,19 +238,19 @@ final class BitvavoBuyServiceTest extends TestCase
         ];
 
         return [
-            'data' => $data,
-            'filledSatoshis' => $filledSatoshis,
-            'filledQuote' => $filledQuote,
-            'feePaid' => $feePaid,
-            'feeCurrency' => $feeCurrency,
-            'price' => $price,
+            self::DATA => $data,
+            self::FILLED_SATOSHIS => $filledSatoshis,
+            self::FILLED_QUOTE => $filledQuote,
+            self::FEE_PAID => $feePaid,
+            self::FEE_CURRENCY => $feeCurrency,
+            self::PRICE => $price,
         ];
     }
 
     private function getPendingResponseStructure(string $orderId): array
     {
         return [
-            'orderId' => $orderId,
+            self::ORDER_ID => $orderId,
             'status' => 'open',
         ];
     }
@@ -248,7 +259,7 @@ final class BitvavoBuyServiceTest extends TestCase
     {
         return [
             'amount' => ($totalAmount / 100) * $percentage,
-            'price' => $price,
+            self::PRICE => $price,
         ];
     }
 }

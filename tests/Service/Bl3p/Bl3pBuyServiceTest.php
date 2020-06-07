@@ -18,6 +18,17 @@ use PHPUnit\Framework\TestCase;
  */
 final class Bl3pBuyServiceTest extends TestCase
 {
+    private const AMOUNT_BOUGHT = 'amountBought';
+    private const AMOUNT_BOUGHT_DISPLAYED = 'amountBoughtDisplayed';
+    private const FEES_DISPLAYED = 'feesDisplayed';
+    private const FEE_SPENT = 'feeSpent';
+    private const TOTAL_SPENT_DISPLAYED = 'totalSpentDisplayed';
+    private const AVERAGE_COST_DISPLAYED = 'averageCostDisplayed';
+    private const CLOSED_RESULT = 'closedResult';
+    private const API_CALL = 'apiCall';
+    private const BTC = 'BTC';
+    private const MONEY_ORDER_RESULT = '/money/order/result';
+    private const MONEY_ORDER_ADD = '/money/order/add';
     /** @var Bl3pClientInterface|MockObject */
     private $client;
     private string $baseCurrency;
@@ -36,7 +47,7 @@ final class Bl3pBuyServiceTest extends TestCase
     {
         return [
             'Not BTC' => ['EUR'],
-            'BTC' => ['BTC'],
+            self::BTC => [self::BTC],
         ];
     }
 
@@ -65,29 +76,29 @@ final class Bl3pBuyServiceTest extends TestCase
         $orderId = 'oid'.random_int(1000, 2000);
 
         [
-            'amountBought' => $amountBought,
-            'amountBoughtDisplayed' => $amountBoughtDisplayed,
-            'feesDisplayed' => $feesDisplayed,
-            'feeSpent' => $feeSpent,
-            'totalSpentDisplayed' => $totalSpentDisplayed,
-            'averageCostDisplayed' => $averageCostDisplayed,
-            'closedResult' => $closedResult,
+            self::AMOUNT_BOUGHT => $amountBought,
+            self::AMOUNT_BOUGHT_DISPLAYED => $amountBoughtDisplayed,
+            self::FEES_DISPLAYED => $feesDisplayed,
+            self::FEE_SPENT => $feeSpent,
+            self::TOTAL_SPENT_DISPLAYED => $totalSpentDisplayed,
+            self::AVERAGE_COST_DISPLAYED => $averageCostDisplayed,
+            self::CLOSED_RESULT => $closedResult,
         ] = $this->getClosedOrderResult($feeCurrency);
 
         $this->client
             ->expects(static::exactly(2))
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->withConsecutive(
                 [
-                    'BTC'.$this->baseCurrency.'/money/order/add',
+                    self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD,
                     [
                         Bl3pBuyService::TYPE => 'bid',
                         Bl3pBuyService::AMOUNT_FUNDS_INT => $amount * 100000,
-                        Bl3pBuyService::FEE_CURRENCY => 'BTC',
+                        Bl3pBuyService::FEE_CURRENCY => self::BTC,
                     ],
                 ],
                 [
-                    'BTC'.$this->baseCurrency.'/money/order/result',
+                    self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT,
                     [
                         Bl3pBuyService::ORDER_ID => $orderId,
                     ],
@@ -101,7 +112,7 @@ final class Bl3pBuyServiceTest extends TestCase
         static::assertSame($amountBought, $completedBuyDTO->getAmountInSatoshis());
         static::assertSame($amountBoughtDisplayed, $completedBuyDTO->getDisplayAmountBought());
         static::assertSame($feesDisplayed, $completedBuyDTO->getDisplayFeesSpent());
-        static::assertSame('BTC' === $feeCurrency ? $feeSpent : 0, $completedBuyDTO->getFeesInSatoshis());
+        static::assertSame(self::BTC === $feeCurrency ? $feeSpent : 0, $completedBuyDTO->getFeesInSatoshis());
         static::assertSame($totalSpentDisplayed, $completedBuyDTO->getDisplayAmountSpent());
         static::assertSame($averageCostDisplayed, $completedBuyDTO->getDisplayAveragePrice());
     }
@@ -119,10 +130,10 @@ final class Bl3pBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::exactly(2))
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->withConsecutive(
-                ['BTC'.$this->baseCurrency.'/money/order/add'],
-                ['BTC'.$this->baseCurrency.'/money/order/result']
+                [self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD],
+                [self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT]
             )
             ->willReturnOnConsecutiveCalls($this->getNewOrderResult($orderId), $this->getPendingOrderResult())
         ;
@@ -143,8 +154,8 @@ final class Bl3pBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('BTC'.$this->baseCurrency.'/money/order/result', [Bl3pBuyService::ORDER_ID => $orderId])
+            ->method(self::API_CALL)
+            ->with(self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT, [Bl3pBuyService::ORDER_ID => $orderId])
             ->willReturn($this->getPendingOrderResult())
         ;
 
@@ -168,20 +179,20 @@ final class Bl3pBuyServiceTest extends TestCase
         $orderId = 'oid'.random_int(1000, 2000);
 
         [
-            'amountBought' => $amountBought,
-            'amountBoughtDisplayed' => $amountBoughtDisplayed,
-            'feesDisplayed' => $feesDisplayed,
-            'feeSpent' => $feeSpent,
-            'totalSpentDisplayed' => $totalSpentDisplayed,
-            'averageCostDisplayed' => $averageCostDisplayed,
-            'closedResult' => $closedResult,
+            self::AMOUNT_BOUGHT => $amountBought,
+            self::AMOUNT_BOUGHT_DISPLAYED => $amountBoughtDisplayed,
+            self::FEES_DISPLAYED => $feesDisplayed,
+            self::FEE_SPENT => $feeSpent,
+            self::TOTAL_SPENT_DISPLAYED => $totalSpentDisplayed,
+            self::AVERAGE_COST_DISPLAYED => $averageCostDisplayed,
+            self::CLOSED_RESULT => $closedResult,
         ] = $this->getClosedOrderResult($feeCurrency);
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->with(
-                'BTC'.$this->baseCurrency.'/money/order/result',
+                self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT,
                 [Bl3pBuyService::ORDER_ID => $orderId],
             )
             ->willReturn($closedResult)
@@ -192,7 +203,7 @@ final class Bl3pBuyServiceTest extends TestCase
         static::assertSame($amountBought, $completedBuyDTO->getAmountInSatoshis());
         static::assertSame($amountBoughtDisplayed, $completedBuyDTO->getDisplayAmountBought());
         static::assertSame($feesDisplayed, $completedBuyDTO->getDisplayFeesSpent());
-        static::assertSame('BTC' === $feeCurrency ? $feeSpent : 0, $completedBuyDTO->getFeesInSatoshis());
+        static::assertSame(self::BTC === $feeCurrency ? $feeSpent : 0, $completedBuyDTO->getFeesInSatoshis());
         static::assertSame($totalSpentDisplayed, $completedBuyDTO->getDisplayAmountSpent());
         static::assertSame($averageCostDisplayed, $completedBuyDTO->getDisplayAveragePrice());
     }
@@ -206,8 +217,8 @@ final class Bl3pBuyServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('BTC'.$this->baseCurrency.'/money/order/cancel', [Bl3pBuyService::ORDER_ID => $orderId])
+            ->method(self::API_CALL)
+            ->with(self::BTC.$this->baseCurrency.'/money/order/cancel', [Bl3pBuyService::ORDER_ID => $orderId])
         ;
 
         $this->service->cancelBuyOrder($orderId);
@@ -253,13 +264,13 @@ final class Bl3pBuyServiceTest extends TestCase
         ];
 
         return [
-            'amountBought' => $amountBought,
-            'amountBoughtDisplayed' => $amountBoughtDisplayed,
-            'feesDisplayed' => $feesDisplayed,
-            'feeSpent' => $feeSpent,
-            'totalSpentDisplayed' => $totalSpentDisplayed,
-            'averageCostDisplayed' => $averageCostDisplayed,
-            'closedResult' => $closedResult,
+            self::AMOUNT_BOUGHT => $amountBought,
+            self::AMOUNT_BOUGHT_DISPLAYED => $amountBoughtDisplayed,
+            self::FEES_DISPLAYED => $feesDisplayed,
+            self::FEE_SPENT => $feeSpent,
+            self::TOTAL_SPENT_DISPLAYED => $totalSpentDisplayed,
+            self::AVERAGE_COST_DISPLAYED => $averageCostDisplayed,
+            self::CLOSED_RESULT => $closedResult,
         ];
     }
 }

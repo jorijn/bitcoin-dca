@@ -50,10 +50,10 @@ final class BitvavoWithdrawServiceTest extends TestCase
     {
         $this->client
             ->expects(static::exactly(2))
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->with('balance', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
             ->willReturnOnConsecutiveCalls(
-                [['symbol' => 'BTC', 'available' => 2.345, 'inOrder' => 1]],
+                [[BitvavoWithdrawService::SYMBOL => 'BTC', 'available' => 2.345, 'inOrder' => 1]],
                 []
             )
         ;
@@ -85,8 +85,8 @@ final class BitvavoWithdrawServiceTest extends TestCase
                     'POST',
                     [],
                     static::callback(static function (array $parameters) use ($netAmount, $address) {
-                        self::assertArrayHasKey('symbol', $parameters);
-                        self::assertSame('BTC', $parameters['symbol']);
+                        self::assertArrayHasKey(BitvavoWithdrawService::SYMBOL, $parameters);
+                        self::assertSame('BTC', $parameters[BitvavoWithdrawService::SYMBOL]);
                         self::assertArrayHasKey(self::ADDRESS, $parameters);
                         self::assertSame($address, $parameters[self::ADDRESS]);
                         self::assertArrayHasKey('amount', $parameters);
@@ -128,7 +128,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
 
         $this->client
             ->expects(static::once())
-            ->method('apiCall')
+            ->method(self::API_CALL)
             ->with('assets', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
             ->willReturn(['withdrawalFee' => $bitvavoFee / 100000000])
         ;

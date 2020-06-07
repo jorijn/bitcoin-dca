@@ -25,6 +25,8 @@ use Psr\Log\LoggerInterface;
  */
 final class WithdrawServiceTest extends TestCase
 {
+    private const ADDRESS = 'address';
+    
     /** @var MockObject|WithdrawAddressProviderInterface */
     private $addressProvider;
     /** @var MockObject|WithdrawServiceInterface */
@@ -105,8 +107,8 @@ final class WithdrawServiceTest extends TestCase
         $this->expectSupportedCheckToService();
 
         $balance = random_int(1000, 2000);
-        $address = 'address'.random_int(1000, 2000);
-        $id = 'id'.mt_rand();
+        $address = self::ADDRESS.random_int(1000, 2000);
+        $id = 'id'.random_int(1000, 2000);
 
         $withdrawDTO = new CompletedWithdraw($address, $balance, $id);
 
@@ -155,7 +157,7 @@ final class WithdrawServiceTest extends TestCase
         $this->expectSupportedCheckToService();
 
         $balance = random_int(1000, 2000);
-        $address = 'address'.random_int(1000, 2000);
+        $address = self::ADDRESS.random_int(1000, 2000);
 
         $this->logger
             ->expects(static::atLeastOnce())
@@ -234,7 +236,7 @@ final class WithdrawServiceTest extends TestCase
      */
     public function testGetRecipientAddress(): void
     {
-        $address = 'address'.random_int(1000, 2000);
+        $address = self::ADDRESS.random_int(1000, 2000);
 
         $unsupportedAddressProvider = $this->createMock(WithdrawAddressProviderInterface::class);
         $unsupportedAddressProvider

@@ -146,7 +146,7 @@ final class BuyServiceTest extends TestCase
             ->willReturn(false)
         ;
 
-        $service = new BuyService(
+        $localService = new BuyService(
             $this->dispatcher,
             $this->logger,
             $this->configuredExchange,
@@ -157,6 +157,6 @@ final class BuyServiceTest extends TestCase
         $this->logger->expects(static::atLeastOnce())->method('error');
         $this->expectException(NoExchangeAvailableException::class);
 
-        $service->buy(10);
+        $localService->buy(10);
     }
 }
