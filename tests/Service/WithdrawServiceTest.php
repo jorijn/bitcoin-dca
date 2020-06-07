@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 final class WithdrawServiceTest extends TestCase
 {
     private const ADDRESS = 'address';
-    
+
     /** @var MockObject|WithdrawAddressProviderInterface */
     private $addressProvider;
     /** @var MockObject|WithdrawServiceInterface */
