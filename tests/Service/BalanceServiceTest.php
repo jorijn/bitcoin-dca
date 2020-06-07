@@ -16,7 +16,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class BalanceServiceTest extends TestCase
 {
-    public const SUPPORTS_EXCHANGE = 'supportsExchange';
+    private const SUPPORTS_EXCHANGE = 'supportsExchange';
+    private const GET_BALANCES = 'getBalances';
 
     /**
      * @covers ::__construct
@@ -33,8 +34,8 @@ final class BalanceServiceTest extends TestCase
         $unsupportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(false);
         $supportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(true);
 
-        $unsupportedExchange->expects(static::never())->method('getBalances');
-        $supportedExchange->expects(static::once())->method('getBalances')->willReturn($balances);
+        $unsupportedExchange->expects(static::never())->method(self::GET_BALANCES);
+        $supportedExchange->expects(static::once())->method(self::GET_BALANCES)->willReturn($balances);
 
         $service = new BalanceService([$unsupportedExchange, $supportedExchange], $exchange);
         static::assertSame($balances, $service->getBalances());
@@ -50,7 +51,7 @@ final class BalanceServiceTest extends TestCase
 
         $unsupportedExchange = $this->createMock(BalanceServiceInterface::class);
         $unsupportedExchange->method(self::SUPPORTS_EXCHANGE)->with($exchange)->willReturn(false);
-        $unsupportedExchange->expects(static::never())->method('getBalances');
+        $unsupportedExchange->expects(static::never())->method(self::GET_BALANCES);
 
         $this->expectException(NoExchangeAvailableException::class);
 

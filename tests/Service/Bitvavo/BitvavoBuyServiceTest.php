@@ -28,6 +28,7 @@ final class BitvavoBuyServiceTest extends TestCase
     private const ORDER_ID = 'orderId';
     private const API_CALL = 'apiCall';
     private const ORDER = 'order';
+    private const AMOUNT_QUOTE = 'amountQuote';
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
@@ -68,7 +69,7 @@ final class BitvavoBuyServiceTest extends TestCase
                 self::MARKET => sprintf('BTC-'.$this->baseCurrency),
                 'side' => 'buy',
                 'orderType' => self::MARKET,
-                'amountQuote' => (string) $amount,
+                self::AMOUNT_QUOTE => (string) $amount,
             ])
             ->willReturn($data)
         ;
@@ -96,7 +97,7 @@ final class BitvavoBuyServiceTest extends TestCase
                 self::MARKET => sprintf('BTC-'.$this->baseCurrency),
                 'side' => 'buy',
                 'orderType' => self::MARKET,
-                'amountQuote' => (string) 1,
+                self::AMOUNT_QUOTE => (string) 1,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
         ;
@@ -228,7 +229,7 @@ final class BitvavoBuyServiceTest extends TestCase
             'filledAmount' => ($filledSatoshis = random_int(10000, 20000)) / 100000000,
             'filledAmountQuote' => $filledQuote = random_int(10, 20),
             'status' => 'filled',
-            'amountQuote' => $filledQuote,
+            self::AMOUNT_QUOTE => $filledQuote,
             self::FEE_PAID => $feePaid = random_int(1, 10),
             self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
