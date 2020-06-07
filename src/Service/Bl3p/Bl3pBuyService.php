@@ -32,10 +32,8 @@ class Bl3pBuyService implements BuyServiceInterface
     protected string $baseCurrency;
     protected string $tradingPair;
 
-    public function __construct(
-        Bl3pClientInterface $client,
-        string $baseCurrency
-    ) {
+    public function __construct(Bl3pClientInterface $client, string $baseCurrency)
+    {
         $this->client = $client;
         $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('BTC%s', $this->baseCurrency);

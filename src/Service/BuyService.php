@@ -11,7 +11,6 @@ use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use SebastianBergmann\Invoker\TimeoutException;
 
 class BuyService
 {
@@ -65,19 +64,17 @@ class BuyService
 
     protected function buyAtService(BuyServiceInterface $service, int $amount, int $try = 0, int $start = null, string $orderId = null): CompletedBuyOrder
     {
-        if ($start === null) {
+        if (null === $start) {
             $start = time();
         }
 
         try {
-            if ($try === 0) {
+            if (0 === $try) {
                 $buyOrder = $service->initiateBuy($amount);
-            }
-            else {
+            } else {
                 $buyOrder = $service->checkIfOrderIsFilled($orderId);
             }
-        }
-        catch (PendingBuyOrderException $exception) {
+        } catch (PendingBuyOrderException $exception) {
             if (time() < ($start + $this->timeout)) {
                 sleep(1);
 

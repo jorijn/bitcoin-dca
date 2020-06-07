@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
-use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService;
-use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

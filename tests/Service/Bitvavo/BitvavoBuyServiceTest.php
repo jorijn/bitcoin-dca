@@ -162,12 +162,13 @@ final class BitvavoBuyServiceTest extends TestCase
         $orderId = 'oid'.random_int(1000, 2000);
 
         $this->client
-            ->expects(self::once())
+            ->expects(static::once())
             ->method('apiCall')
             ->with('order', 'DELETE', [
                 'market' => 'BTC-'.$this->baseCurrency,
-                'orderId' => $orderId
-            ]);
+                'orderId' => $orderId,
+            ])
+        ;
 
         $this->service->cancelBuyOrder($orderId);
     }
