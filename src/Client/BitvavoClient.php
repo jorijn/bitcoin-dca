@@ -34,10 +34,10 @@ class BitvavoClient implements BitvavoClientInterface
     {
         $now = time() * 1000;
         $query = http_build_query($parameters, '', '&');
-        $endpointParams = $path.(\count($parameters) > 0 ? '?'.$query : null);
+        $endpointParams = $path.(!empty($parameters) ? '?'.$query : null);
         $hashString = $now.$method.'/v2/'.$endpointParams;
 
-        if (\count($body) > 0) {
+        if (!empty($body)) {
             $hashString .= json_encode($body, JSON_THROW_ON_ERROR);
         }
 
@@ -53,7 +53,7 @@ class BitvavoClient implements BitvavoClientInterface
         $serverResponse = $this->httpClient->request($method, $path, [
             'headers' => $headers,
             'query' => $parameters,
-        ] + (\count($body) > 0 ? ['json' => $body] : []));
+        ] + (!empty($body) ? ['json' => $body] : []));
 
         $responseData = $serverResponse->toArray(false);
 
