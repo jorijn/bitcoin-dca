@@ -53,16 +53,16 @@ final class BitvavoBalanceServiceTest extends TestCase
         $result = $this->service->getBalances();
 
         static::assertSame([
-            ['BTC', '3 BTC', '1 BTC'],
-            ['EUR', '2 EUR', '2 EUR'],
+            ['BTC', '3 BTC', '1.00000000 BTC'],
+            ['EUR', '2 EUR', '2.00000000 EUR'],
         ], $result);
     }
 
     protected function getStubResponse(): array
     {
         return [
-            ['symbol' => 'BTC', 'available' => 3, 'inOrder' => 2],
-            ['symbol' => 'EUR', 'available' => 2, 'inOrder' => 0],
+            ['symbol' => 'BTC', 'available' => '3', 'inOrder' => '2'],
+            ['symbol' => 'EUR', 'available' => '2', 'inOrder' => '0'],
         ];
     }
 }

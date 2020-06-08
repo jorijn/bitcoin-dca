@@ -27,7 +27,7 @@ class BitvavoBalanceService implements BalanceServiceInterface
         $rows = [];
 
         foreach ($response as ['symbol' => $symbol, 'available' => $available, 'inOrder' => $inOrder]) {
-            $rows[] = [$symbol, $available.' '.$symbol, ($available - $inOrder).' '.$symbol];
+            $rows[] = [$symbol, $available.' '.$symbol, bcsub($available, $inOrder, 8).' '.$symbol];
         }
 
         return $rows;

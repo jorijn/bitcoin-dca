@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 class BitvavoWithdrawService implements WithdrawServiceInterface
 {
     public const SYMBOL = 'symbol';
+    private const DIVISOR = '100000000';
     protected BitvavoClientInterface $client;
     protected LoggerInterface $logger;
 
@@ -28,7 +29,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
         $this->client->apiCall('withdrawal', 'POST', [], [
             self::SYMBOL => 'BTC',
             'address' => $addressToWithdrawTo,
-            'amount' => (string) ($netAmountToWithdraw / 100000000),
+            'amount' => bcdiv((string) $netAmountToWithdraw, self::DIVISOR, 8),
             'addWithdrawalFee' => true,
         ]);
 
@@ -44,8 +45,8 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
             return 0;
         }
 
-        $available = (int) ($response[0]['available'] * 100000000);
-        $inOrder = (int) ($response[0]['inOrder'] * 100000000);
+        $available = (int) bcmul($response[0]['available'], self::DIVISOR, 8);
+        $inOrder = (int) bcmul($response[0]['inOrder'], self::DIVISOR, 8);
 
         return $available - $inOrder;
     }
@@ -54,7 +55,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
     {
         $response = $this->client->apiCall('assets', 'GET', [self::SYMBOL => 'BTC']);
 
-        return (int) ($response['withdrawalFee'] * 100000000);
+        return (int) bcmul($response['withdrawalFee'], self::DIVISOR, 8);
     }
 
     public function supportsExchange(string $exchange): bool

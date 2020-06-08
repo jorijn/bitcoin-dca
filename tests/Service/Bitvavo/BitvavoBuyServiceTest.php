@@ -224,17 +224,18 @@ final class BitvavoBuyServiceTest extends TestCase
     private function getSimpleResponseStructure($feeCurrency = 'EUR'): array
     {
         $price = random_int(9000, 11000);
+        $filledSatoshis = random_int(10000, 20000);
 
         $data = [
-            'filledAmount' => ($filledSatoshis = random_int(10000, 20000)) / 100000000,
-            'filledAmountQuote' => $filledQuote = random_int(10, 20),
+            'filledAmount' => (bcdiv((string) $filledSatoshis, '100000000', 8)),
+            'filledAmountQuote' => $filledQuote = (string) random_int(10, 20),
             'status' => 'filled',
             self::AMOUNT_QUOTE => $filledQuote,
-            self::FEE_PAID => $feePaid = random_int(1, 10),
+            self::FEE_PAID => $feePaid = (string) random_int(1, 10),
             self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
-                $this->createFill($filledSatoshis / 100000000, 50, $price - 1000),
-                $this->createFill($filledSatoshis / 100000000, 50, $price + 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, '100000000', 8), 50, $price - 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, '100000000', 8), 50, $price + 1000),
             ],
         ];
 
@@ -256,10 +257,10 @@ final class BitvavoBuyServiceTest extends TestCase
         ];
     }
 
-    private function createFill(float $totalAmount, int $percentage, int $price): array
+    private function createFill(string $totalAmount, int $percentage, int $price): array
     {
         return [
-            'amount' => ($totalAmount / 100) * $percentage,
+            'amount' => bcmul(bcdiv($totalAmount, '100', 8), (string) $percentage, 8),
             self::PRICE => $price,
         ];
     }

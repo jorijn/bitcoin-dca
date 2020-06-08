@@ -53,7 +53,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->method(self::API_CALL)
             ->with('balance', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
             ->willReturnOnConsecutiveCalls(
-                [[BitvavoWithdrawService::SYMBOL => 'BTC', 'available' => 2.345, 'inOrder' => 1]],
+                [[BitvavoWithdrawService::SYMBOL => 'BTC', 'available' => '2.345', 'inOrder' => '1']],
                 []
             )
         ;
@@ -90,7 +90,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                         self::assertArrayHasKey(self::ADDRESS, $parameters);
                         self::assertSame($address, $parameters[self::ADDRESS]);
                         self::assertArrayHasKey('amount', $parameters);
-                        self::assertSame((string) ($netAmount / 100000000), $parameters['amount']);
+                        self::assertSame((string) bcdiv((string) $netAmount, '100000000', 8), $parameters['amount']);
                         self::assertArrayHasKey('addWithdrawalFee', $parameters);
                         self::assertTrue($parameters['addWithdrawalFee']);
 
@@ -99,7 +99,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                 ]
             )
             ->willReturnOnConsecutiveCalls(
-                ['withdrawalFee' => $bitvavoFee / 100000000],
+                ['withdrawalFee' => bcdiv((string) $bitvavoFee, '100000000', 8)],
                 $apiResponse
             )
         ;
@@ -130,11 +130,11 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with('assets', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
-            ->willReturn(['withdrawalFee' => $bitvavoFee / 100000000])
+            ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, '100000000', 8)])
         ;
 
         $providedFee = $this->service->getWithdrawFeeInSatoshis();
 
-        static::assertEqualsWithDelta($bitvavoFee, $providedFee, 1.0);
+        static::assertSame($bitvavoFee, $providedFee);
     }
 }

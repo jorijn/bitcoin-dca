@@ -73,9 +73,9 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getCompletedBuyOrderFromResponse(array $orderInfo): CompletedBuyOrder
     {
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) ($orderInfo[self::FILLED_AMOUNT] * 100000000))
+            ->setAmountInSatoshis((int) bcmul($orderInfo[self::FILLED_AMOUNT], '100000000', 8))
             ->setFeesInSatoshis('BTC' === $orderInfo['feeCurrency']
-                ? (int) ($orderInfo['feePaid'] * 100000000)
+                ? (int) bcmul($orderInfo['feePaid'], '100000000', 8)
                 : 0)
             ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
             ->setDisplayAmountSpent($orderInfo['filledAmountQuote'].' '.$this->baseCurrency)
@@ -87,10 +87,10 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getAveragePrice($data): float
     {
         $dividend = $divisor = 0;
-        $totalSats = $data[self::FILLED_AMOUNT] * 100000000;
+        $totalSats = (int) bcmul($data[self::FILLED_AMOUNT], '100000000', 8);
 
         foreach ($data['fills'] as $fill) {
-            $filledSats = $fill['amount'] * 100000000;
+            $filledSats = (int) bcmul($fill['amount'], '100000000', 8);
             $percent = ($filledSats / $totalSats) * 100;
 
             $dividend += ($percent * (float) $fill['price']);

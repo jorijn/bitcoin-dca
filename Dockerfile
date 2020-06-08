@@ -20,7 +20,7 @@ FROM php:7.4-cli-alpine as base_image
 
 RUN apk --no-cache update \
     && apk --no-cache add gmp-dev \
-    && docker-php-ext-install -j$(nproc) gmp
+    && docker-php-ext-install -j$(nproc) gmp bcmath
 
 FROM base_image as test
 
