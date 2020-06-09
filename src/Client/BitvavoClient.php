@@ -30,9 +30,17 @@ class BitvavoClient implements BitvavoClientInterface
         $this->accessWindow = $accessWindow;
     }
 
-    public function apiCall(string $path, string $method = 'GET', array $parameters = [], array $body = []): array
-    {
-        $now = time() * 1000;
+    public function apiCall(
+        string $path,
+        string $method = 'GET',
+        array $parameters = [],
+        array $body = [],
+        int $now = null
+    ): array {
+        if (null === $now) {
+            $now = time() * 1000;
+        }
+
         $query = http_build_query($parameters, '', '&');
         $endpointParams = $path.(!empty($parameters) ? '?'.$query : null);
         $hashString = $now.$method.'/v2/'.$endpointParams;
