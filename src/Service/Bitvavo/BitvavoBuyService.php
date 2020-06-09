@@ -15,6 +15,7 @@ class BitvavoBuyService implements BuyServiceInterface
     public const FILLED_AMOUNT = 'filledAmount';
     public const ORDER = 'order';
     public const ORDER_ID = 'orderId';
+    private const SATOSHIS_IN_A_BITCOIN = '100000000';
 
     protected BitvavoClientInterface $client;
     protected string $baseCurrency;
@@ -73,9 +74,9 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getCompletedBuyOrderFromResponse(array $orderInfo): CompletedBuyOrder
     {
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) bcmul($orderInfo[self::FILLED_AMOUNT], '100000000', 8))
+            ->setAmountInSatoshis((int) bcmul($orderInfo[self::FILLED_AMOUNT], self::SATOSHIS_IN_A_BITCOIN, 8))
             ->setFeesInSatoshis('BTC' === $orderInfo['feeCurrency']
-                ? (int) bcmul($orderInfo['feePaid'], '100000000', 8)
+                ? (int) bcmul($orderInfo['feePaid'], self::SATOSHIS_IN_A_BITCOIN, 8)
                 : 0)
             ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
             ->setDisplayAmountSpent($orderInfo['filledAmountQuote'].' '.$this->baseCurrency)
@@ -87,10 +88,10 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getAveragePrice($data): float
     {
         $dividend = $divisor = 0;
-        $totalSats = (int) bcmul($data[self::FILLED_AMOUNT], '100000000', 8);
+        $totalSats = (int) bcmul($data[self::FILLED_AMOUNT], self::SATOSHIS_IN_A_BITCOIN, 8);
 
         foreach ($data['fills'] as $fill) {
-            $filledSats = (int) bcmul($fill['amount'], '100000000', 8);
+            $filledSats = (int) bcmul($fill['amount'], self::SATOSHIS_IN_A_BITCOIN, 8);
             $percent = ($filledSats / $totalSats) * 100;
 
             $dividend += ($percent * (float) $fill['price']);

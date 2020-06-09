@@ -17,7 +17,7 @@ For the sake of demonstration, we'll be using the following XPUB here:
 .. code-block::
    :caption: /home/bob/.bitcoin-dca
 
-   BL3P_WITHDRAW_XPUB=zpub6rLtzSoXnXKPXHroRKGCwuRVHjgA5YL6oUkdZnCfbDLdtAKNXb1FX1EmPUYR1uYMRBpngvkdJwxqhLvM46trRy5MRb7oYdSLbb4w5VC4i3z
+   WITHDRAW_XPUB=zpub6rLtzSoXnXKPXHroRKGCwuRVHjgA5YL6oUkdZnCfbDLdtAKNXb1FX1EmPUYR1uYMRBpngvkdJwxqhLvM46trRy5MRb7oYdSLbb4w5VC4i3z
 
 .. warning::
    It's **very important** that you verify the configured XPUB to make sure your Bitcoin will be sent to addresses in your possession.

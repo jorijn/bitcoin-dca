@@ -20,6 +20,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 final class BitvavoClientTest extends TestCase
 {
+    private const HEADERS = 'headers';
+
     /** @var HttpClientInterface|MockObject */
     private $httpClient;
     private string $accessWindow;
@@ -91,21 +93,21 @@ final class BitvavoClientTest extends TestCase
                 $path,
                 static::callback(
                     function (array $options) use ($parameters, $now, $hashString, $body) {
-                        self::assertArrayHasKey('headers', $options);
-                        self::assertArrayHasKey('Bitvavo-Access-Key', $options['headers']);
-                        self::assertSame($this->apiKey, $options['headers']['Bitvavo-Access-Key']);
-                        self::assertArrayHasKey('Bitvavo-Access-Signature', $options['headers']);
+                        self::assertArrayHasKey(self::HEADERS, $options);
+                        self::assertArrayHasKey('Bitvavo-Access-Key', $options[self::HEADERS]);
+                        self::assertSame($this->apiKey, $options[self::HEADERS]['Bitvavo-Access-Key']);
+                        self::assertArrayHasKey('Bitvavo-Access-Signature', $options[self::HEADERS]);
                         self::assertSame(
                             hash_hmac('sha256', $hashString, $this->apiSecret),
-                            $options['headers']['Bitvavo-Access-Signature']
+                            $options[self::HEADERS]['Bitvavo-Access-Signature']
                         );
-                        self::assertArrayHasKey('Bitvavo-Access-Timestamp', $options['headers']);
-                        self::assertSame($now, $options['headers']['Bitvavo-Access-Timestamp']);
-                        self::assertArrayHasKey('Bitvavo-Access-Window', $options['headers']);
-                        self::assertSame($this->accessWindow, $options['headers']['Bitvavo-Access-Window']);
-                        self::assertArrayHasKey('Content-Type', $options['headers']);
-                        self::assertSame('application/json', $options['headers']['Content-Type']);
-                        self::assertArrayHasKey('User-Agent', $options['headers']);
+                        self::assertArrayHasKey('Bitvavo-Access-Timestamp', $options[self::HEADERS]);
+                        self::assertSame($now, $options[self::HEADERS]['Bitvavo-Access-Timestamp']);
+                        self::assertArrayHasKey('Bitvavo-Access-Window', $options[self::HEADERS]);
+                        self::assertSame($this->accessWindow, $options[self::HEADERS]['Bitvavo-Access-Window']);
+                        self::assertArrayHasKey('Content-Type', $options[self::HEADERS]);
+                        self::assertSame('application/json', $options[self::HEADERS]['Content-Type']);
+                        self::assertArrayHasKey('User-Agent', $options[self::HEADERS]);
 
                         self::assertArrayHasKey('query', $options);
                         self::assertSame($parameters, $options['query']);

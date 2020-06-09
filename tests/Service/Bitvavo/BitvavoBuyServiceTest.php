@@ -29,6 +29,7 @@ final class BitvavoBuyServiceTest extends TestCase
     private const API_CALL = 'apiCall';
     private const ORDER = 'order';
     private const AMOUNT_QUOTE = 'amountQuote';
+    private const DIVISOR = '100000000';
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
@@ -227,15 +228,15 @@ final class BitvavoBuyServiceTest extends TestCase
         $filledSatoshis = random_int(10000, 20000);
 
         $data = [
-            'filledAmount' => (bcdiv((string) $filledSatoshis, '100000000', 8)),
+            'filledAmount' => (bcdiv((string) $filledSatoshis, self::DIVISOR, 8)),
             'filledAmountQuote' => $filledQuote = (string) random_int(10, 20),
             'status' => 'filled',
             self::AMOUNT_QUOTE => $filledQuote,
             self::FEE_PAID => $feePaid = (string) random_int(1, 10),
             self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
-                $this->createFill(bcdiv((string) $filledSatoshis, '100000000', 8), 50, $price - 1000),
-                $this->createFill(bcdiv((string) $filledSatoshis, '100000000', 8), 50, $price + 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, self::DIVISOR, 8), 50, $price - 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, self::DIVISOR, 8), 50, $price + 1000),
             ],
         ];
 

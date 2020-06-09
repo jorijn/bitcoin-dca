@@ -21,6 +21,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
     public const ADDRESS = 'address';
     public const API_CALL = 'apiCall';
     public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
+    private const DIVISOR = '100000000';
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
@@ -90,7 +91,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                         self::assertArrayHasKey(self::ADDRESS, $parameters);
                         self::assertSame($address, $parameters[self::ADDRESS]);
                         self::assertArrayHasKey('amount', $parameters);
-                        self::assertSame((string) bcdiv((string) $netAmount, '100000000', 8), $parameters['amount']);
+                        self::assertSame((string) bcdiv((string) $netAmount, self::DIVISOR, 8), $parameters['amount']);
                         self::assertArrayHasKey('addWithdrawalFee', $parameters);
                         self::assertTrue($parameters['addWithdrawalFee']);
 
@@ -99,7 +100,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                 ]
             )
             ->willReturnOnConsecutiveCalls(
-                ['withdrawalFee' => bcdiv((string) $bitvavoFee, '100000000', 8)],
+                ['withdrawalFee' => bcdiv((string) $bitvavoFee, self::DIVISOR, 8)],
                 $apiResponse
             )
         ;
@@ -130,7 +131,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with('assets', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
-            ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, '100000000', 8)])
+            ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, self::DIVISOR, 8)])
         ;
 
         $providedFee = $this->service->getWithdrawFeeInSatoshis();
