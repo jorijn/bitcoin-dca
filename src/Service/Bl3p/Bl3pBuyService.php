@@ -52,7 +52,7 @@ class Bl3pBuyService implements BuyServiceInterface
             self::FEE_CURRENCY => 'BTC',
         ]);
 
-        return $this->checkIfOrderIsFilled($result[self::DATA][self::ORDER_ID]);
+        return $this->checkIfOrderIsFilled((string) $result[self::DATA][self::ORDER_ID]);
     }
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder

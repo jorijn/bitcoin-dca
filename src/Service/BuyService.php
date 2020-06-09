@@ -72,7 +72,7 @@ class BuyService
             if (0 === $try) {
                 $buyOrder = $service->initiateBuy($amount);
             } else {
-                $buyOrder = $service->checkIfOrderIsFilled($orderId);
+                $buyOrder = $service->checkIfOrderIsFilled((string) $orderId);
             }
         } catch (PendingBuyOrderException $exception) {
             if (time() < ($start + $this->timeout)) {
