@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Command;
+namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Command\WithdrawCommand;
-use Jorijn\Bl3pDca\Service\WithdrawService;
+use Jorijn\Bitcoin\Dca\Command\WithdrawCommand;
+use Jorijn\Bitcoin\Dca\Service\WithdrawService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Command\WithdrawCommand
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\WithdrawCommand
  * @covers ::__construct
  * @covers ::configure
  *
@@ -90,7 +90,7 @@ final class WithdrawCommandTest extends TestCase
         $this->withdrawService
             ->expects(static::once())
             ->method('getBalance')
-            ->with(true, $tag)
+            ->with($tag)
             ->willReturn($simulatedBalance)
         ;
 

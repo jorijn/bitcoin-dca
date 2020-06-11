@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\EventListener;
+namespace Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bl3pDca\Event\BuySuccessEvent;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 class IncreaseTaggedBalanceListener

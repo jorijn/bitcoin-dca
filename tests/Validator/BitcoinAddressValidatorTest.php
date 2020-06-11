@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Validator;
+namespace Tests\Jorijn\Bitcoin\Dca\Validator;
 
 use BitWasp\Bitcoin\Address\AddressCreator;
 use Exception;
-use Jorijn\Bl3pDca\Validator\BitcoinAddressValidator;
-use Jorijn\Bl3pDca\Validator\BitcoinAddressValidatorException;
+use Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidator;
+use Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidatorException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Validator\BitcoinAddressValidator
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidator
  * @covers ::__construct
  *
  * @internal

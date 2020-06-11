@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Model;
+namespace Jorijn\Bitcoin\Dca\Model;
 
 class CompletedBuyOrder
 {

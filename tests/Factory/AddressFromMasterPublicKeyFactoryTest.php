@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Factory;
+namespace Tests\Jorijn\Bitcoin\Dca\Factory;
 
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
  * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
  *
- * @coversDefaultClass \Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
  *
  * @internal
  */

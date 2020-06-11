@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Service;
+namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
 class BuyServiceTestException extends \RuntimeException
 {

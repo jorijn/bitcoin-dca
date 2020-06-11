@@ -1,5 +1,5 @@
 .. note::
-   This guide is meant for people on Linux. You can use it on your VPS or Raspberry Pi.
+   This guide is meant for people on Linux. You can use it on your VPS or Raspberry Pi. The Getting Started guide assumes you will be setting up Bitcoin DCA using the BL3P exchange. If you need to configure another exchange substitute the exchange specific configuration with the correct ones from :ref:`configuration`.
 
 .. _getting-started:
 
@@ -17,7 +17,7 @@ Create a new file somewhere that will contain the configuration needed for the t
 
    BL3P_PRIVATE_KEY=bl3p private key here
    BL3P_PUBLIC_KEY=bl3p identifier key here
-   BL3P_WITHDRAW_ADDRESS=hardware wallet address here
+   WITHDRAW_ADDRESS=hardware wallet address here
 
 .. note::
    See :ref:`configuration` for all available options.

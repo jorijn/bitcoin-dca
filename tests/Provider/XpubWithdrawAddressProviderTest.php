@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Provider;
+namespace Tests\Jorijn\Bitcoin\Dca\Provider;
 
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
-use Jorijn\Bl3pDca\Provider\XpubWithdrawAddressProvider;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
-use Jorijn\Bl3pDca\Validator\ValidationInterface;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Provider\XpubWithdrawAddressProvider
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider
  * @covers ::__construct
  *
  * @internal

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Command;
+namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Command\BalanceCommand;
+use Jorijn\Bitcoin\Dca\Command\BalanceCommand;
+use Jorijn\Bitcoin\Dca\Service\BalanceService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Command\BalanceCommand
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BalanceCommand
  * @covers ::__construct
  * @covers ::configure
  *
@@ -19,36 +19,35 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 final class BalanceCommandTest extends TestCase
 {
-    /** @var Bl3pClientInterface|MockObject */
-    private $client;
+    /** @var BalanceService|MockObject */
+    private $service;
     private CommandTester $commandTester;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->client = $this->createMock(Bl3pClientInterface::class);
-        $this->commandTester = new CommandTester(new BalanceCommand($this->client));
+        $this->service = $this->createMock(BalanceService::class);
+        $this->commandTester = new CommandTester(new BalanceCommand($this->service));
     }
 
     /**
      * @covers ::execute
      */
-    public function testApiFailure(): void
+    public function testFailure(): void
     {
         $errorMessage = 'message'.random_int(1000, 2000);
-        $apiException = new \Exception($errorMessage);
+        $exception = new \Exception($errorMessage);
 
-        $this->client
+        $this->service
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('GENMKT/money/info')
-            ->willThrowException($apiException)
+            ->method('getBalances')
+            ->willThrowException($exception)
         ;
 
         $this->commandTester->execute([]);
 
-        static::assertStringContainsString('API failure:', $this->commandTester->getDisplay());
+        static::assertStringContainsString('ERROR', $this->commandTester->getDisplay());
         static::assertStringContainsString($errorMessage, $this->commandTester->getDisplay());
     }
 
@@ -60,33 +59,14 @@ final class BalanceCommandTest extends TestCase
         $btcBalance = random_int(1000, 2000);
         $euroBalance = random_int(1000, 2000);
 
-        $this->client
+        $this->service
             ->expects(static::once())
-            ->method('apiCall')
-            ->with('GENMKT/money/info')
+            ->method('getBalances')
             ->willReturn(
                 [
-                    'data' => [
-                        'wallets' => [
-                            'BTC' => [
-                                'balance' => [
-                                    'display' => $btcBalance,
-                                ],
-                                'available' => [
-                                    'display' => $btcBalance,
-                                ],
-                            ],
-                            'EUR' => [
-                                'balance' => [
-                                    'display' => $euroBalance,
-                                ],
-                                'available' => [
-                                    'display' => $euroBalance,
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
+                    ['BTC', $btcBalance, $btcBalance],
+                    ['EUR', $euroBalance, $euroBalance],
+                ]
             )
         ;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Event;
+namespace Tests\Jorijn\Bitcoin\Dca\Event;
 
-use Jorijn\Bl3pDca\Event\BuySuccessEvent;
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Event\BuySuccessEvent
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Event\BuySuccessEvent
  *
  * @internal
  */

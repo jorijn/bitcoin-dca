@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Command;
+namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Command\VerifyXPubCommand;
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Command\VerifyXPubCommand;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Command\VerifyXPubCommand
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\VerifyXPubCommand
  * @covers ::__construct
  * @covers ::configure
  *

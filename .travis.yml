@@ -38,7 +38,6 @@ jobs:
         - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
       script:
         - vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
-        - ./sonarphp-xml-patcher.py
         - sonar-scanner
     - stage: build
       language: bash

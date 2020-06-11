@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Model;
+namespace Tests\Jorijn\Bitcoin\Dca\Model;
 
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Model\CompletedBuyOrder
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder
  *
  * @internal
  */

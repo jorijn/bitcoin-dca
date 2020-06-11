@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Command;
+namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Command\BuyCommand;
-use Jorijn\Bl3pDca\Exception\BuyTimeoutException;
-use Jorijn\Bl3pDca\Model\CompletedBuyOrder;
-use Jorijn\Bl3pDca\Service\BuyService;
+use Jorijn\Bitcoin\Dca\Command\BuyCommand;
+use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Service\BuyService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Command\BuyCommand
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BuyCommand
  * @covers ::__construct
  * @covers ::configure
  *

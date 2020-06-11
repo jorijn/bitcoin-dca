@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\EventListener;
+namespace Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Factory\AddressFromMasterPublicKeyFactory;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 class XPubAddressUsedListener

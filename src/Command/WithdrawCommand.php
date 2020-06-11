@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Command;
+namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bl3pDca\Service\WithdrawService;
+use Jorijn\Bitcoin\Dca\Service\WithdrawService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,7 +59,7 @@ class WithdrawCommand extends Command
             return 1;
         }
 
-        $balanceToWithdraw = $this->withdrawService->getBalance($input->getOption('all'), $input->getOption('tag'));
+        $balanceToWithdraw = $this->withdrawService->getBalance($input->getOption('tag'));
         $addressToWithdrawTo = $this->withdrawService->getRecipientAddress();
 
         if (0 === $balanceToWithdraw) {
@@ -73,7 +73,7 @@ class WithdrawCommand extends Command
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee.',
                 $balanceToWithdraw / 100000000,
                 $addressToWithdrawTo,
-                WithdrawService::WITHDRAW_FEE / 100000000
+                $this->withdrawService->getWithdrawFeeInSatoshis() / 100000000
             );
 
             if (!$io->confirm($question, false)) {

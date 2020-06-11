@@ -18,18 +18,20 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-iconv": "*",
+        "ext-bcmath": "*",
         "bitwasp/bitcoin": "^1.0",
         "symfony/event-dispatcher": "^5.0",
-        "monolog/monolog": "^2.0"
+        "monolog/monolog": "^2.0",
+        "symfony/http-client": "^5.0"
     },
     "autoload": {
         "psr-4": {
-            "Jorijn\\Bl3pDca\\": "src/"
+            "Jorijn\\Bitcoin\\Dca\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Jorijn\\Bl3pDca\\": "tests/"
+            "Tests\\Jorijn\\Bitcoin\\Dca\\": "tests/"
         }
     },
     "scripts": {

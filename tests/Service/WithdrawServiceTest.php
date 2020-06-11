@@ -2,260 +2,311 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bl3pDca\Service;
+namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use Jorijn\Bl3pDca\Client\Bl3pClientInterface;
-use Jorijn\Bl3pDca\Event\WithdrawSuccessEvent;
-use Jorijn\Bl3pDca\Exception\NoRecipientAddressAvailableException;
-use Jorijn\Bl3pDca\Provider\WithdrawAddressProviderInterface;
-use Jorijn\Bl3pDca\Repository\TaggedIntegerRepositoryInterface;
-use Jorijn\Bl3pDca\Service\WithdrawService;
-use Jorijn\Bl3pDca\Validator\ValidationException;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
+use Jorijn\Bitcoin\Dca\Exception\NoRecipientAddressAvailableException;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
+use Jorijn\Bitcoin\Dca\Provider\WithdrawAddressProviderInterface;
+use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
+use Jorijn\Bitcoin\Dca\Service\WithdrawService;
+use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bl3pDca\Service\WithdrawService
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\WithdrawService
  * @covers ::__construct
  *
  * @internal
  */
 final class WithdrawServiceTest extends TestCase
 {
-    public const ADDRESS = 'address';
-    public const API_CALL = 'apiCall';
-    public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
+    private const ADDRESS = 'address';
 
-    /** @var Bl3pClientInterface|MockObject */
-    private $client;
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $balanceRepository;
+    /** @var MockObject|WithdrawAddressProviderInterface */
+    private $addressProvider;
+    /** @var MockObject|WithdrawServiceInterface */
+    private $supportedService;
     /** @var EventDispatcherInterface|MockObject */
     private $dispatcher;
     /** @var LoggerInterface|MockObject */
     private $logger;
-    private WithdrawService $service;
-    private array $addressProviders;
+    private string $configuredExchange;
+    /** @var MockObject|TaggedIntegerRepositoryInterface */
+    private $balanceRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->client = $this->createMock(Bl3pClientInterface::class);
-        $this->addressProviders = [];
+        $this->addressProvider = $this->createMock(WithdrawAddressProviderInterface::class);
+        $this->supportedService = $this->createMock(WithdrawServiceInterface::class);
         $this->balanceRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-
-        $this->service = new WithdrawService(
-            $this->client,
-            $this->addressProviders,
-            $this->balanceRepository,
-            $this->dispatcher,
-            $this->logger
-        );
+        $this->configuredExchange = 'ce'.random_int(1000, 2000);
     }
 
     public function providerOfTags(): array
     {
-        return ['tag' => ['tag'.random_int(1000, 2000)], 'without tag' => [null]];
+        return [
+            'with tag' => ['tag'.random_int(1000, 2000)],
+            'without tag' => [null],
+        ];
+    }
+
+    public function providerOfBalancesAndTags(): array
+    {
+        return [
+            'tag, exchange is limiting factor' => [1000, 'tag'.random_int(1000, 2000), 2000, 1000],
+            'tag, tag is limiting factor' => [3000, 'tag'.random_int(1000, 2000), 2000, 2000],
+            'no tag' => [1000, null, null, 1000],
+        ];
     }
 
     /**
-     * @covers ::getRecipientAddress
-     *
-     * @throws \Exception
+     * @covers ::getActiveService
+     * @covers ::getWithdrawFeeInSatoshis
      */
-    public function testGetRecipientAddressFromActiveAddressProvider(): void
+    public function testGettingWithdrawFee(): void
     {
-        $recipientAddress = self::ADDRESS.random_int(1000, 2000);
-        $failingProvider = $this->createMock(WithdrawAddressProviderInterface::class);
-        $workingProvider = $this->createMock(WithdrawAddressProviderInterface::class);
+        $this->expectSupportedCheckToService();
+        $fee = random_int(1000, 2000);
 
-        $failingProvider->method('provide')->willThrowException(new ValidationException('error'));
-        $workingProvider->method('provide')->willReturn($recipientAddress);
+        $this->supportedService
+            ->expects(static::once())
+            ->method('getWithdrawFeeInSatoshis')
+            ->willReturn($fee)
+        ;
 
-        $this->service = new WithdrawService(
-            $this->client,
-            [
-                $failingProvider,
-                $workingProvider,
-            ],
+        $returnedFee = (new WithdrawService(
+            [$this->addressProvider],
+            [$this->supportedService],
             $this->balanceRepository,
             $this->dispatcher,
-            $this->logger
-        );
+            $this->logger,
+            $this->configuredExchange
+        ))->getWithdrawFeeInSatoshis();
 
-        static::assertSame($recipientAddress, $this->service->getRecipientAddress());
+        static::assertSame($fee, $returnedFee);
     }
 
     /**
-     * @covers ::getRecipientAddress
-     */
-    public function testNoAddressProviderAvailable(): void
-    {
-        $this->expectException(NoRecipientAddressAvailableException::class);
-
-        $this->service->getRecipientAddress();
-    }
-
-    /**
-     * @covers ::getBalance
-     *
-     * @throws \Exception
-     */
-    public function testGetBalanceWithoutTag(): void
-    {
-        $balance = random_int(1000, 2000);
-
-        $this->client
-            ->expects(static::once())
-            ->method(self::API_CALL)
-            ->with(self::GENMKT_MONEY_INFO)
-            ->willReturn($this->createBalanceStructure($balance))
-        ;
-
-        $this->balanceRepository
-            ->expects(static::never())
-            ->method('get')
-        ;
-
-        static::assertSame($balance, $this->service->getBalance(true));
-    }
-
-    /**
-     * @covers ::getBalance
-     *
-     * @throws \Exception
-     */
-    public function testGetBalanceForTagButLessBalanceIsAvailable(): void
-    {
-        $balanceAvailable = random_int(1000, 2000);
-        $taggedBalance = random_int(3000, 5000);
-        $tag = 'tag'.random_int(1000, 2000);
-
-        $this->client
-            ->expects(static::once())
-            ->method(self::API_CALL)
-            ->with(self::GENMKT_MONEY_INFO)
-            ->willReturn($this->createBalanceStructure($balanceAvailable))
-        ;
-
-        $this->balanceRepository
-            ->expects(static::once())
-            ->method('get')
-            ->with($tag)
-            ->willReturn($taggedBalance)
-        ;
-
-        static::assertSame($balanceAvailable, $this->service->getBalance(true, $tag));
-    }
-
-    /**
-     * @covers ::getBalance
-     */
-    public function testGetSpecificAmountFromBalance(): void
-    {
-        // this is not implemented, but it might in the future
-        static::assertSame(0, $this->service->getBalance(false));
-    }
-
-    /**
-     * @covers ::getBalance
-     *
-     * @throws \Exception
-     */
-    public function testGetBalanceForTag(): void
-    {
-        $balanceAvailable = random_int(7000, 9000);
-        $taggedBalance = random_int(3000, 5000);
-        $tag = 'tag'.random_int(1000, 2000);
-
-        $this->client
-            ->expects(static::once())
-            ->method(self::API_CALL)
-            ->with(self::GENMKT_MONEY_INFO)
-            ->willReturn($this->createBalanceStructure($balanceAvailable))
-        ;
-
-        $this->balanceRepository
-            ->expects(static::once())
-            ->method('get')
-            ->with($tag)
-            ->willReturn($taggedBalance)
-        ;
-
-        static::assertSame($taggedBalance, $this->service->getBalance(true, $tag));
-    }
-
-    /**
-     * @dataProvider providerOfTags
+     * @covers ::getActiveService
      * @covers ::withdraw
+     * @dataProvider providerOfTags
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
-    public function testWithdraw(string $tag = null): void
+    public function testWithdrawHappyFlow(?string $tag): void
     {
+        $this->expectSupportedCheckToService();
+
+        $balance = random_int(1000, 2000);
         $address = self::ADDRESS.random_int(1000, 2000);
-        $amount = random_int(100000, 300000);
-        $netAmount = $amount - WithdrawService::WITHDRAW_FEE;
-        $withdrawID = 'id'.random_int(1000, 2000);
-        $apiResponse = ['data' => ['id' => $withdrawID]];
+        $id = 'id'.random_int(1000, 2000);
 
-        $this->client
+        $withdrawDTO = new CompletedWithdraw($address, $balance, $id);
+
+        $this->logger
+            ->expects(static::atLeastOnce())
+            ->method('info')
+        ;
+
+        $this->supportedService
             ->expects(static::once())
-            ->method(self::API_CALL)
-            ->with(
-                'GENMKT/money/withdraw',
-                static::callback(function (array $parameters) use ($netAmount, $address) {
-                    self::assertArrayHasKey('currency', $parameters);
-                    self::assertSame('BTC', $parameters['currency']);
-                    self::assertArrayHasKey(self::ADDRESS, $parameters);
-                    self::assertSame($address, $parameters[self::ADDRESS]);
-                    self::assertArrayHasKey('amount_int', $parameters);
-                    self::assertSame($netAmount, $parameters['amount_int']);
-
-                    return true;
-                })
-            )
-            ->willReturn($apiResponse)
+            ->method('withdraw')
+            ->with($balance, $address)
+            ->willReturn($withdrawDTO)
         ;
 
         $this->dispatcher
             ->expects(static::once())
             ->method('dispatch')
-            ->with(static::callback(function (WithdrawSuccessEvent $event) use ($address, $netAmount, $withdrawID, $tag) {
+            ->with(static::callback(function (WithdrawSuccessEvent $event) use ($tag, $withdrawDTO) {
+                self::assertSame($withdrawDTO, $event->getCompletedWithdraw());
                 self::assertSame($tag, $event->getTag());
-                self::assertSame($withdrawID, $event->getCompletedWithdraw()->getId());
-                self::assertSame($netAmount, $event->getCompletedWithdraw()->getNetAmount());
-                self::assertSame($address, $event->getCompletedWithdraw()->getRecipientAddress());
 
                 return true;
             }))
         ;
 
-        $this->logger->expects(static::atLeastOnce())->method('info');
+        $completedWithdraw = (new WithdrawService(
+            [$this->addressProvider],
+            [$this->supportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->withdraw($balance, $address, $tag);
 
-        $dto = $this->service->withdraw($amount, $address, $tag);
-        static::assertSame($withdrawID, $dto->getId());
-        static::assertSame($netAmount, $dto->getNetAmount());
-        static::assertSame($address, $dto->getRecipientAddress());
+        static::assertSame($withdrawDTO, $completedWithdraw);
     }
 
-    private function createBalanceStructure(int $balance): array
+    /**
+     * @covers ::getActiveService
+     * @covers ::withdraw
+     * @dataProvider providerOfTags
+     */
+    public function testWithdrawFails(?string $tag): void
     {
-        return [
-            'data' => [
-                'wallets' => [
-                    'BTC' => [
-                        'available' => [
-                            'value_int' => $balance,
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        $this->expectSupportedCheckToService();
+
+        $balance = random_int(1000, 2000);
+        $address = self::ADDRESS.random_int(1000, 2000);
+
+        $this->logger
+            ->expects(static::atLeastOnce())
+            ->method('error')
+        ;
+
+        $error = new \RuntimeException('random'.random_int(1000, 2000));
+        $this->supportedService
+            ->expects(static::once())
+            ->method('withdraw')
+            ->with($balance, $address)
+            ->willThrowException($error)
+        ;
+
+        $this->dispatcher
+            ->expects(static::never())
+            ->method('dispatch')
+        ;
+
+        $this->expectExceptionObject($error);
+
+        (new WithdrawService(
+            [$this->addressProvider],
+            [$this->supportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->withdraw($balance, $address, $tag);
+    }
+
+    /**
+     * @covers ::getActiveService
+     * @covers ::getBalance
+     * @dataProvider providerOfBalancesAndTags
+     */
+    public function testGetBalanceForActiveExchange(
+        int $exchangeBalance,
+        ?string $tag,
+        ?int $taggedBalance,
+        int $expectedBalance
+    ): void {
+        $this->expectSupportedCheckToService();
+
+        $this->supportedService
+            ->expects(static::once())
+            ->method('getAvailableBalance')
+            ->willReturn($exchangeBalance)
+        ;
+
+        if ($tag) {
+            $this->balanceRepository
+                ->expects(static::once())
+                ->method('get')
+                ->with($tag)
+                ->willReturn($taggedBalance)
+            ;
+        }
+
+        $returnedBalance = (new WithdrawService(
+            [$this->addressProvider],
+            [$this->supportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->getBalance($tag);
+
+        static::assertSame($expectedBalance, $returnedBalance);
+    }
+
+    /**
+     * @covers ::getRecipientAddress
+     *
+     * @throws \Exception
+     */
+    public function testGetRecipientAddress(): void
+    {
+        $address = self::ADDRESS.random_int(1000, 2000);
+
+        $unsupportedAddressProvider = $this->createMock(WithdrawAddressProviderInterface::class);
+        $unsupportedAddressProvider
+            ->expects(static::exactly(2))
+            ->method('provide')
+            ->willThrowException(new \RuntimeException('test failure'))
+        ;
+
+        $this->addressProvider
+            ->expects(static::once())
+            ->method('provide')
+            ->willReturn($address)
+        ;
+
+        $returnedAddress = (new WithdrawService(
+            [$unsupportedAddressProvider, $this->addressProvider],
+            [$this->supportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->getRecipientAddress();
+
+        static::assertSame($address, $returnedAddress);
+
+        // test handling of no capable providers
+        $this->expectException(NoRecipientAddressAvailableException::class);
+        (new WithdrawService(
+            [$unsupportedAddressProvider],
+            [$this->supportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->getRecipientAddress();
+    }
+
+    /**
+     * @covers ::getActiveService
+     * @covers ::getBalance
+     */
+    public function testNoExchangeAvailable(): void
+    {
+        $unsupportedService = $this->createMock(WithdrawServiceInterface::class);
+        $unsupportedService
+            ->expects(static::once())
+            ->method('supportsExchange')
+            ->with($this->configuredExchange)
+            ->willReturn(false)
+        ;
+
+        $this->expectException(NoExchangeAvailableException::class);
+
+        (new WithdrawService(
+            [$this->addressProvider],
+            [$unsupportedService],
+            $this->balanceRepository,
+            $this->dispatcher,
+            $this->logger,
+            $this->configuredExchange
+        ))->getBalance();
+    }
+
+    protected function expectSupportedCheckToService(): void
+    {
+        $this->supportedService
+            ->expects(static::once())
+            ->method('supportsExchange')
+            ->with($this->configuredExchange)
+            ->willReturn(true)
+        ;
     }
 }

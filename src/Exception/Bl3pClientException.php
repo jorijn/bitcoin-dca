@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bl3pDca\Exception;
+namespace Jorijn\Bitcoin\Dca\Exception;
 
 class Bl3pClientException extends \RuntimeException
 {
