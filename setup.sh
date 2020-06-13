@@ -86,7 +86,8 @@ check_docker_runnable_under_own_user() {
 
 function check_if_docker_is_installed() {
   if command_exists docker; then
-    export DOCKER=$(command -v docker)
+    # shellcheck disable=SC2230
+    export DOCKER=$(which docker)
     return 0
   fi
 
