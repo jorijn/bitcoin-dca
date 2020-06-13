@@ -49,6 +49,7 @@ final class BalanceCommandTest extends TestCase
 
         static::assertStringContainsString('ERROR', $this->commandTester->getDisplay());
         static::assertStringContainsString($errorMessage, $this->commandTester->getDisplay());
+        static::assertSame(1, $this->commandTester->getStatusCode());
     }
 
     /**
@@ -74,5 +75,6 @@ final class BalanceCommandTest extends TestCase
 
         static::assertStringContainsString((string) $btcBalance, $this->commandTester->getDisplay());
         static::assertStringContainsString((string) $euroBalance, $this->commandTester->getDisplay());
+        static::assertSame(0, $this->commandTester->getStatusCode());
     }
 }
