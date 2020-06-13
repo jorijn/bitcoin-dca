@@ -18,6 +18,8 @@ GREEN=$(tput setaf 2)
 NC=$(tput sgr0)
 DOCKER_IMAGE="jorijn/bitcoin-dca:latest"
 APPLICATION_DIR="${HOME}/.bitcoin-dca"
+CONFIGURATION_LOCATION="${APPLICATION_DIR}/configuration.conf"
+DATA_LOCATION="${APPLICATION_DIR}/data"
 FLAG_PERSISTENT_STORAGE=0
 CONFIGURATION_FILE=$(mktemp)
 
@@ -84,6 +86,7 @@ check_docker_runnable_under_own_user() {
 
 function check_if_docker_is_installed() {
   if command_exists docker; then
+    export DOCKER=$(command -v docker)
     return 0
   fi
 
@@ -99,7 +102,7 @@ function check_if_docker_is_installed() {
 
 function pull_image_from_registry() {
   echo
-  docker pull $DOCKER_IMAGE
+  #  docker pull $DOCKER_IMAGE
   echo
 }
 
@@ -117,7 +120,7 @@ function check_application_directory() {
 
 function verify() {
   while true; do
-    read -rp "❓ $1 [y/n]: " yn
+    read -rp "❓ $1 [yes/no]: " yn
 
     case $yn in
     [Yy]*)
@@ -168,19 +171,112 @@ function configuration_pick_an_exchange() {
     "I changed my mind, quit")
       exit 0
       ;;
-    *) echo "☠️ Invalid option: $REPLY" ;;
+    *) echo "☠️  Invalid option: $REPLY" ;;
     esac
   done
+}
+
+function configuration_pick_an_withdraw_method() {
+  echo "Eventually when your Dollar Cost Averaging you will want to withdraw your purchased satoshis to"
+  echo "a hardware wallet. Here, you may choose between either a static wallet address or derive a new address"
+  echo "every time a withdrawal is made."
+  echo
+  echo "Wallet address:  If your unsure about what Xpub means, pick this option. Your hardware wallet should"
+  echo "                 give you an address for receiving funds into. This tool will instruct the exchange to"
+  echo "                 send your satoshis to this address every time a withdrawal is made."
+  echo
+  echo "xPub derivation: Although a bit more complex to set up, this is the recommended way to go. Your HD wallet"
+  echo "                 contains many key pairs and by configuring Bitcoin DCA to use your xPub it will instruct"
+  echo "                 the exchange to use a new fresh address every time a withdrawal is made. This improves"
+  echo "                 your privacy as the blockchain is a public ledger and everyone could know how much you"
+  echo "                 have saved eventually."
+  echo
+
+  PS3='Please enter your choice: '
+  options=("Wallet address" "xPub derivation" "I changed my mind, quit")
+  select opt in "${options[@]}"; do
+    case $opt in
+    "Wallet address")
+      configure_simple_wallet_address
+      return 0
+      ;;
+    "xPub derivation")
+      configure_xpub_wallet_address
+      return 0
+      ;;
+    "I changed my mind, quit")
+      exit 0
+      ;;
+    *) echo "☠️  Invalid option: $REPLY" ;;
+    esac
+  done
+}
+
+function configure_simple_wallet_address() {
+  local wallet_address
+
+  echo
+  wallet_address=$(ask "What is your Bitcoin wallet address")
+  echo "WITHDRAW_ADDRESS=$wallet_address" >>"$CONFIGURATION_FILE"
+}
+
+function configure_xpub_wallet_address() {
+  local xpub_address
+
+  export FLAG_PERSISTENT_STORAGE=1
+
+  echo
+  echo "💡 Need some help figuring out where your xPub is located? See this blog post:"
+  echo "${GREEN}https://blog.blockonomics.co/how-to-find-your-xpub-key-with-these-8-popular-bitcoin-wallets-ce8ea665ffdc${NC}"
+  echo
+
+  xpub_address=$(ask "What is your Bitcoin xPub")
+  echo "WITHDRAW_XPUB=$xpub_address" >>"$CONFIGURATION_FILE"
+
+  run_tool_with_test_configuration verify-xpub
+  if test $? -ne 0; then
+    echo
+    echo "🚫 It could be that there is a problem with the derivation mechanism or that you didn't enter the xPub correctly."
+    echo "   Please try again or reach out to me for support."
+    show_support_text
+    exit 1
+  fi
+
+  verify "Does the list displayed here match the one in your wallet client"
+  if test $? -ne 0; then
+    echo
+    echo "🚫 It could be that there is a problem with the derivation mechanism or that you didn't enter the xPub correctly."
+    echo "   Please try again or reach out to me for support."
+    show_support_text
+    exit 1
+  fi
 }
 
 function start_configuration_wizard() {
   configuration_pick_an_exchange
 
-  # more...
+  echo
+  echo "✅ OK! Will try and get your balance to see if we're connected."
+  echo
+
+  run_tool_with_test_configuration balance
+  if test $? -ne 0; then
+    echo "😧 Something happened, are your API credentials correctly entered? Please verify them and restart the setup wizard."
+    show_support_text
+    exit 1
+  fi
+
+  echo "✅ OK! Balance check is looking good."
+  echo
+
+  configuration_pick_an_withdraw_method
+  echo
 }
 
 function remove_temp_configuration_file() {
-  cat "$CONFIGURATION_FILE" # debug
+  if [ ! -e "$CONFIGURATION_FILE" ]; then
+    return 0
+  fi
 
   rm "$CONFIGURATION_FILE"
 }
@@ -190,20 +286,55 @@ function configure_exchange_bl3p() {
   local api_secret
 
   echo
-  echo "EXCHANGE=bl3p" >> "$CONFIGURATION_FILE"
+  echo "EXCHANGE=bl3p" >>"$CONFIGURATION_FILE"
 
   echo "💵 Great choice! Let's configure the API connection."
   echo
 
   api_key=$(ask "What is your BL3P API Identifier Key")
-  echo "BL3P_PUBLIC_KEY=$api_key" >> "$CONFIGURATION_FILE"
+  echo "BL3P_PUBLIC_KEY=$api_key" >>"$CONFIGURATION_FILE"
 
   api_secret=$(ask "What is your BL3P API Private Key")
-  echo "BL3P_PRIVATE_KEY=$api_secret" >> "$CONFIGURATION_FILE"
+  echo "BL3P_PRIVATE_KEY=$api_secret" >>"$CONFIGURATION_FILE"
+}
+
+function run_tool_with_test_configuration() {
+  $DOCKER run --rm -it --env-file "$CONFIGURATION_FILE" $DOCKER_IMAGE "$@"
 }
 
 function configure_exchange_bitvavo() {
-  echo "EXCHANGE=bitvavo" >"$CONFIGURATION_FILE"
+  local api_key
+  local api_secret
+
+  echo
+  echo "EXCHANGE=bitvavo" >>"$CONFIGURATION_FILE"
+
+  echo "💵 Great choice! Let's configure the API connection."
+  echo
+
+  api_key=$(ask "What is your Bitvavo API Key")
+  echo "BITVAVO_API_KEY=$api_key" >>"$CONFIGURATION_FILE"
+
+  api_secret=$(ask "What is your Bitvavo API Secret")
+  echo "BITVAVO_API_SECRET=$api_secret" >>"$CONFIGURATION_FILE"
+}
+
+function install_tool() {
+  mkdir -p "$APPLICATION_DIR"
+
+  if [ "$FLAG_PERSISTENT_STORAGE" -eq 1 ]; then
+    mkdir -p "$DATA_LOCATION"
+  fi
+
+  cat "$CONFIGURATION_FILE" >"$CONFIGURATION_LOCATION"
+
+  persistent_storage_argument=""
+  if [ "$FLAG_PERSISTENT_STORAGE" -eq 1 ]; then
+    persistent_storage_argument=" -v $DATA_LOCATION:/var/storage"
+  fi
+
+  export TOOL_COMMAND_INTERACTIVE="${DOCKER} run --rm -it${persistent_storage_argument} --env-file ${CONFIGURATION_LOCATION} ${DOCKER_IMAGE}"
+  export TOOL_COMMAND="${DOCKER} run --rm${persistent_storage_argument} --env-file ${CONFIGURATION_LOCATION} ${DOCKER_IMAGE}"
 }
 
 do_install() {
@@ -224,6 +355,30 @@ do_install() {
 
   echo "🤖 Starting the configuration wizard.."
   start_configuration_wizard
+
+  echo "🤖 Installing the configuration"
+  install_tool
+
+  clear
+  echo "🎉 Bitcoin DCA was successfully configured and installed to ${GREEN}${APPLICATION_DIR}${NC}."
+  echo
+  echo "You can now follow the rest of the steps from the Getting Started guide to test buying, withdrawing and"
+  echo "setting up recurring purchases."
+  echo
+  echo "${GREEN}https://bitcoin-dca.readthedocs.io/en/latest/getting-started.html${NC}"
+  echo
+  echo "These are your personalized commands:"
+  echo
+  echo "  ${GREEN}Running the tool from your terminal:${NC}"
+  echo "  $ ${TOOL_COMMAND_INTERACTIVE}"
+  echo
+  echo "  ${GREEN}Running the tool on a schedule from a cronjob:${NC}"
+  echo "  $ ${TOOL_COMMAND}"
+  echo
+  echo "Do you have any questions? Reach out to me by email using ${GREEN}jorijn@jorijn.com${NC} or visit the"
+  echo "Telegram support chat at ${GREEN}https://t.me/bitcoindca${NC}"
+  echo
+  echo "Happy DCA-ing! 👋"
 }
 
 echo "${GREEN}====================================================================================${NC}"

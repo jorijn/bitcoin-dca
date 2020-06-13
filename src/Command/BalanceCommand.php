@@ -44,6 +44,8 @@ class BalanceCommand extends Command
             $io->success('Success!');
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
+
+            return 1;
         }
 
         return 0;
