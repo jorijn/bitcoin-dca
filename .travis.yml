@@ -13,7 +13,7 @@ php:
 stages:
   - test
   - name: build
-    if: (tag =~ ^v) AND (branch = feature/releases-by-tags)
+    if: tag =~ ^v
 
 addons:
   sonarcloud:
