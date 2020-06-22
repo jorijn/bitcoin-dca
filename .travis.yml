@@ -56,7 +56,6 @@ jobs:
           "build_number": "${TRAVIS_BUILD_NUMBER}"
           }
           VERSIONFILE
-        - echo '{"version":"$TRAVIS_TAG","commit":"$TRAVIS_COMMIT"}' > version.json
         - docker run --privileged linuxkit/binfmt:v0.8
         - docker buildx create --use
         - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bitcoin-dca:latest_test -t jorijn/bitcoin-dca:$TRAVIS_TAG --push .
