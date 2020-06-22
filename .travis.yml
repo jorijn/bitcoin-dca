@@ -13,7 +13,7 @@ php:
 stages:
   - test
   - name: build
-    if: branch = feature/releases-by-tags
+    if: (tag =~ ^v) AND (branch = branch = feature/releases-by-tags)
 
 addons:
   sonarcloud:
@@ -42,7 +42,7 @@ jobs:
     - stage: build
       on:
         tags: true
-      language: bash
+      language: shell
       before_install:
         - curl -sf https://test.docker.com | sh
         - docker --version
