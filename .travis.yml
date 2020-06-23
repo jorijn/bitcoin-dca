@@ -48,15 +48,14 @@ jobs:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
         - touch ${TRAVIS_BUILD_DIR}/version.json
         - |
-          cat > "${TRAVIS_BUILD_DIR}/version.json" <<-"EOF"
-            {
-              "built_from_branch": "${TRAVIS_BRANCH}",
-              "commit_id": "${TRAVIS_COMMIT}",
-              "build_date": "$(date)",
-              "version": "${TRAVIS_TAG}",
-              "build_number": "${TRAVIS_BUILD_NUMBER}"
-            }
-          EOF
+          cat > "${TRAVIS_BUILD_DIR}/version.json" <<FILE
+          {
+            "built_from_branch": "${TRAVIS_BRANCH}",
+            "commit_id": "${TRAVIS_COMMIT}",
+            "build_date": "$(date)",
+            "version": "${TRAVIS_TAG}",
+            "build_number": "${TRAVIS_BUILD_NUMBER}"
+          }
         - docker run --privileged linuxkit/binfmt:v0.8
         - docker buildx create --use
         - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bitcoin-dca:latest_test -t jorijn/bitcoin-dca:$TRAVIS_TAG --push .
