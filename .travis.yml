@@ -46,8 +46,9 @@ jobs:
         - docker --version
       install:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
+        - touch ${TRAVIS_BUILD_DIR}/version.json
         - |
-          cat > "${TRAVIS_BUILD_DIR}/version.json" << FILE
+          cat > "${TRAVIS_BUILD_DIR}/version.json" <<FILE
           {
             "built_from_branch": "${TRAVIS_BRANCH}",
             "commit_id": "${TRAVIS_COMMIT}",
