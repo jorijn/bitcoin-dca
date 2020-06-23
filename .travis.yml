@@ -13,7 +13,7 @@ php:
 stages:
   - test
   - name: build
-    if: branch = master AND type = push
+    if: tag IS present
 
 addons:
   sonarcloud:
@@ -40,12 +40,22 @@ jobs:
         - vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
         - sonar-scanner
     - stage: build
-      language: bash
+      language: shell
       before_install:
         - curl -sf https://test.docker.com | sh
         - docker --version
       install:
         - echo $DOCKER_PASSWORD | docker login --username jorijn --password-stdin &> /dev/null
+        - touch ${TRAVIS_BUILD_DIR}/version.json
+        - |
+          cat > "${TRAVIS_BUILD_DIR}/version.json" <<FILE
+          {
+            "built_from_branch": "${TRAVIS_BRANCH}",
+            "commit_id": "${TRAVIS_COMMIT}",
+            "build_date": "$(date)",
+            "version": "${TRAVIS_TAG}",
+            "build_number": "${TRAVIS_BUILD_NUMBER}"
+          }
         - docker run --privileged linuxkit/binfmt:v0.8
         - docker buildx create --use
-        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bitcoin-dca:latest --push .
+        - docker buildx build --progress plain --platform "$PLATFORMS" -t jorijn/bitcoin-dca:latest -t jorijn/bitcoin-dca:$TRAVIS_TAG --push .
