@@ -13,7 +13,7 @@ php:
 stages:
   - test
   - name: build
-    if: tag =~ ^v
+    if: tag IS present
 
 addons:
   sonarcloud:
