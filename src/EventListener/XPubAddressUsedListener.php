@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
 

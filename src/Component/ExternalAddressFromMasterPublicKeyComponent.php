@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Component;
 
-use Jorijn\Bitcoin\Dca\Exception\CouldNotGetExternalDerivationException;
 use Psr\Log\LoggerInterface;
 
 class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
@@ -61,17 +60,7 @@ class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPu
             throw $exception;
         }
 
-        $requestedAddress = $result[$path] ?? null;
-        if (null === $requestedAddress) {
-            $this->logger->error('external tool result is empty', [
-                'result' => $result,
-                'str_result' => $strResult,
-            ]);
-
-            throw new CouldNotGetExternalDerivationException('external tool result is empty');
-        }
-
-        return $requestedAddress;
+        return $result[$path];
     }
 
     public function supported(): bool

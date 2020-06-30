@@ -2,67 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bitcoin\Dca\Factory;
+namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
-use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
-use PHPUnit\Framework\TestCase;
-
-/**
- * The keys used in this class are generated solely for the purpose of testing, do not expect funds there.
- *
- * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
- * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
- *
- * @coversDefaultClass \Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent
- *
- * @internal
- */
-final class AddressFromMasterPublicKeyComponentTest extends TestCase
+trait MasterPublicKeyScenarioTrait
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        if (PHP_INT_SIZE !== 8) {
-            self::markTestSkipped('unsupported on non 64 bits systems');
-        }
-    }
-
     /**
-     * @dataProvider providerOfScenarios
-     * @covers ::derive
+     * The keys used in this class are generated solely for the purpose of testing, do not expect funds there.
+     *
+     * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
+     * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
      */
-    public function testDerive(string $xpub, array $expectedAddressList): void
-    {
-        $factory = new AddressFromMasterPublicKeyComponent();
-        foreach ($expectedAddressList as $index => $expectedAddress) {
-            static::assertSame(
-                $expectedAddress,
-                $factory->derive($xpub, '0/'.$index)
-            );
-        }
-    }
-
-    /**
-     * @covers ::derive
-     */
-    public function testDeriveWithEmptyXpubKey(): void
-    {
-        $factory = new AddressFromMasterPublicKeyComponent();
-        $this->expectException(\InvalidArgumentException::class);
-        $factory->derive('');
-    }
-
-    /**
-     * @covers ::derive
-     */
-    public function testDeriveWithUnsupportedKey(): void
-    {
-        $factory = new AddressFromMasterPublicKeyComponent();
-        $this->expectException(\RuntimeException::class);
-        $factory->derive('(╯°□°）╯︵ ┻━┻');
-    }
-
     public function providerOfScenarios(): array
     {
         return [

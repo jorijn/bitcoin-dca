@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;

@@ -21,9 +21,8 @@ class DeriveFromMasterPublicKeyComponentFactory
 
     public function createDerivationComponent(): AddressFromMasterPublicKeyComponentInterface
     {
-        foreach ($this->availableComponents as $availableComponent)
-        {
-            if ($availableComponent->supported() === true) {
+        foreach ($this->availableComponents as $availableComponent) {
+            if (true === $availableComponent->supported()) {
                 return $availableComponent;
             }
         }
