@@ -28,6 +28,10 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
+        if (!isset($_SERVER['XPUB_PYTHON_CLI']) || empty($_SERVER['XPUB_PYTHON_CLI']) || !file_exists($_SERVER['XPUB_PYTHON_CLI'])) {
+            static::markTestSkipped('setting XPUB_PYTHON_CLI is empty or does not exists');
+        }
+
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->component = new ExternalAddressFromMasterPublicKeyComponent($this->logger, $_SERVER['XPUB_PYTHON_CLI']);
     }
