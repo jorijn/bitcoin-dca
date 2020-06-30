@@ -14,11 +14,11 @@ def derive(mpub: str, start: int, length: int):
     :return: a json list of derived addresses
     """
 
-    address_list = []
+    address_list = {}
     for index in range(start, start + length):
         xpub = bip32.derive(xkey=mpub, path=f"./0/{index}")
         address = slip32.address_from_xpub(xpub).decode("ascii")
-        address_list.append(address)
+        address_list[f"0/{index}"] = address
 
     return json.dumps(address_list)
 

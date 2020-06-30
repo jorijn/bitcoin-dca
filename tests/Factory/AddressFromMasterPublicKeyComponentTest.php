@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Factory;
 
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,11 +13,11 @@ use PHPUnit\Framework\TestCase;
  * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
  * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
  *
- * @coversDefaultClass \Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent
  *
  * @internal
  */
-final class AddressFromMasterPublicKeyFactoryTest extends TestCase
+final class AddressFromMasterPublicKeyComponentTest extends TestCase
 {
     /**
      * @dataProvider providerOfScenarios
@@ -25,7 +25,7 @@ final class AddressFromMasterPublicKeyFactoryTest extends TestCase
      */
     public function testDerive(string $xpub, array $expectedAddressList): void
     {
-        $factory = new AddressFromMasterPublicKeyFactory();
+        $factory = new AddressFromMasterPublicKeyComponent();
         foreach ($expectedAddressList as $index => $expectedAddress) {
             static::assertSame(
                 $expectedAddress,
@@ -39,7 +39,7 @@ final class AddressFromMasterPublicKeyFactoryTest extends TestCase
      */
     public function testDeriveWithEmptyXpubKey(): void
     {
-        $factory = new AddressFromMasterPublicKeyFactory();
+        $factory = new AddressFromMasterPublicKeyComponent();
         $this->expectException(\InvalidArgumentException::class);
         $factory->derive('');
     }
@@ -49,7 +49,7 @@ final class AddressFromMasterPublicKeyFactoryTest extends TestCase
      */
     public function testDeriveWithUnsupportedKey(): void
     {
-        $factory = new AddressFromMasterPublicKeyFactory();
+        $factory = new AddressFromMasterPublicKeyComponent();
         $this->expectException(\RuntimeException::class);
         $factory->derive('(╯°□°）╯︵ ┻━┻');
     }

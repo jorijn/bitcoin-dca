@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Provider;
 
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 
 class XpubWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {
     protected ValidationInterface $validation;
-    protected AddressFromMasterPublicKeyFactory $keyFactory;
+    protected AddressFromMasterPublicKeyComponentInterface $keyFactory;
     protected TaggedIntegerRepositoryInterface $xpubRepository;
     protected ?string $configuredXPub;
 
     public function __construct(
         ValidationInterface $validation,
-        AddressFromMasterPublicKeyFactory $keyFactory,
+        AddressFromMasterPublicKeyComponentInterface $keyFactory,
         TaggedIntegerRepositoryInterface $xpubRepository,
         ?string $configuredXPub
     ) {

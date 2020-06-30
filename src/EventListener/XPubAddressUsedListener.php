@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\EventListener;
 
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 class XPubAddressUsedListener
 {
     protected TaggedIntegerRepositoryInterface $xpubRepository;
-    protected AddressFromMasterPublicKeyFactory $keyFactory;
+    protected AddressFromMasterPublicKeyComponent $keyFactory;
     protected LoggerInterface $logger;
     protected ?string $configuredXPub;
 
     public function __construct(
         TaggedIntegerRepositoryInterface $xpubRepository,
-        AddressFromMasterPublicKeyFactory $keyFactory,
+        AddressFromMasterPublicKeyComponent $keyFactory,
         LoggerInterface $logger,
         ?string $configuredXPub
     ) {

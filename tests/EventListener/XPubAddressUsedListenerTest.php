@@ -6,7 +6,7 @@ namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener;
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,7 +23,7 @@ final class XPubAddressUsedListenerTest extends TestCase
 {
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $xpubRepository;
-    /** @var AddressFromMasterPublicKeyFactory|MockObject */
+    /** @var AddressFromMasterPublicKeyComponent|MockObject */
     private $keyFactory;
     /** @var LoggerInterface|MockObject */
     private $logger;
@@ -37,7 +37,7 @@ final class XPubAddressUsedListenerTest extends TestCase
         parent::setUp();
 
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
-        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
+        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyComponent::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->configuredXPub = 'xpub'.random_int(1000, 2000);
         $this->listener = new XPubAddressUsedListener(

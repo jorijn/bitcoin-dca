@@ -20,6 +20,9 @@ parameters:
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
   env(EXCHANGE): 'bl3p'
 
+  # xpub fallback settings
+  env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
+
 services:
   ######################################################################
   # CLI Commands
@@ -48,7 +51,7 @@ services:
   command.verify_xpub:
     class: Jorijn\Bitcoin\Dca\Command\VerifyXPubCommand
     arguments:
-      - '@factory.derive_from_master_public_key'
+      - '@component.derive_from_master_public_key'
       - '@repository.tag_integer.xpub_index'
       - '%env(WITHDRAW_XPUB)%'
       - 'WITHDRAW_XPUB'
@@ -58,8 +61,30 @@ services:
   ######################################################################
   # Factories
   ######################################################################
-  factory.derive_from_master_public_key:
-    class: Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
+  factory.derive_from_master_public_key.component:
+    class: Jorijn\Bitcoin\Dca\Factory\DeriveFromMasterPublicKeyComponentFactory
+    arguments:
+      - !tagged_iterator derive-from-master-public-key
+
+  ######################################################################
+  # Components
+  ######################################################################
+  component.derive_from_master_public_key:
+    class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface
+    factory: ['@factory.derive_from_master_public_key.component', 'createDerivationComponent']
+
+  component.derive_from_master_public_key_bitwasp:
+    class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent
+    tags:
+      - { name: derive-from-master-public-key, priority: -500 }
+
+  component.derive_from_master_public_key_external:
+    class: Jorijn\Bitcoin\Dca\Component\ExternalAddressFromMasterPublicKeyComponent
+    arguments:
+      - '@logger'
+      - '%env(XPUB_PYTHON_CLI)%'
+    tags:
+      - { name: derive-from-master-public-key, priority: -1000 }
 
   ######################################################################
   # API Clients
@@ -111,7 +136,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider
     arguments:
       - '@validator.bitcoin_address'
-      - '@factory.derive_from_master_public_key'
+      - '@component.derive_from_master_public_key'
       - '@repository.tag_integer.xpub_index'
       - '%env(WITHDRAW_XPUB)%'
     tags:
@@ -154,7 +179,7 @@ services:
     class: Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener
     arguments:
       - '@repository.tag_integer.xpub_index'
-      - '@factory.derive_from_master_public_key'
+      - '@component.derive_from_master_public_key'
       - '@logger'
       - '%env(WITHDRAW_XPUB)%'
     tags:
