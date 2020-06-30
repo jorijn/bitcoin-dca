@@ -67,7 +67,7 @@ final class BitvavoClientTest extends TestCase
     public function testApiCall(string $method, array $parameters, array $body): void
     {
         $path = 'path'.random_int(1000, 2000);
-        $now = time() * 1000;
+        $now = (int) (time() * 1000);
         $returnData = ['return' => random_int(1000, 2000)];
 
         $query = http_build_query($parameters, '', '&');
