@@ -25,7 +25,7 @@ RUN composer install \
 FROM php:7.4-cli-alpine as base_image
 
 RUN apk --no-cache update \
-    && apk --no-cache add gmp-dev python3 \
+    && apk --no-cache add gmp-dev python3 py3-pip \
     && docker-php-ext-install -j$(nproc) gmp bcmath
 
 COPY . /app/
@@ -33,7 +33,7 @@ COPY --from=vendor /app/vendor/ /app/vendor/
 
 WORKDIR /app/resources/xpub_derive
 
-RUN python3 -m pip install --no-cache -r requirements.txt
+RUN pip3 install --no-cache -r requirements.txt
 
 WORKDIR /app/
 
