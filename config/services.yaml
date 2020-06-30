@@ -193,9 +193,14 @@ services:
     class: Jorijn\Bitcoin\Dca\EventListener\NotifyOnBuyListener
     arguments:
       - '@mailer'
+      - '@html_to_markdown'
       - '%env(MAILER_TO)%'
       - '%env(MAILER_FROM)%'
       - '%env(MAILER_SUBJECT_PREFIX)%'
+      - '%application.path%/resources/templates/buy_notification.html.php'
+      - '%application.path%/resources/images/logo-small.png'
+      - '%application.path%/resources/images/github-logo-colored.png'
+      - '%application.path%/resources/notification-quotes.json'
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
 
@@ -289,6 +294,13 @@ services:
     class: Symfony\Component\EventDispatcher\EventDispatcher
     public: true
 
+  html_to_markdown:
+    class: League\HTMLToMarkdown\HtmlConverter
+    public: true
+    arguments:
+      -
+        - strip_tags: true
+
   logger.stream_handler:
     class: Monolog\Handler\StreamHandler
     arguments:
@@ -300,6 +312,9 @@ services:
       - 'bitcoin-dca'
       - ['@logger.stream_handler']
 
+  ######################################################################
+  # Symfony Mailer
+  ######################################################################
   mailer:
     class: Symfony\Component\Mailer\Mailer
     arguments:
@@ -313,11 +328,20 @@ services:
     factory:
       - 'Symfony\Component\Mailer\Transport\Dsn'
       - 'fromString'
+    arguments:
       - '%env(MAILER_DSN)%'
+
+  mailer.transport.esmtp.factory:
+    class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory
+    arguments:
+      - '@event_dispatcher'
+      - '@http_client'
+      - '@logger'
 
   mailer.transport.esmtp:
     class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport
     factory:
-      - 'Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory'
+      - '@mailer.transport.esmtp.factory'
       - 'create'
-      - 'mailer.transport.esmtp.dsn'
+    arguments:
+      - '@mailer.transport.esmtp.dsn'

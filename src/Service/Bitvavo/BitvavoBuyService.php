@@ -35,6 +35,15 @@ class BitvavoBuyService implements BuyServiceInterface
 
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
+        return (new CompletedBuyOrder())
+            ->setAmountInSatoshis(123456)
+            ->setFeesInSatoshis(123)
+            ->setDisplayAmountBought('0.000123456 BTC')
+            ->setDisplayAmountSpent('7 EUR')
+            ->setDisplayAveragePrice('3938 EUR')
+            ->setDisplayFeesSpent('0.000000123 BTC')
+        ;
+
         $orderInfo = $this->client->apiCall(self::ORDER, 'POST', [], [
             self::MARKET => $this->tradingPair,
             'side' => 'buy',
