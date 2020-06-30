@@ -19,6 +19,15 @@ use PHPUnit\Framework\TestCase;
  */
 final class AddressFromMasterPublicKeyComponentTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (PHP_INT_SIZE !== 8) {
+            self::markTestSkipped('unsupported on non 64 bits systems');
+        }
+    }
+
     /**
      * @dataProvider providerOfScenarios
      * @covers ::derive
