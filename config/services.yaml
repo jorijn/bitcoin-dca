@@ -27,6 +27,9 @@ parameters:
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
 
+  # xpub fallback settings
+  env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
+
 services:
   ######################################################################
   # CLI Commands
