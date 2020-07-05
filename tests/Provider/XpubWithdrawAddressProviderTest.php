@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Provider;
 
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
@@ -21,7 +21,7 @@ final class XpubWithdrawAddressProviderTest extends TestCase
 {
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $xpubRepository;
-    /** @var AddressFromMasterPublicKeyFactory|MockObject */
+    /** @var AddressFromMasterPublicKeyComponent|MockObject */
     private $keyFactory;
     /** @var MockObject|ValidationInterface */
     private $validation;
@@ -33,7 +33,7 @@ final class XpubWithdrawAddressProviderTest extends TestCase
         parent::setUp();
 
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
-        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
+        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyComponent::class);
         $this->configuredXPub = 'xpub'.random_int(1000, 2000);
         $this->validation = $this->createMock(ValidationInterface::class);
         $this->provider = new XpubWithdrawAddressProvider(
