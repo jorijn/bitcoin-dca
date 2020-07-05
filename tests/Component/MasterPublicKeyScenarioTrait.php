@@ -2,58 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Jorijn\Bitcoin\Dca\Factory;
+namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
-use PHPUnit\Framework\TestCase;
-
-/**
- * The keys used in this class are generated solely for the purpose of testing, do not expect funds there.
- *
- * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
- * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
- *
- * @coversDefaultClass \Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory
- *
- * @internal
- */
-final class AddressFromMasterPublicKeyFactoryTest extends TestCase
+trait MasterPublicKeyScenarioTrait
 {
     /**
-     * @dataProvider providerOfScenarios
-     * @covers ::derive
+     * The keys used in this class are generated solely for the purpose of testing, do not expect funds there.
+     *
+     * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
+     * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
      */
-    public function testDerive(string $xpub, array $expectedAddressList): void
-    {
-        $factory = new AddressFromMasterPublicKeyFactory();
-        foreach ($expectedAddressList as $index => $expectedAddress) {
-            static::assertSame(
-                $expectedAddress,
-                $factory->derive($xpub, '0/'.$index)
-            );
-        }
-    }
-
-    /**
-     * @covers ::derive
-     */
-    public function testDeriveWithEmptyXpubKey(): void
-    {
-        $factory = new AddressFromMasterPublicKeyFactory();
-        $this->expectException(\InvalidArgumentException::class);
-        $factory->derive('');
-    }
-
-    /**
-     * @covers ::derive
-     */
-    public function testDeriveWithUnsupportedKey(): void
-    {
-        $factory = new AddressFromMasterPublicKeyFactory();
-        $this->expectException(\RuntimeException::class);
-        $factory->derive('(╯°□°）╯︵ ┻━┻');
-    }
-
     public function providerOfScenarios(): array
     {
         return [

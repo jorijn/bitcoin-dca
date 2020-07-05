@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
 use Jorijn\Bitcoin\Dca\Command\VerifyXPubCommand;
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 final class VerifyXPubCommandTest extends TestCase
 {
-    /** @var AddressFromMasterPublicKeyFactory|MockObject */
+    /** @var AddressFromMasterPublicKeyComponent|MockObject */
     private $keyFactory;
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $xpubRepository;
@@ -33,7 +33,7 @@ final class VerifyXPubCommandTest extends TestCase
     {
         parent::setUp();
 
-        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyFactory::class);
+        $this->keyFactory = $this->createMock(AddressFromMasterPublicKeyComponent::class);
         $this->xpubRepository = $this->createMock(TaggedIntegerRepositoryInterface::class);
         $this->configuredKey = 'xpub'.random_int(1000, 2000);
         $this->environmentKey = 'CONFIG_KEY_HERE';

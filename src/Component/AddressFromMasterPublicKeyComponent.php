@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jorijn\Bitcoin\Dca\Factory;
+namespace Jorijn\Bitcoin\Dca\Component;
 
 use BitWasp\Bitcoin\Address\AddressCreator;
 use BitWasp\Bitcoin\Bitcoin;
@@ -14,8 +14,9 @@ use BitWasp\Bitcoin\Network\NetworkFactory;
 use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\Base58ExtendedKeySerializer;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\ExtendedKeySerializer;
+use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
 
-class AddressFromMasterPublicKeyFactory
+class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
     public function derive(string $masterPublicKey, $path = '0/0'): string
     {
@@ -45,7 +46,7 @@ class AddressFromMasterPublicKeyFactory
 
                 break;
             default:
-                throw new \RuntimeException('no master public key available');
+                throw new NoMasterPublicKeyAvailableException('no master public key available');
 
                 break;
         }
@@ -62,5 +63,11 @@ class AddressFromMasterPublicKeyFactory
         $child_key = $key->derivePath($path);
 
         return $child_key->getAddress(new AddressCreator())->getAddress();
+    }
+
+    public function supported(): bool
+    {
+        // this component only works on PHP 64-bits
+        return PHP_INT_SIZE === 8;
     }
 }

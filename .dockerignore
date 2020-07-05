@@ -4,3 +4,4 @@ var/cache/*
 .env
 .env.dist
 .php_cs
+resources/xpub_derive/venv

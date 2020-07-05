@@ -2,3 +2,5 @@
 vendor
 .php_cs.cache
 .vscode
+resources/xpub_derive/.idea
+resources/xpub_derive/venv

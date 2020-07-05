@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Command;
 
-use Jorijn\Bitcoin\Dca\Factory\AddressFromMasterPublicKeyFactory;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -17,10 +17,10 @@ class VerifyXPubCommand extends Command
     protected ?string $configuredKey;
     protected string $environmentKey;
     protected TaggedIntegerRepositoryInterface $xpubRepository;
-    private AddressFromMasterPublicKeyFactory $keyFactory;
+    protected AddressFromMasterPublicKeyComponentInterface $keyFactory;
 
     public function __construct(
-        AddressFromMasterPublicKeyFactory $keyFactory,
+        AddressFromMasterPublicKeyComponentInterface $keyFactory,
         TaggedIntegerRepositoryInterface $xpubRepository,
         ?string $configuredKey,
         string $environmentKey
@@ -66,7 +66,7 @@ class VerifyXPubCommand extends Command
         }
 
         $table->render();
-        $io->warning('Make sure these addresses match those in your client, do not use the withdraw function is they do not.');
+        $io->warning('Make sure these addresses match those in your client, do not use the withdraw function if they do not.');
 
         return 0;
     }

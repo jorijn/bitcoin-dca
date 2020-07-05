@@ -46,7 +46,7 @@ You can verify that Bitcoin DCA will derive the correct addresses using the foll
    │ 9 │ bc1q2ufc8j9uw6x7hwqfsdakungk63etanxtkplel0 │               │
    └───┴────────────────────────────────────────────┴───────────────┘
 
-   [WARNING] Make sure these addresses match those in your client, do not use the withdraw function is they do not.
+   [WARNING] Make sure these addresses match those in your client, do not use the withdraw function if they do not.
 
 You can check that the correct address is being used when attempting to withdraw your Bitcoin:
 
