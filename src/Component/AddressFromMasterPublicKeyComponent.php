@@ -14,6 +14,7 @@ use BitWasp\Bitcoin\Network\NetworkFactory;
 use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\Base58ExtendedKeySerializer;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\ExtendedKeySerializer;
+use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
 
 class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
@@ -45,7 +46,7 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
 
                 break;
             default:
-                throw new \RuntimeException('no master public key available');
+                throw new NoMasterPublicKeyAvailableException('no master public key available');
 
                 break;
         }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
+use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -56,7 +57,7 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     public function testDeriveWithUnsupportedKey(): void
     {
         $component = new AddressFromMasterPublicKeyComponent();
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(NoMasterPublicKeyAvailableException::class);
         $component->derive('(╯°□°）╯︵ ┻━┻');
     }
 

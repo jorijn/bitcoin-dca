@@ -17,15 +17,17 @@ use PHPUnit\Framework\TestCase;
  */
 final class DeriveFromMasterPublicKeyComponentFactoryTest extends TestCase
 {
+    private const SUPPORTED = 'supported';
+
     /**
      * @covers ::createDerivationComponent
      */
     public function testOrderIsHandledCorrectly(): void
     {
         $service1 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
-        $service1->expects(static::once())->method('supported')->willReturn(true);
+        $service1->expects(static::once())->method(self::SUPPORTED)->willReturn(true);
         $service2 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
-        $service2->expects(static::never())->method('supported');
+        $service2->expects(static::never())->method(self::SUPPORTED);
 
         $factory = new DeriveFromMasterPublicKeyComponentFactory([
             $service1,
@@ -41,9 +43,9 @@ final class DeriveFromMasterPublicKeyComponentFactoryTest extends TestCase
     public function testSupported(): void
     {
         $service1 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
-        $service1->expects(static::once())->method('supported')->willReturn(true);
+        $service1->expects(static::once())->method(self::SUPPORTED)->willReturn(true);
         $service2 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
-        $service2->expects(static::once())->method('supported')->willReturn(false);
+        $service2->expects(static::once())->method(self::SUPPORTED)->willReturn(false);
 
         $factory = new DeriveFromMasterPublicKeyComponentFactory([
             $service2,

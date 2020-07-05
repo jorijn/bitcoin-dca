@@ -20,6 +20,8 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
 {
     use MasterPublicKeyScenarioTrait;
 
+    private const XPUB_PYTHON_CLI = 'XPUB_PYTHON_CLI';
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private ExternalAddressFromMasterPublicKeyComponent $component;
@@ -28,12 +30,12 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
-        if (!isset($_SERVER['XPUB_PYTHON_CLI']) || empty($_SERVER['XPUB_PYTHON_CLI']) || !file_exists($_SERVER['XPUB_PYTHON_CLI'])) {
+        if (!isset($_SERVER[self::XPUB_PYTHON_CLI]) || empty($_SERVER[self::XPUB_PYTHON_CLI]) || !file_exists($_SERVER[self::XPUB_PYTHON_CLI])) {
             static::markTestSkipped('setting XPUB_PYTHON_CLI is empty or does not exists');
         }
 
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->component = new ExternalAddressFromMasterPublicKeyComponent($this->logger, $_SERVER['XPUB_PYTHON_CLI']);
+        $this->component = new ExternalAddressFromMasterPublicKeyComponent($this->logger, $_SERVER[self::XPUB_PYTHON_CLI]);
     }
 
     /**
