@@ -420,8 +420,9 @@
                                                                 <h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">
                                                                     Where did your satoshis go</h2>
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
-                                                                    Bitcoin DCA left them in your online wallet at BL3P.
-                                                                    It is recommened to withdraw any funds you have
+                                                                    Bitcoin DCA left them in your online wallet
+                                                                    at <?php echo $this->exchange ?>.
+                                                                    It is recommended to withdraw any funds you have
                                                                     there because you don't own the private keys,
                                                                     amongst <a target="_blank"
                                                                                href="https://cryptonews.com/guides/why-it-is-risky-to-leave-your-cryptocurrency-in-exchange.htm"
@@ -475,7 +476,7 @@
                                                                             style="padding:0;Margin:0"><a
                                                                                     target="_blank"
                                                                                     href="https://github.com/Jorijn/bitcoin-dca"
-                                                                                    style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:11px;text-decoration:underline;color:#1376C8"><img
+                                                                                    style="max-width:32px;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:11px;text-decoration:underline;color:#1376C8"><img
                                                                                         title="GitHub"
                                                                                         src="cid:github-icon"
                                                                                         alt="GitHub" width="32"
@@ -489,16 +490,8 @@
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px">
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#999999">
-                                                                    “This is a random quote that changes every email. I
-                                                                    really like Bitcoin. I own Bitcoins. It’s a store of
-                                                                    value, a distributed ledger. It’s a great place to
-                                                                    put assets, especially in places like Argentina with
-                                                                    40 percent inflation, where $1 today is worth 60
-                                                                    cents in a year, and a government’s currency does
-                                                                    not hold value. It’s also a good investment vehicle
-                                                                    if you have an appetite for risk. But it won’t be a
-                                                                    currency until volatility slows down.” — David
-                                                                    Marcus (CEO of Paypal)</p></td>
+                                                                    “<?php echo $quote ?>”
+                                                                    — <?php echo $quoteAuthor ?></p></td>
                                                         </tr>
                                                     </table>
                                                 </td>

@@ -19,6 +19,8 @@ class NotifyOnBuyListener
     protected HtmlConverterInterface $htmlConverter;
     protected string $logoLocation;
     protected string $iconLocation;
+    protected string $exchange;
+    protected string $quotesLocation;
 
     public function __construct(
         MailerInterface $notifier,
@@ -26,9 +28,11 @@ class NotifyOnBuyListener
         string $to,
         string $from,
         string $subjectPrefix,
+        string $exchange,
         string $templateLocation,
         string $logoLocation,
-        string $iconLocation
+        string $iconLocation,
+        string $quotesLocation
     ) {
         $this->notifier = $notifier;
         $this->to = $to;
@@ -38,11 +42,16 @@ class NotifyOnBuyListener
         $this->htmlConverter = $htmlConverter;
         $this->logoLocation = $logoLocation;
         $this->iconLocation = $iconLocation;
+        $this->exchange = ucfirst($exchange);
+        $this->quotesLocation = $quotesLocation;
     }
 
     public function onBuy(BuySuccessEvent $event): void
     {
-        // TODO exchange name replace in template
+        $quotes = json_decode(file_get_contents($this->quotesLocation), true, 512, JSON_THROW_ON_ERROR);
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        ['quote' => $quote, 'author' => $quoteAuthor] = $quotes[array_rand($quotes)];
+
         ob_start();
         include $this->templateLocation;
         $html = ob_get_clean();

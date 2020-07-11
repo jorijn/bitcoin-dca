@@ -15,12 +15,6 @@ stages:
   - name: build
     if: tag IS present
 
-addons:
-  sonarcloud:
-    organization: "jorijns"
-    token:
-      secure: "EDADMvl/z1dwynwqPsopCflcBieBU88A1q5DfE93rIj9uawbThl90ekOFyPtZD6gvHdKtgYKOEk3BVG51E9NH2+Y3JCRTijBdl4mJ4okK1cf460WA7kFLDBwiJXjQtDoo+XUP0yKNua/ZPhxNabU5OGo0V6MGYgJbEvXWysOVxm3fWi37YTSTSbgeE+dYdmgeE6obU1DfFS3uhjwSQl7tsQ5PyLFoFrECC38K/YNeifUbw9SS+HOXSqNURWurNHJ8FFBijm+fnOkKfMq8JLDF3KBMN8Tl+Z6R6OYL1FCP/21dtdLcBqY8T2UFLHMnRX5OlI3ocXwlrjSLpUljdjVz/4eRNkqUpmf/0e59RLtGT4jMUEzlo+vYAVHygHkDMKZFF34ispzgxoFChREMhxdhj7c3qKTafzv8gM6sR5VR6liq6IFYYZAs4fxRAUJGcTDDr56IfmpkkgX4lOXSaDiVY5S9TiTBvM53SmICh6RlN/j+COcy2lTgn766kaY7DlUwYvvZ9uSpZnYoKvIrtOP51Fy9bkYANrEo5TJS1ie3jAE28z/aIUznu6OYHfm3C6IPVZ4K7/oY13uJkNX0F5+OV1ee2AiUwVDDf3IglMTYo6QXTdJPkoELiT9pk5rAxmPKTX/AdQ+MSnuMRE/lwLR6GYmM1+UzinlvAdNfT/afm4="
-
 cache:
   directories:
     - $HOME/.composer/cache
@@ -38,7 +32,6 @@ jobs:
         - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-dist
       script:
         - vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
-        - sonar-scanner
     - stage: build
       language: shell
       before_install:

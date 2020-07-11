@@ -5,13 +5,6 @@
 # Automated Bitcoin DCA tool for multiple Exchanges
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bitcoin-dca)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=coverage)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=ncloc)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=security_rating)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
-
-_Please be aware this is beta software. Test thoroughly with small amounts of money at first. This software is provided "as is" and comes without warranty. See [LICENSE](LICENSE)._
 
 ## Requirements
 * You need to have an account on a supported exchange;
@@ -41,3 +34,8 @@ The DCA tool is built with flexibility in mind, allowing you to specify your own
 
 ## Support
 You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoindca
+
+## Contributing
+Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
+
+Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32`.
