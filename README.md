@@ -1,4 +1,6 @@
-_May 27th: This project was originally called "bl3p-dca" since I launched with BL3P at first. I would like to expand the list of supported exchanges and because of that, I chose to continue development under a more generic name. Be sure to update your Docker container from `jorijn/bl3p-dca` to `jorijn/bitcoin-dca`._
+<p align="center">
+  <img src="/resources/images/logo.png?raw=true">
+</p>
 
 # Automated Bitcoin DCA tool for multiple Exchanges
 
@@ -39,3 +41,8 @@ The DCA tool is built with flexibility in mind, allowing you to specify your own
 
 ## Support
 You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoindca
+
+## Contributing
+Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
+
+Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32`.
