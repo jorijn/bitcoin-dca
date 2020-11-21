@@ -43,7 +43,7 @@ class WithdrawCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'If supplied, will limit the withdrawal to the balance available for this tag'
             )
-            ->setDescription('Withdraw Bitcoin from Bl3P')
+            ->setDescription('Withdraw Bitcoin from the exchange')
         ;
     }
 

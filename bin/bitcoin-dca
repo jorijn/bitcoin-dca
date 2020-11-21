@@ -35,13 +35,13 @@ if (!$containerConfigCache->isFresh()) {
     // write the compiled container to file
     $dumper = new PhpDumper($containerBuilder);
     $containerConfigCache->write(
-        $dumper->dump(['class' => 'Bl3pDcaContainer']),
+        $dumper->dump(['class' => 'BitcoinDcaContainer']),
         $containerBuilder->getResources()
     );
 }
 
 require_once $containerCache;
-$container = new Bl3pDcaContainer();
+$container = new BitcoinDcaContainer();
 
 $application = $container->get('application');
 $application->setCommandLoader($container->get('console.command_loader'));

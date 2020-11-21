@@ -1,7 +1,6 @@
 parameters:
   application_title: 'Bitcoin DCA Tool'
   buy_fill_timeout: 30
-  base_currency: EUR
 
   # BL3P settings
   env(BL3P_API_URL): 'https://api.bl3p.eu/1/'
@@ -15,10 +14,16 @@ parameters:
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
 
+  # bitvavo settings
+  env(KRAKEN_API_URL): 'https://api.bitvavo.com/v2/'
+  env(KRAKEN_API_KEY): ~
+  env(KRAKEN_PRIVATE_KEY): ~
+
   # generic application settings
   env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
   env(EXCHANGE): 'bl3p'
+  env(BASE_CURRENCY): 'EUR'
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -31,6 +36,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Command\BuyCommand
     arguments:
       - '@service.buy'
+      - '%env(BASE_CURRENCY)%'
     tags:
       - { name: console.command, command: 'buy' }
 
@@ -236,7 +242,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService
     arguments:
       - '@api.client.bl3p'
-      - '%base_currency%'
+      - '%env(BASE_CURRENCY)%'
     tags:
       - { name: exchange-buy-service }
 
@@ -262,7 +268,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService
     arguments:
       - '@api.client.bitvavo'
-      - '%base_currency%'
+      - '%env(BASE_CURRENCY)%'
     tags:
       - { name: exchange-buy-service }
 
