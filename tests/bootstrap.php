@@ -9,6 +9,6 @@ if (method_exists(Dotenv::class, 'bootEnv') && file_exists(dirname(__DIR__).'/.e
 }
 
 // set the default location for the external derivation tool
-if (getenv('XPUB_PYTHON_CLI') === false && file_exists('/app/resources/xpub_derive/main.py')) {
+if (false === getenv('XPUB_PYTHON_CLI') && file_exists('/app/resources/xpub_derive/main.py')) {
     putenv('XPUB_PYTHON_CLI=/usr/bin/python3 /app/resources/xpub_derive/main.py');
 }

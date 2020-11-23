@@ -15,7 +15,7 @@ parameters:
   env(BITVAVO_API_SECRET): ~
 
   # bitvavo settings
-  env(KRAKEN_API_URL): 'https://api.bitvavo.com/v2/'
+  env(KRAKEN_API_URL): 'https://api.kraken.com/'
   env(KRAKEN_API_KEY): ~
   env(KRAKEN_PRIVATE_KEY): ~
 
@@ -126,6 +126,22 @@ services:
       - create
     arguments:
       - base_uri: '%env(string:BITVAVO_API_URL)%'
+
+  api.client.kraken:
+    class: Jorijn\Bitcoin\Dca\Client\KrakenClient
+    arguments:
+      - '@http_client.kraken'
+      - '@logger'
+      - '%env(string:KRAKEN_API_KEY)%'
+      - '%env(string:KRAKEN_PRIVATE_KEY)%'
+
+  http_client.kraken:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:KRAKEN_API_URL)%'
 
   ######################################################################
   # Address Providers
@@ -284,6 +300,32 @@ services:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService
     arguments:
       - '@api.client.bitvavo'
+    tags:
+      - { name: exchange-balance-service }
+
+  ##
+  ## Kraken
+  ##
+  service.buy.kraken:
+    class: Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBuyService
+    arguments:
+      - '@api.client.kraken'
+      - '%env(BASE_CURRENCY)%'
+    tags:
+      - { name: exchange-buy-service }
+
+  service.withdraw.kraken:
+    class: Jorijn\Bitcoin\Dca\Service\Kraken\KrakenWithdrawService
+    arguments:
+      - '@api.client.kraken'
+      - '@logger'
+    tags:
+      - { name: exchange-withdraw-service }
+
+  service.balance.kraken:
+    class: Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBalanceService
+    arguments:
+      - '@api.client.kraken'
     tags:
       - { name: exchange-balance-service }
 

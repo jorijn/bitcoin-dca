@@ -40,6 +40,9 @@ Supported Exchanges
    * - Bitvavo
      - https://bitvavo.com/
      - EUR
+   * - Kraken
+     - https://kraken.com/
+     - USD EUR CAD JPY GBP CHF AUD
 
 Telegram / Support
 -------

@@ -30,7 +30,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
-        if (getenv(self::XPUB_PYTHON_CLI) === false) {
+        if (false === getenv(self::XPUB_PYTHON_CLI)) {
             static::markTestSkipped('setting XPUB_PYTHON_CLI is empty or does not exists');
         }
 
