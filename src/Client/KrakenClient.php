@@ -14,15 +14,15 @@ class KrakenClient implements KrakenClientInterface
 
     protected HttpClientInterface $httpClient;
     protected LoggerInterface $logger;
-    protected string $publicKey;
-    protected string $privateKey;
+    protected ?string $publicKey;
+    protected ?string $privateKey;
     protected string $version;
 
     public function __construct(
         HttpClientInterface $httpClient,
         LoggerInterface $logger,
-        string $publicKey,
-        string $privateKey,
+        ?string $publicKey,
+        ?string $privateKey,
         string $version = '0'
     ) {
         $this->logger = $logger;
