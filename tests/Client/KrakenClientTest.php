@@ -27,6 +27,7 @@ final class KrakenClientTest extends TestCase
     protected KrakenClient $client;
     protected string $version;
     private array $testResponses = [];
+    private const BASE_URI = 'https://unit.test/';
 
     protected function setUp(): void
     {
@@ -41,7 +42,7 @@ final class KrakenClientTest extends TestCase
                 $url,
                 $options
             ) => new MockResponse($this->testResponses[$method][$url] ?? []),
-            'https://unit.test'
+            self::BASE_URI
         );
 
         $this->client = new KrakenClient(
@@ -65,7 +66,7 @@ final class KrakenClientTest extends TestCase
         $this->expectExceptionMessage($errorMessage);
 
         $this->testResponses['POST'] = [
-            'https://unit.test/'.$this->version.'/public/test' => json_encode(
+            self::BASE_URI.$this->version.'/public/test' => json_encode(
                 ['error' => [$errorMessage]],
                 JSON_THROW_ON_ERROR
             ),
@@ -83,7 +84,7 @@ final class KrakenClientTest extends TestCase
         $expectedResult = 'ok'.random_int(1000, 2000);
 
         $this->testResponses['POST'] = [
-            'https://unit.test/'.$this->version.'/public/test' => json_encode(
+            self::BASE_URI.$this->version.'/public/test' => json_encode(
                 ['result' => ['ok' => $expectedResult]],
                 JSON_THROW_ON_ERROR
             ),
@@ -101,7 +102,7 @@ final class KrakenClientTest extends TestCase
         $expectedResult = 'ok'.random_int(1000, 2000);
 
         $this->testResponses['POST'] = [
-            'https://unit.test/'.$this->version.'/private/test' => json_encode(
+            self::BASE_URI.$this->version.'/private/test' => json_encode(
                 ['result' => ['ok' => $expectedResult]],
                 JSON_THROW_ON_ERROR
             ),
