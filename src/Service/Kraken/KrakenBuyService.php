@@ -13,7 +13,7 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 class KrakenBuyService implements BuyServiceInterface
 {
     private const SATOSHIS_IN_A_BITCOIN = '100000000';
-    protected string $lastUserRef;
+    protected array $lastUserRefs = [];
     protected KrakenClientInterface $client;
     protected string $baseCurrency;
     protected string $tradingPair;
@@ -33,7 +33,7 @@ class KrakenBuyService implements BuyServiceInterface
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
         // generate a 32-bit singed integer to track this order
-        $this->lastUserRef = (string) random_int(0, 0x7FFFFFFF);
+        $lastUserRef = (string) random_int(0, 0x7FFFFFFF);
 
         $addedOrder = $this->client->queryPrivate('AddOrder', [
             'pair' => $this->tradingPair,
@@ -41,10 +41,12 @@ class KrakenBuyService implements BuyServiceInterface
             'ordertype' => 'market',
             'volume' => bcdiv((string) $amount, $this->getCurrentPrice(), 8),
             'oflags' => 'fciq', // prefer fee in quote currency
-            'userref' => $this->lastUserRef,
+            'userref' => $lastUserRef,
         ]);
 
         $orderId = $addedOrder['txid'][array_key_first($addedOrder['txid'])];
+
+        $this->lastUserRefs[$orderId] = $lastUserRef;
 
         // check that its closed
         $this->checkIfOrderIsFilled($orderId);
@@ -54,7 +56,7 @@ class KrakenBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $trades = $this->client->queryPrivate('OpenOrders', ['userref' => $this->lastUserRef]);
+        $trades = $this->client->queryPrivate('OpenOrders', ['userref' => $this->lastUserRefs[$orderId] ?? null]);
         if (\count($trades['open'] ?? []) > 0) {
             throw new PendingBuyOrderException($orderId);
         }
