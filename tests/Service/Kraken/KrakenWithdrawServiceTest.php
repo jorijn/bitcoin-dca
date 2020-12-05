@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,4 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class KrakenWithdrawServiceTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        $this->client = $this->createMock(KrakenClientInterface::class);
+    }
 }
