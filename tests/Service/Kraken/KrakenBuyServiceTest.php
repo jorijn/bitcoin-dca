@@ -114,7 +114,7 @@ final class KrakenBuyServiceTest extends TestCase
         ;
 
         $completedOrder = $this->buyService->initiateBuy($amount);
-        var_dump($completedOrder);
+
         static::assertSame(
             (int) bcmul(bcdiv((string) $amount, $price, 8), KrakenBuyService::SATOSHIS_IN_A_BITCOIN, 0),
             $completedOrder->getAmountInSatoshis()

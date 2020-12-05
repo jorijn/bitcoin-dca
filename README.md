@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/resources/images/logo.png?raw=true">
+  <img src="/resources/images/logo.png?raw=true" alt="Bitcoin DCA Logo">
 </p>
 
 # Automated Bitcoin DCA tool for multiple Exchanges
@@ -46,3 +46,5 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
 Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32`.
+
+<img src="/resources/images/contribute_qr.png?raw=true" alt="QR code for a contribution">
