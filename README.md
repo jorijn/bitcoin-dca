@@ -47,4 +47,6 @@ Contributions are highly welcome! Feel free to submit issues and pull requests o
 
 Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32`.
 
-<img src="/resources/images/contribute_qr.png?raw=true" alt="QR code for a contribution">
+<p align="center">
+    <img src="/resources/images/contribute_qr.png?raw=true" alt="QR code for a contribution">
+</p>
