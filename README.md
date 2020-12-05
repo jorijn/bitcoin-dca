@@ -45,7 +45,7 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 ## Contributing
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
-Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32` on-chain or on lightning: `03e85b676b0e8c84088525a1377b075dc4e12197bf2974529a3a5fdbfb47e957a2@37.97.173.245:9735`.
+Like my work? Buy me a 🍺 by sending some sats to `bc1quqjfmnldh9nfnxpucyvxh9pc63jyp0qdkpmf32` on-chain or on lightning: [03e85b676b0e8c84088525a1377b075dc4e12197bf2974529a3a5fdbfb47e957a2@37.97.173.245:9735](https://1ml.com/node/03e85b676b0e8c84088525a1377b075dc4e12197bf2974529a3a5fdbfb47e957a2).
 
 <p align="center">
     <img src="/resources/images/contribute_qr.png?raw=true" alt="QR code for a contribution">
