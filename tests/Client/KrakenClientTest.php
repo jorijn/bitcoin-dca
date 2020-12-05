@@ -20,6 +20,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
  */
 final class KrakenClientTest extends TestCase
 {
+    private const BASE_URI = 'https://unit.test/';
     /** @var MockHttpClient */
     protected MockHttpClient $httpClient;
     /** @var LoggerInterface|MockObject */
@@ -27,7 +28,6 @@ final class KrakenClientTest extends TestCase
     protected KrakenClient $client;
     protected string $version;
     private array $testResponses = [];
-    private const BASE_URI = 'https://unit.test/';
 
     protected function setUp(): void
     {

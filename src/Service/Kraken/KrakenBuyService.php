@@ -12,7 +12,7 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class KrakenBuyService implements BuyServiceInterface
 {
-    private const SATOSHIS_IN_A_BITCOIN = '100000000';
+    public const SATOSHIS_IN_A_BITCOIN = '100000000';
     protected array $lastUserRefs = [];
     protected KrakenClientInterface $client;
     protected string $baseCurrency;
@@ -49,9 +49,7 @@ class KrakenBuyService implements BuyServiceInterface
         $this->lastUserRefs[$orderId] = $lastUserRef;
 
         // check that its closed
-        $this->checkIfOrderIsFilled($orderId);
-
-        return $this->getCompletedBuyOrder($orderId);
+        return $this->checkIfOrderIsFilled($orderId);
     }
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
