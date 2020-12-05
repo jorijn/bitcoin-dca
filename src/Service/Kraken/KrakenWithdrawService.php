@@ -56,20 +56,16 @@ class KrakenWithdrawService implements WithdrawServiceInterface
 
     public function getWithdrawFeeInSatoshis(): int
     {
-        try {
-            $response = $this->client->queryPrivate(
-                'WithdrawInfo',
-                [
-                    'asset' => self::ASSET_NAME,
-                    'key' => $this->withdrawKey,
-                    'amount' => bcdiv((string) $this->getAvailableBalance(), self::DIVISOR, 8),
-                ]
-            );
+        $response = $this->client->queryPrivate(
+            'WithdrawInfo',
+            [
+                'asset' => self::ASSET_NAME,
+                'key' => $this->withdrawKey,
+                'amount' => bcdiv((string) $this->getAvailableBalance(), self::DIVISOR, 8),
+            ]
+        );
 
-            return (int) bcmul((string) $response['fee'], self::DIVISOR, 8);
-        } catch (KrakenClientException $exception) {
-            return 0;
-        }
+        return (int) bcmul((string) $response['fee'], self::DIVISOR, 8);
     }
 
     public function supportsExchange(string $exchange): bool
