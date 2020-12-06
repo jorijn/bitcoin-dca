@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
@@ -116,7 +117,7 @@ final class KrakenBuyServiceTest extends TestCase
         $completedOrder = $this->buyService->initiateBuy($amount);
 
         static::assertSame(
-            (int) bcmul(bcdiv((string) $amount, $price, 8), KrakenBuyService::SATOSHIS_IN_A_BITCOIN, 0),
+            (int) bcmul(bcdiv((string) $amount, $price, 8), Bitcoin::SATOSHIS, 0),
             $completedOrder->getAmountInSatoshis()
         );
 

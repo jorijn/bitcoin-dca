@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
@@ -13,7 +14,6 @@ use Psr\Log\LoggerInterface;
 class KrakenWithdrawService implements WithdrawServiceInterface
 {
     public const ASSET_NAME = 'XXBT';
-    private const DIVISOR = '100000000';
 
     protected KrakenClientInterface $client;
     protected LoggerInterface $logger;
@@ -31,7 +31,7 @@ class KrakenWithdrawService implements WithdrawServiceInterface
         $response = $this->client->queryPrivate('Withdraw', [
             'asset' => self::ASSET_NAME,
             'key' => $this->withdrawKey,
-            'amount' => bcdiv((string) $balanceToWithdraw, self::DIVISOR, 8),
+            'amount' => bcdiv((string) $balanceToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
         ]);
 
         return new CompletedWithdraw($addressToWithdrawTo, $balanceToWithdraw, $response['refid']);
@@ -44,7 +44,7 @@ class KrakenWithdrawService implements WithdrawServiceInterface
 
             foreach ($response as $symbol => $available) {
                 if (self::ASSET_NAME === $symbol) {
-                    return (int) bcmul((string) $available, self::DIVISOR, 8);
+                    return (int) bcmul((string) $available, Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
                 }
             }
         } catch (KrakenClientException $exception) {
@@ -61,11 +61,11 @@ class KrakenWithdrawService implements WithdrawServiceInterface
             [
                 'asset' => self::ASSET_NAME,
                 'key' => $this->withdrawKey,
-                'amount' => bcdiv((string) $this->getAvailableBalance(), self::DIVISOR, 8),
+                'amount' => bcdiv((string) $this->getAvailableBalance(), Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
             ]
         );
 
-        return (int) bcmul((string) $response['fee'], self::DIVISOR, 8);
+        return (int) bcmul((string) $response['fee'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
     }
 
     public function supportsExchange(string $exchange): bool

@@ -7,6 +7,7 @@ namespace Jorijn\Bitcoin\Dca\Client;
 use Jorijn\Bitcoin\Dca\Exception\Bl3pClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 /**
  * @source https://github.com/BitonicNL/bl3p-api/blob/master/examples/php/example.php
@@ -68,7 +69,7 @@ class Bl3pClient implements Bl3pClientInterface
         try {
             // convert json into an array
             $result = $serverResponse->toArray(true);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error(
                 self::LOG_API_CALL_FAILED,
                 [self::LOG_CONTEXT_URL => $path, self::LOG_CONTEXT_PARAMETERS => $parameters]

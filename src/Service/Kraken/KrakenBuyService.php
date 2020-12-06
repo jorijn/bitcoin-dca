@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
@@ -12,7 +13,6 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class KrakenBuyService implements BuyServiceInterface
 {
-    public const SATOSHIS_IN_A_BITCOIN = '100000000';
     protected array $lastUserRefs = [];
     protected KrakenClientInterface $client;
     protected string $baseCurrency;
@@ -39,7 +39,7 @@ class KrakenBuyService implements BuyServiceInterface
             'pair' => $this->tradingPair,
             'type' => 'buy',
             'ordertype' => 'market',
-            'volume' => bcdiv((string) $amount, $this->getCurrentPrice(), 8),
+            'volume' => bcdiv((string) $amount, $this->getCurrentPrice(), Bitcoin::DECIMALS),
             'oflags' => 'fciq', // prefer fee in quote currency
             'userref' => $lastUserRef,
         ]);
@@ -96,7 +96,7 @@ class KrakenBuyService implements BuyServiceInterface
         }
 
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) bcmul($orderInfo['vol'], self::SATOSHIS_IN_A_BITCOIN, 8))
+            ->setAmountInSatoshis((int) bcmul($orderInfo['vol'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
             ->setFeesInSatoshis(0)
             ->setDisplayAmountBought($orderInfo['vol'].' BTC')
             ->setDisplayAmountSpent($orderInfo['cost'].' '.$this->baseCurrency)

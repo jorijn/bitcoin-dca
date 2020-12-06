@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Command;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Service\WithdrawService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -71,9 +72,9 @@ class WithdrawCommand extends Command
         if (!$input->getOption('yes')) {
             $question = sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s will be taken as withdraw fee.',
-                $balanceToWithdraw / 100000000,
+                $balanceToWithdraw / Bitcoin::SATOSHIS,
                 $addressToWithdrawTo,
-                $this->withdrawService->getWithdrawFeeInSatoshis() / 100000000
+                $this->withdrawService->getWithdrawFeeInSatoshis() / Bitcoin::SATOSHIS
             );
 
             if (!$io->confirm($question, false)) {

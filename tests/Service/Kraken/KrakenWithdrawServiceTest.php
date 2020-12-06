@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Service\Kraken\KrakenWithdrawService;
@@ -54,7 +55,7 @@ final class KrakenWithdrawServiceTest extends TestCase
                 [
                     'asset' => KrakenWithdrawService::ASSET_NAME,
                     'key' => $this->withdrawKey,
-                    'amount' => bcdiv((string) $balanceToWithdraw, self::DIVISOR, 8),
+                    'amount' => bcdiv((string) $balanceToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
                 ]
             )
             ->willReturn([
@@ -87,7 +88,7 @@ final class KrakenWithdrawServiceTest extends TestCase
         ;
 
         static::assertSame(
-            (int) bcmul((string) $bitcoinBalance, self::DIVISOR, 0),
+            (int) bcmul((string) $bitcoinBalance, Bitcoin::SATOSHIS, 0),
             $this->service->getAvailableBalance()
         );
     }
@@ -145,7 +146,7 @@ final class KrakenWithdrawServiceTest extends TestCase
     public function testGetWithdrawFee(): void
     {
         $bitcoinBalance = random_int(1, 10) / 5;
-        $fee = bcdiv((string) $feeInSatoshis = random_int(25000, 50000), self::DIVISOR, 8);
+        $fee = bcdiv((string) $feeInSatoshis = random_int(25000, 50000), Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
 
         $this->client
             ->expects(static::exactly(2))
