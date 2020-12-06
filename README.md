@@ -19,10 +19,13 @@ _Please be aware this is beta software. Test thoroughly with small amounts of mo
 * You need to have an API key active on a supported exchange. It needs **read**, **trade** and **withdraw** permission.
 
 ## Supported Exchanges
-| Exchange | URL | Currencies |
-|------|------|------|
-| BL3P | https://bl3p.eu/ | EUR |
-| Bitvavo | https://bitvavo.com/ | EUR |
+| Exchange | URL | Currencies | XPUB withdraw supported |
+|------|------|------|------|
+| BL3P | https://bl3p.eu/ | EUR | No * |
+| Bitvavo | https://bitvavo.com/ | EUR | No * |
+| Kraken | https://kraken.com/ | USD EUR CAD JPY GBP CHF AUD | No |
+
+\* Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require you to provide proof of address ownership, thus temporarily disabling Bitcoin-DCA's XPUB feature.
 
 ## About this software
 The DCA tool is built with flexibility in mind, allowing you to specify your own schedule of buying and withdrawing. A few examples that are possible:
