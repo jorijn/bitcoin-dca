@@ -194,7 +194,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($price, $amount, &$userRef) {
+                    static::callback(function ($options) use (&$userRef) {
                         self::assertArrayHasKey('userref', $options);
                         self::assertNotEmpty($options['userref']);
 

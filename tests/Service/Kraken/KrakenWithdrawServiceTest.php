@@ -20,8 +20,6 @@ use Psr\Log\LoggerInterface;
  */
 final class KrakenWithdrawServiceTest extends TestCase
 {
-    private const DIVISOR = '100000000';
-
     /** @var KrakenClientInterface|MockObject */
     private $client;
     /** @var LoggerInterface|MockObject */
