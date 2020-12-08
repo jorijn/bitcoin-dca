@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require you to provide proof of address ownership, thus temporarily breaking Bitcoin-DCA's XPUB feature.
 
 ### Added
-* Added the logo to the README.md file #39
+* Add Kraken to the list of supported exchanges
+* Allow other base currencies than EUR, with Kraken the list is expanded to USD, EUR, CAD, JPY, GBP, CHF & AUD
+* Added the logo to the README.md file
 * Added CODE_OF_CONDUCT.md for people looking to contribute to Bitcoin DCA
-* Add Kraken to the list of supported exchanges #40
-* Allow other base currencies than EUR, with Kraken the list is expanded to USD, EUR, CAD, JPY, GBP, CHF & AUD #40
 * Added lines to the project README.md to allow project funding through on-chain and lightning transactions
 
 ### Fixed
