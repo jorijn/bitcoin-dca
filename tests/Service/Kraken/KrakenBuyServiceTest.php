@@ -241,7 +241,7 @@ final class KrakenBuyServiceTest extends TestCase
      */
     public function testBuyWithInclusiveStrategy(): void
     {
-        $buyService = new KrakenBuyService(
+        $includedFeeBuyService = new KrakenBuyService(
             $this->client,
             $this->baseCurrency,
             KrakenBuyService::FEE_STRATEGY_INCLUSIVE
@@ -301,7 +301,7 @@ final class KrakenBuyServiceTest extends TestCase
             )
         ;
 
-        $completedOrder = $buyService->initiateBuy($amount);
+        $completedOrder = $includedFeeBuyService->initiateBuy($amount);
 
         static::assertSame(
             (int) bcmul(bcdiv((string) $expectedAmount, $price, 8), Bitcoin::SATOSHIS, 0),
