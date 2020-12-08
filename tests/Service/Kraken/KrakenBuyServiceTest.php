@@ -29,7 +29,11 @@ final class KrakenBuyServiceTest extends TestCase
     {
         $this->client = $this->createMock(KrakenClientInterface::class);
         $this->baseCurrency = 'EUR'.random_int(1, 9);
-        $this->buyService = new KrakenBuyService($this->client, $this->baseCurrency);
+        $this->buyService = new KrakenBuyService(
+            $this->client,
+            $this->baseCurrency,
+            KrakenBuyService::FEE_STRATEGY_EXCLUSIVE
+        );
     }
 
     /**
@@ -43,6 +47,7 @@ final class KrakenBuyServiceTest extends TestCase
 
     /**
      * @covers ::checkIfOrderIsFilled
+     * @covers ::getAmountForStrategy
      * @covers ::getCompletedBuyOrder
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
@@ -222,5 +227,89 @@ final class KrakenBuyServiceTest extends TestCase
         $this->expectExceptionMessage('no open orders left yet order was not found, you should investigate this');
 
         $this->buyService->initiateBuy($amount);
+    }
+
+    /**
+     * @covers ::checkIfOrderIsFilled
+     * @covers ::getAmountForStrategy
+     * @covers ::getCompletedBuyOrder
+     * @covers ::getCurrentPrice
+     * @covers ::getTakerFeeFromSchedule
+     * @covers ::initiateBuy
+     *
+     * @throws \Exception
+     */
+    public function testBuyWithInclusiveStrategy(): void
+    {
+        $buyService = new KrakenBuyService(
+            $this->client,
+            $this->baseCurrency,
+            KrakenBuyService::FEE_STRATEGY_INCLUSIVE
+        );
+        $takerFeePercentage = random_int(10, 90) / 100;
+        $amount = random_int(100, 150);
+        $price = (string) random_int(10000, 90000);
+        $txId = (string) random_int(1000, 2000);
+
+        // amount with estimated fee already deducted to be inclusive
+        $expectedAmount = $amount - (($amount / 100) * $takerFeePercentage);
+        $fee = (string) ($expectedAmount * $takerFeePercentage / 100);
+
+        $this->client
+            ->expects(static::exactly(2))
+            ->method('queryPublic')
+            ->withConsecutive(
+                ['Ticker', ['pair' => 'XBT'.$this->baseCurrency]],
+                ['AssetPairs', ['pair' => 'XBT'.$this->baseCurrency, 'info' => 'fees']]
+            )
+            ->willReturnOnConsecutiveCalls(
+                ['XBT' => ['a' => [$price]]],
+                ['XBT'.$this->baseCurrency => ['fees' => [[0, $takerFeePercentage]]]]
+            )
+        ;
+
+        $this->client
+            ->expects(static::exactly(3))
+            ->method('queryPrivate')
+            ->withConsecutive(
+                [
+                    'AddOrder',
+                    static::callback(function ($options) use ($expectedAmount, $price) {
+                        self::assertArrayHasKey('volume', $options);
+                        self::assertSame(bcdiv((string) $expectedAmount, $price, 8), $options['volume']);
+
+                        return true;
+                    }),
+                ],
+                ['OpenOrders'],
+                ['TradesHistory'],
+            )
+            ->willReturnOnConsecutiveCalls(
+                ['txid' => [$txId]], // add order call
+                [[]], // open orders call
+                [
+                    'trades' => [
+                        [
+                            'ordertxid' => $txId,
+                            'vol' => bcdiv((string) $expectedAmount, $price, 8),
+                            'cost' => $expectedAmount,
+                            'price' => $price,
+                            'fee' => $fee,
+                        ],
+                    ],
+                ]
+            )
+        ;
+
+        $completedOrder = $buyService->initiateBuy($amount);
+
+        static::assertSame(
+            (int) bcmul(bcdiv((string) $expectedAmount, $price, 8), Bitcoin::SATOSHIS, 0),
+            $completedOrder->getAmountInSatoshis()
+        );
+
+        static::assertSame(bcdiv((string) $expectedAmount, $price, 8).' BTC', $completedOrder->getDisplayAmountBought());
+        static::assertSame($expectedAmount.' '.$this->baseCurrency, $completedOrder->getDisplayAmountSpent());
+        static::assertSame($fee.' '.$this->baseCurrency, $completedOrder->getDisplayFeesSpent());
     }
 }

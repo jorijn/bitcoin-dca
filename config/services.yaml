@@ -19,6 +19,7 @@ parameters:
   env(KRAKEN_API_KEY): ~
   env(KRAKEN_PRIVATE_KEY): ~
   env(KRAKEN_WITHDRAW_DESCRIPTION): ~
+  env(KRAKEN_FEE_STRATEGY): 'include'
 
   # generic application settings
   env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
@@ -312,6 +313,7 @@ services:
     arguments:
       - '@api.client.kraken'
       - '%env(BASE_CURRENCY)%'
+      - '%env(KRAKEN_FEE_STRATEGY)%'
     tags:
       - { name: exchange-buy-service }
 
