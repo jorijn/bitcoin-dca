@@ -20,7 +20,7 @@ final class SimpleWithdrawAddressProviderTest extends TestCase
 {
     /** @var MockObject|ValidationInterface */
     private $validation;
-    /** @var SimpleWithdrawAddressProvider */
+
     private SimpleWithdrawAddressProvider $provider;
     private string $configuredAddress;
 

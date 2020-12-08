@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,7 +22,6 @@ final class BitvavoWithdrawServiceTest extends TestCase
     public const ADDRESS = 'address';
     public const API_CALL = 'apiCall';
     public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
-    private const DIVISOR = '100000000';
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
@@ -91,7 +91,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                         self::assertArrayHasKey(self::ADDRESS, $parameters);
                         self::assertSame($address, $parameters[self::ADDRESS]);
                         self::assertArrayHasKey('amount', $parameters);
-                        self::assertSame((string) bcdiv((string) $netAmount, self::DIVISOR, 8), $parameters['amount']);
+                        self::assertSame((string) bcdiv((string) $netAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), $parameters['amount']);
                         self::assertArrayHasKey('addWithdrawalFee', $parameters);
                         self::assertTrue($parameters['addWithdrawalFee']);
 
@@ -100,7 +100,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
                 ]
             )
             ->willReturnOnConsecutiveCalls(
-                ['withdrawalFee' => bcdiv((string) $bitvavoFee, self::DIVISOR, 8)],
+                ['withdrawalFee' => bcdiv((string) $bitvavoFee, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)],
                 $apiResponse
             )
         ;
@@ -131,7 +131,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with('assets', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
-            ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, self::DIVISOR, 8)])
+            ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)])
         ;
 
         $providedFee = $this->service->getWithdrawFeeInSatoshis();

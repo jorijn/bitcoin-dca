@@ -27,15 +27,17 @@ final class BuyCommandTest extends TestCase
 
     /** @var BuyService|MockObject */
     private $buyService;
-    /** @var BuyCommand */
+
     private BuyCommand $command;
+    private string $baseCurency;
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->baseCurency = 'BC'.random_int(1, 9);
         $this->buyService = $this->createMock(BuyService::class);
-        $this->command = new BuyCommand($this->buyService);
+        $this->command = new BuyCommand($this->buyService, $this->baseCurency);
     }
 
     public function providerOfTags(): array
@@ -95,8 +97,9 @@ final class BuyCommandTest extends TestCase
 
         static::assertSame(0, $commandTester->getStatusCode());
         static::assertStringContainsString(sprintf(
-            '[OK] Bought: %s, EUR: %s, price: %s, spent fees: %s',
+            '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
             $orderInformation->getDisplayAmountBought(),
+            $this->baseCurency,
             $orderInformation->getDisplayAmountSpent(),
             $orderInformation->getDisplayAveragePrice(),
             $orderInformation->getDisplayFeesSpent(),
@@ -116,8 +119,9 @@ final class BuyCommandTest extends TestCase
 
         static::assertSame(0, $commandTester->getStatusCode());
         static::assertStringContainsString(sprintf(
-            '[OK] Bought: %s, EUR: %s, price: %s, spent fees: %s',
+            '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
             $orderInformation->getDisplayAmountBought(),
+            $this->baseCurency,
             $orderInformation->getDisplayAmountSpent(),
             $orderInformation->getDisplayAveragePrice(),
             $orderInformation->getDisplayFeesSpent(),

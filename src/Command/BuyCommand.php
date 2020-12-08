@@ -15,18 +15,20 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class BuyCommand extends Command
 {
     protected BuyService $buyService;
+    protected string $baseCurrency;
 
-    public function __construct(BuyService $buyService)
+    public function __construct(BuyService $buyService, string $baseCurrency)
     {
         parent::__construct(null);
 
         $this->buyService = $buyService;
+        $this->baseCurrency = $baseCurrency;
     }
 
     public function configure(): void
     {
         $this
-            ->addArgument('amount', InputArgument::REQUIRED, 'The amount of EUR to use for the BUY order')
+            ->addArgument('amount', InputArgument::REQUIRED, 'The amount of base currency to use for the BUY order')
             ->addOption(
                 'yes',
                 'y',
@@ -55,7 +57,7 @@ class BuyCommand extends Command
         }
 
         if (!$input->getOption('yes') && !$io->confirm(
-            'Are you sure you want to place an order for EUR '.$amount.'?',
+            'Are you sure you want to place an order for '.$this->baseCurrency.' '.$amount.'?',
             false
         )) {
             return 0;
@@ -65,8 +67,9 @@ class BuyCommand extends Command
             $orderInformation = $this->buyService->buy((int) $amount, $input->getOption('tag'));
 
             $io->success(sprintf(
-                'Bought: %s, EUR: %s, price: %s, spent fees: %s',
+                'Bought: %s, %s: %s, price: %s, spent fees: %s',
                 $orderInformation->getDisplayAmountBought(),
+                $this->baseCurrency,
                 $orderInformation->getDisplayAmountSpent(),
                 $orderInformation->getDisplayAveragePrice(),
                 $orderInformation->getDisplayFeesSpent()

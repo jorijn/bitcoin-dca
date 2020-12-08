@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
@@ -12,7 +13,6 @@ use Psr\Log\LoggerInterface;
 class BitvavoWithdrawService implements WithdrawServiceInterface
 {
     public const SYMBOL = 'symbol';
-    private const DIVISOR = '100000000';
     protected BitvavoClientInterface $client;
     protected LoggerInterface $logger;
 
@@ -29,7 +29,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
         $this->client->apiCall('withdrawal', 'POST', [], [
             self::SYMBOL => 'BTC',
             'address' => $addressToWithdrawTo,
-            'amount' => bcdiv((string) $netAmountToWithdraw, self::DIVISOR, 8),
+            'amount' => bcdiv((string) $netAmountToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
             'addWithdrawalFee' => true,
         ]);
 
@@ -45,8 +45,8 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
             return 0;
         }
 
-        $available = (int) bcmul($response[0]['available'], self::DIVISOR, 8);
-        $inOrder = (int) bcmul($response[0]['inOrder'], self::DIVISOR, 8);
+        $available = (int) bcmul($response[0]['available'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        $inOrder = (int) bcmul($response[0]['inOrder'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
 
         return $available - $inOrder;
     }
@@ -55,7 +55,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
     {
         $response = $this->client->apiCall('assets', 'GET', [self::SYMBOL => 'BTC']);
 
-        return (int) bcmul($response['withdrawalFee'], self::DIVISOR, 8);
+        return (int) bcmul($response['withdrawalFee'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
     }
 
     public function supportsExchange(string $exchange): bool
