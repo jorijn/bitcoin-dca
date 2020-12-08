@@ -21,7 +21,7 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
-        if (PHP_INT_SIZE !== 8) {
+        if (\PHP_INT_SIZE !== 8) {
             static::markTestSkipped('unsupported on non 64 bits systems');
         }
     }
@@ -67,6 +67,6 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     public function testSupported(): void
     {
         $component = new AddressFromMasterPublicKeyComponent();
-        static::assertSame(PHP_INT_SIZE === 8, $component->supported());
+        static::assertSame(\PHP_INT_SIZE === 8, $component->supported());
     }
 }

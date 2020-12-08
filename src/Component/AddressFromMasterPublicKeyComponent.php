@@ -35,16 +35,19 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
                 $pub = $masterPublicKey;
 
                 break;
+
             case 'y':
                 $pubPrefix = $slip132->p2shP2wpkh($bitcoin_prefixes);
                 $pub = $masterPublicKey;
 
                 break;
+
             case 'z':
                 $pubPrefix = $slip132->p2wpkh($bitcoin_prefixes);
                 $pub = $masterPublicKey;
 
                 break;
+
             default:
                 throw new NoMasterPublicKeyAvailableException('no master public key available');
 
@@ -68,6 +71,6 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
     public function supported(): bool
     {
         // this component only works on PHP 64-bits
-        return PHP_INT_SIZE === 8;
+        return \PHP_INT_SIZE === 8;
     }
 }

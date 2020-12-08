@@ -19,7 +19,7 @@ final class KrakenBalanceServiceTest extends TestCase
 {
     /** @var KrakenClientInterface|MockObject */
     protected $client;
-    /** @var KrakenBalanceService */
+
     protected KrakenBalanceService $balanceService;
 
     protected function setUp(): void

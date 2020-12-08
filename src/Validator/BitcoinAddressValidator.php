@@ -8,7 +8,6 @@ use BitWasp\Bitcoin\Address\AddressCreator;
 
 class BitcoinAddressValidator implements ValidationInterface
 {
-    /** @var AddressCreator */
     protected AddressCreator $addressCreator;
 
     public function __construct(AddressCreator $addressCreator)

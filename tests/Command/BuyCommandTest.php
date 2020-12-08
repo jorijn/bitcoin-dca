@@ -27,7 +27,7 @@ final class BuyCommandTest extends TestCase
 
     /** @var BuyService|MockObject */
     private $buyService;
-    /** @var BuyCommand */
+
     private BuyCommand $command;
     private string $baseCurency;
 

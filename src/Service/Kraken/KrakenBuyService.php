@@ -99,6 +99,7 @@ class KrakenBuyService implements BuyServiceInterface
         switch ($feeStrategy) {
             case self::FEE_STRATEGY_EXCLUSIVE:
                 return bcdiv((string) $baseCurrencyAmount, $currentPrice, Bitcoin::DECIMALS);
+
             case self::FEE_STRATEGY_INCLUSIVE:
             default:
                 $fee = $this->getTakerFeeFromSchedule() / 10000;

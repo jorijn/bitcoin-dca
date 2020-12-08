@@ -67,7 +67,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'POST', [], [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) $amount,
@@ -95,7 +95,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'POST', [], [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) 1,
@@ -130,7 +130,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'GET', [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 self::ORDER_ID => $orderId,
             ])
             ->willReturn($data)
@@ -156,7 +156,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'GET', [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 self::ORDER_ID => $orderId,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
