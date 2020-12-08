@@ -106,10 +106,19 @@ Kraken secured the platform by limiting API usage to pre-whitelisted withdrawal 
 **Example**: ``BITVAVO_API_SECRET=bitcoin-dca``
 
 KRAKEN_API_URL (optional)
-"""""""""""""""""""""""""""""
+"""""""""""""""""""""""""
 The endpoint where the tool should connect to.
 
-**Example**: ``KRAKEN_API_URL=https://api.kraken.com/``
+**Default**: ``KRAKEN_API_URL=https://api.kraken.com/``
+
+KRAKEN_FEE_STRATEGY (optional)
+""""""""""""""""""""""""""""""
+When you request to buy 100 EUR/USD from Kraken they assume you want to buy a minimum of 100 by default. If the fee would be 0.30 that would be added to the 100, resulting in 100.30 being deducted from your EUR/USD balance. If you're transferring a fixed amount of money for a fixed amount of DCA cycles this would result in a lack of balance for the final complete DCA purchase of that cycle.
+
+Option ``include`` (default): deducts the fee estimation from your order, this will ensure you have enough balance left for the final DCA cycle.
+Option ``exclude``: Kraken default, the tool will order for 100 and Kraken will pay the fee with the remainder of your balance.
+
+**Default**: ``KRAKEN_FEE_STRATEGY=include``
 
 Feeding configuration into the DCA tool
 ---------------------------------------
