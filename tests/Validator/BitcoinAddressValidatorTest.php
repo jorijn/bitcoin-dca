@@ -21,7 +21,7 @@ final class BitcoinAddressValidatorTest extends TestCase
 {
     /** @var AddressCreator|MockObject */
     private $addressCreator;
-    /** @var BitcoinAddressValidator */
+
     private BitcoinAddressValidator $validator;
 
     protected function setUp(): void

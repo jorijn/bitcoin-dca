@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
+use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService;
@@ -29,7 +30,6 @@ final class BitvavoBuyServiceTest extends TestCase
     private const API_CALL = 'apiCall';
     private const ORDER = 'order';
     private const AMOUNT_QUOTE = 'amountQuote';
-    private const DIVISOR = '100000000';
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
@@ -67,7 +67,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'POST', [], [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) $amount,
@@ -95,7 +95,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'POST', [], [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) 1,
@@ -130,7 +130,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'GET', [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 self::ORDER_ID => $orderId,
             ])
             ->willReturn($data)
@@ -156,7 +156,7 @@ final class BitvavoBuyServiceTest extends TestCase
             ->expects(static::once())
             ->method(self::API_CALL)
             ->with(self::ORDER, 'GET', [
-                self::MARKET => sprintf('BTC-'.$this->baseCurrency),
+                self::MARKET => 'BTC-'.$this->baseCurrency,
                 self::ORDER_ID => $orderId,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
@@ -209,7 +209,7 @@ final class BitvavoBuyServiceTest extends TestCase
 
         $responseDTO = $this->service->initiateBuy($amount);
 
-        static::assertSame($feePaid * 100000000, $responseDTO->getFeesInSatoshis());
+        static::assertSame($feePaid * Bitcoin::SATOSHIS, $responseDTO->getFeesInSatoshis());
         static::assertSame($feePaid.' '.$feeCurrency, $responseDTO->getDisplayFeesSpent());
     }
 
@@ -228,15 +228,15 @@ final class BitvavoBuyServiceTest extends TestCase
         $filledSatoshis = random_int(10000, 20000);
 
         $data = [
-            'filledAmount' => (bcdiv((string) $filledSatoshis, self::DIVISOR, 8)),
+            'filledAmount' => (bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)),
             'filledAmountQuote' => $filledQuote = (string) random_int(10, 20),
             'status' => 'filled',
             self::AMOUNT_QUOTE => $filledQuote,
             self::FEE_PAID => $feePaid = (string) random_int(1, 10),
             self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
-                $this->createFill(bcdiv((string) $filledSatoshis, self::DIVISOR, 8), 50, $price - 1000),
-                $this->createFill(bcdiv((string) $filledSatoshis, self::DIVISOR, 8), 50, $price + 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), 50, $price - 1000),
+                $this->createFill(bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), 50, $price + 1000),
             ],
         ];
 
@@ -261,7 +261,7 @@ final class BitvavoBuyServiceTest extends TestCase
     private function createFill(string $totalAmount, int $percentage, int $price): array
     {
         return [
-            'amount' => bcmul(bcdiv($totalAmount, '100', 8), (string) $percentage, 8),
+            'amount' => bcmul(bcdiv($totalAmount, '100', Bitcoin::DECIMALS), (string) $percentage, Bitcoin::DECIMALS),
             self::PRICE => $price,
         ];
     }

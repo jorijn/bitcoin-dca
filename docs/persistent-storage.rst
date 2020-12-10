@@ -27,9 +27,9 @@ We'll be creating a new directory here where the files will be stored:
 Running with a mounted volume
 -----------------------------
 
-Now, when running this tool you need to mount the new storage directory onto the container using argument ``-v /home/bob/applications/bitcoin-dca:/var/storage``. A typical command could look like this:
+Now, when running this tool you need to mount the new storage directory onto the container using argument ``-v /home/bob/applications/bitcoin-dca:/app/var/storage``. A typical command could look like this:
 
 .. code-block:: bash
    :caption: Running withdraw with a persistent storage directory
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca -v /home/bob/applications/bitcoin-dca:/var/storage jorijn/bitcoin-dca:latest withdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca -v /home/bob/applications/bitcoin-dca:/app/var/storage jorijn/bitcoin-dca:latest withdraw --all

@@ -114,7 +114,7 @@ final class VerifyXPubCommandTest extends TestCase
         }
 
         // test the active derivation is marked with a "<"
-        self::assertMatchesRegularExpression('/0\/'.$activeIndex.'.+</', $output);
+        static::assertMatchesRegularExpression('/0\/'.$activeIndex.'.+</', $output);
     }
 
     protected function createCommandTester(): CommandTester

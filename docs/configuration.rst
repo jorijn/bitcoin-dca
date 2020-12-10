@@ -38,7 +38,7 @@ EXCHANGE
 """"""""
 This configuration value determines which exchange will be used for buys and withdrawals. The default value is BL3P.
 
-Available options: ``bl3p``, ``bitvavo``
+Available options: ``bl3p``, ``bitvavo``, ``kraken``
 
 **Example**: ``EXCHANGE=bl3p``
 
@@ -64,7 +64,7 @@ The endpoint where the tool should connect to.
 **Example**: ``BL3P_API_URL=https://api.bl3p.eu/1/``
 
 Exchange: Bitvavo
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 BITVAVO_API_KEY
 """""""""""""""
@@ -82,7 +82,43 @@ BITVAVO_API_SECRET (optional)
 """""""""""""""""""""""""""""
 The endpoint where the tool should connect to.
 
-**Example**: ``https://api.bitvavo.com/v2/``
+**Example**: ``BITVAVO_API_URL=https://api.bitvavo.com/v2/``
+
+Exchange: Kraken
+^^^^^^^^^^^^^^^^
+
+KRAKEN_API_KEY
+""""""""""""""
+This is the identifying part of the API key that you created on the Kraken exchange.
+
+**Example**: ``BITVAVO_API_KEY=1006e89gd84e8f3a5209b2762d1bbef36eds5e6108e7696f6117556830b0e3dy``
+
+KRAKEN_PRIVATE_KEY
+""""""""""""""""""
+This is the private part of your API connection to Kraken. It’s an encoded secret granting access to your Kraken account.
+
+**Example**: ``BITVAVO_API_SECRET=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
+
+KRAKEN_WITHDRAW_DESCRIPTION
+"""""""""""""""""""""""""""
+Kraken secured the platform by limiting API usage to pre-whitelisted withdrawal addresses. This makes it a lot more secure but unfortunately limits the tool to one withdrawal address thus disabling XPUB generation. On Kraken, go to Funding and create a new Bitcoin withdrawal address and for description use something without special symbols or spaces. Configure the value here.
+
+**Example**: ``BITVAVO_API_SECRET=bitcoin-dca``
+
+KRAKEN_API_URL (optional)
+"""""""""""""""""""""""""
+The endpoint where the tool should connect to.
+
+**Default**: ``KRAKEN_API_URL=https://api.kraken.com/``
+
+KRAKEN_FEE_STRATEGY (optional)
+""""""""""""""""""""""""""""""
+When you request to buy 100 EUR/USD from Kraken they assume you want to buy a minimum of 100 by default. If the fee would be 0.30 that would be added to the 100, resulting in 100.30 being deducted from your EUR/USD balance. If you're transferring a fixed amount of money for a fixed amount of DCA cycles this would result in a lack of balance for the final complete DCA purchase of that cycle.
+
+Option ``include`` (default): deducts the fee estimation from your order, this will ensure you have enough balance left for the final DCA cycle.
+Option ``exclude``: Kraken default, the tool will order for 100 and Kraken will pay the fee with the remainder of your balance.
+
+**Default**: ``KRAKEN_FEE_STRATEGY=include``
 
 Feeding configuration into the DCA tool
 ---------------------------------------
