@@ -35,10 +35,11 @@ class BitvavoClient implements BitvavoClientInterface
         string $method = 'GET',
         array $parameters = [],
         array $body = [],
-        int $now = null
+        string $now = null
     ): array {
         if (null === $now) {
-            $now = (int) (time() * 1000);
+            $time = explode(' ', microtime());
+            $now = $time[1].substr($time[0], 2, 3);
         }
 
         $query = http_build_query($parameters, '', '&');
