@@ -1,5 +1,6 @@
 parameters:
   application_title: 'Bitcoin DCA Tool'
+  application_version: 'DEVELOPMENT'
   buy_fill_timeout: 30
 
   # BL3P settings
@@ -65,6 +66,13 @@ services:
       - 'WITHDRAW_XPUB'
     tags:
       - { name: console.command, command: 'verify-xpub' }
+
+  command.version:
+    class: Jorijn\Bitcoin\Dca\Command\VersionCommand
+    arguments:
+      - '%application.path%/version.json'
+    tags:
+      - { name: console.command, command: 'version' }
 
   ######################################################################
   # Factories
@@ -182,6 +190,7 @@ services:
     public: true
     arguments:
       - '%application_title%'
+      - '%application_version%'
 
   ######################################################################
   # Repositories
