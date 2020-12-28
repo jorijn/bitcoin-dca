@@ -15,7 +15,7 @@ parameters:
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
 
-  # bitvavo settings
+  # kraken settings
   env(KRAKEN_API_URL): 'https://api.kraken.com/'
   env(KRAKEN_API_KEY): ~
   env(KRAKEN_PRIVATE_KEY): ~
@@ -299,7 +299,7 @@ services:
     tags:
       - { name: exchange-buy-service }
 
-  service.withdraw.bivavo:
+  service.withdraw.bitvavo:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService
     arguments:
       - '@api.client.bitvavo'
