@@ -15,12 +15,13 @@ parameters:
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
 
-  # bitvavo settings
+  # kraken settings
   env(KRAKEN_API_URL): 'https://api.kraken.com/'
   env(KRAKEN_API_KEY): ~
   env(KRAKEN_PRIVATE_KEY): ~
   env(KRAKEN_WITHDRAW_DESCRIPTION): ~
   env(KRAKEN_FEE_STRATEGY): 'include'
+  env(KRAKEN_TRADING_AGREEMENT): ~
 
   # generic application settings
   env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
@@ -323,6 +324,7 @@ services:
       - '@api.client.kraken'
       - '%env(BASE_CURRENCY)%'
       - '%env(KRAKEN_FEE_STRATEGY)%'
+      - '%env(KRAKEN_TRADING_AGREEMENT)%'
     tags:
       - { name: exchange-buy-service }
 

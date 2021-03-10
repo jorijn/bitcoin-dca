@@ -36,6 +36,14 @@ final class KrakenBuyServiceTest extends TestCase
         );
     }
 
+    public function togglerTradingAgreement(): array
+    {
+        return [
+            'trading agreement enabled' => ['agree'],
+            'trading agreement disabled' => [null],
+        ];
+    }
+
     /**
      * @covers ::supportsExchange
      */
@@ -51,11 +59,21 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getCompletedBuyOrder
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
+     * @dataProvider togglerTradingAgreement
      *
      * @throws \Exception
      */
-    public function testSuccessfulBuy(): void
+    public function testSuccessfulBuy(?string $tradingAgreement): void
     {
+        if (null !== $tradingAgreement) {
+            $this->buyService = new KrakenBuyService(
+                $this->client,
+                $this->baseCurrency,
+                KrakenBuyService::FEE_STRATEGY_EXCLUSIVE,
+                $tradingAgreement
+            );
+        }
+
         $amount = random_int(100, 150);
         $price = (string) random_int(10000, 90000);
         $txId = (string) random_int(1000, 2000);
@@ -75,7 +93,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($price, $amount, &$userRef) {
+                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef) {
                         self::assertArrayHasKey('pair', $options);
                         self::assertSame('XBT'.$this->baseCurrency, $options['pair']);
                         self::assertArrayHasKey('type', $options);
@@ -88,6 +106,14 @@ final class KrakenBuyServiceTest extends TestCase
                         self::assertSame('fciq', $options['oflags']);
                         self::assertArrayHasKey('userref', $options);
                         self::assertNotEmpty($options['userref']);
+
+                        // https://github.com/Jorijn/bitcoin-dca/issues/45
+                        if (null !== $tradingAgreement) {
+                            self::assertArrayHasKey('trading_agreement', $options);
+                            self::assertSame('agree', $options['trading_agreement']);
+                        } else {
+                            self::assertArrayNotHasKey('trading_agreement', $options);
+                        }
 
                         $userRef = $options['userref'];
 
