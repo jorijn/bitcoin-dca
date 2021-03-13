@@ -120,6 +120,14 @@ Option ``exclude``: Kraken default, the tool will order for 100 and Kraken will 
 
 **Default**: ``KRAKEN_FEE_STRATEGY=include``
 
+KRAKEN_TRADING_AGREEMENT (only for German residents)
+""""""""""""""""""""""""""""""""""""""""""""""""""""
+If your Kraken account is verified with a German address, you will need to accept a trading agreement in order to place market and margin orders.
+
+See https://support.kraken.com/hc/en-us/articles/360036157952
+
+If you agree, fill this value with ``agree``, like this: ``KRAKEN_TRADING_AGREEMENT=agree``
+
 Feeding configuration into the DCA tool
 ---------------------------------------
 

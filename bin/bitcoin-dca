@@ -30,6 +30,15 @@ if (!$containerConfigCache->isFresh()) {
     $containerBuilder->addCompilerPass(new AddConsoleCommandPass());
     $containerBuilder->addCompilerPass(new RegisterListenersPass());
     $containerBuilder->setParameter('application.path', dirname(__DIR__));
+
+    $versionFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'version.json';
+    if (file_exists($versionFile)) {
+        $version = json_decode(file_get_contents($versionFile), true, 512, JSON_THROW_ON_ERROR);
+        if (isset($version['version'])) {
+            $containerBuilder->setParameter('application_version', $version['version']);
+        }
+    }
+
     $containerBuilder->compile();
 
     // write the compiled container to file

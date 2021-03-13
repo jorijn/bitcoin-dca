@@ -21,16 +21,19 @@ class KrakenBuyService implements BuyServiceInterface
     protected string $baseCurrency;
     protected string $tradingPair;
     protected string $feeStrategy;
+    protected ?string $tradingAgreement;
 
     public function __construct(
         KrakenClientInterface $client,
         string $baseCurrency,
-        string $feeStrategy = self::FEE_STRATEGY_EXCLUSIVE
+        string $feeStrategy = self::FEE_STRATEGY_EXCLUSIVE,
+        string $tradingAgreement = null
     ) {
         $this->client = $client;
         $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('XBT%s', $this->baseCurrency);
         $this->feeStrategy = $feeStrategy;
+        $this->tradingAgreement = $tradingAgreement;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -43,14 +46,21 @@ class KrakenBuyService implements BuyServiceInterface
         // generate a 32-bit singed integer to track this order
         $lastUserRef = (string) random_int(0, 0x7FFFFFFF);
 
-        $addedOrder = $this->client->queryPrivate('AddOrder', [
+        $orderDetails = [
             'pair' => $this->tradingPair,
             'type' => 'buy',
             'ordertype' => 'market',
             'volume' => $this->getAmountForStrategy($amount, $this->feeStrategy),
             'oflags' => 'fciq', // prefer fee in quote currency
             'userref' => $lastUserRef,
-        ]);
+        ];
+
+        // https://github.com/Jorijn/bitcoin-dca/issues/45
+        if (!empty($this->tradingAgreement)) {
+            $orderDetails['trading_agreement'] = $this->tradingAgreement;
+        }
+
+        $addedOrder = $this->client->queryPrivate('AddOrder', $orderDetails);
 
         $orderId = $addedOrder['txid'][array_key_first($addedOrder['txid'])];
 

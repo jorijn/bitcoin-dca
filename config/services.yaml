@@ -1,5 +1,6 @@
 parameters:
   application_title: 'Bitcoin DCA Tool'
+  application_version: 'DEVELOPMENT'
   buy_fill_timeout: 30
 
   # BL3P settings
@@ -14,12 +15,13 @@ parameters:
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
 
-  # bitvavo settings
+  # kraken settings
   env(KRAKEN_API_URL): 'https://api.kraken.com/'
   env(KRAKEN_API_KEY): ~
   env(KRAKEN_PRIVATE_KEY): ~
   env(KRAKEN_WITHDRAW_DESCRIPTION): ~
   env(KRAKEN_FEE_STRATEGY): 'include'
+  env(KRAKEN_TRADING_AGREEMENT): ~
 
   # generic application settings
   env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
@@ -69,6 +71,13 @@ services:
       - 'WITHDRAW_XPUB'
     tags:
       - { name: console.command, command: 'verify-xpub' }
+
+  command.version:
+    class: Jorijn\Bitcoin\Dca\Command\VersionCommand
+    arguments:
+      - '%application.path%/version.json'
+    tags:
+      - { name: console.command, command: 'version' }
 
   ######################################################################
   # Factories
@@ -195,6 +204,7 @@ services:
     public: true
     arguments:
       - '%application_title%'
+      - '%application_version%'
 
   ######################################################################
   # Repositories
@@ -319,7 +329,7 @@ services:
     tags:
       - { name: exchange-buy-service }
 
-  service.withdraw.bivavo:
+  service.withdraw.bitvavo:
     class: Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService
     arguments:
       - '@api.client.bitvavo'
@@ -343,6 +353,7 @@ services:
       - '@api.client.kraken'
       - '%env(BASE_CURRENCY)%'
       - '%env(KRAKEN_FEE_STRATEGY)%'
+      - '%env(KRAKEN_TRADING_AGREEMENT)%'
     tags:
       - { name: exchange-buy-service }
 
