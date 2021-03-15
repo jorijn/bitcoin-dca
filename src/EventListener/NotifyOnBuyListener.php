@@ -49,10 +49,11 @@ class NotifyOnBuyListener
     public function onBuy(BuySuccessEvent $event): void
     {
         $quotes = json_decode(file_get_contents($this->quotesLocation), true, 512, JSON_THROW_ON_ERROR);
-        /** @noinspection PhpUnusedLocalVariableInspection */
+        // @noinspection PhpUnusedLocalVariableInspection
         ['quote' => $quote, 'author' => $quoteAuthor] = $quotes[array_rand($quotes)];
 
         ob_start();
+
         include $this->templateLocation;
         $html = ob_get_clean();
 

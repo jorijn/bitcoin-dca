@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office"
+<html xmlns="http://www.w3.org/1999/xhtml"
       style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
 <head>
     <meta charset="UTF-8">
@@ -288,7 +288,7 @@
                                                                 style="padding:0;Margin:0;padding-bottom:10px"><h1
                                                                         style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:30px;font-style:normal;font-weight:normal;color:#333333;text-align:center">
                                                                     Hey, you
-                                                                    bought <?php echo number_format($event->getBuyOrder()->getAmountInSatoshis()) ?>
+                                                                    bought <?php echo number_format($event->getBuyOrder()->getAmountInSatoshis()); ?>
                                                                     satoshis!</h1></td>
                                                         </tr>
                                                         <tr style="border-collapse:collapse">
@@ -322,8 +322,8 @@
                                                                     <tr style="border-collapse:collapse">
                                                                         <td align="right" style="padding:0;Margin:0"><p
                                                                                     style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:28px;color:#333333">
-                                                                                <strong>Purchased Bitcoin<br>Spent&nbsp;EUR<br>Exchange&nbsp;Fee<br>Exchange&nbsp;Rate<?php if ($tag = $event->getTag()): ?>
-                                                                                        <br>Tag<?php endif ?></strong>
+                                                                                <strong>Purchased Bitcoin<br>Spent&nbsp;EUR<br>Exchange&nbsp;Fee<br>Exchange&nbsp;Rate<?php if ($tag = $event->getTag()) { ?>
+                                                                                        <br>Tag<?php } ?></strong>
                                                                             </p></td>
                                                                     </tr>
                                                                 </table>
@@ -344,11 +344,11 @@
                                                                     <tr style="border-collapse:collapse">
                                                                         <td align="left" style="padding:0;Margin:0"><p
                                                                                     style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:28px;color:#333333">
-                                                                                <?php echo $event->getBuyOrder()->getDisplayAmountBought() ?>
-                                                                                <br><?php echo $event->getBuyOrder()->getDisplayAmountSpent() ?>
-                                                                                <br><?php echo $event->getBuyOrder()->getDisplayFeesSpent() ?>
-                                                                                <br><?php echo $event->getBuyOrder()->getDisplayAveragePrice() ?><?php if ($tag = $event->getTag()): ?>
-                                                                                    <br><?php echo $tag ?><?php endif ?>
+                                                                                <?php echo $event->getBuyOrder()->getDisplayAmountBought(); ?>
+                                                                                <br><?php echo $event->getBuyOrder()->getDisplayAmountSpent(); ?>
+                                                                                <br><?php echo $event->getBuyOrder()->getDisplayFeesSpent(); ?>
+                                                                                <br><?php echo $event->getBuyOrder()->getDisplayAveragePrice(); ?><?php if ($tag = $event->getTag()) { ?>
+                                                                                    <br><?php echo $tag; ?><?php } ?>
                                                                             </p></td>
                                                                     </tr>
                                                                 </table>
@@ -387,15 +387,15 @@
                                                                 style="padding:0;Margin:0;padding-bottom:10px"><p
                                                                         style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
                                                                     <strong>Purchased
-                                                                        Bitcoin</strong><br><?php echo $event->getBuyOrder()->getDisplayAmountBought() ?>
+                                                                        Bitcoin</strong><br><?php echo $event->getBuyOrder()->getDisplayAmountBought(); ?>
                                                                     <br><br><strong>Spent
-                                                                        EUR</strong><br><?php echo $event->getBuyOrder()->getDisplayAmountSpent() ?>
+                                                                        <?php echo $event->getBuyOrder()->getDisplayAmountSpentCurrency(); ?></strong><br><?php echo $event->getBuyOrder()->getDisplayAmountSpent(); ?>
                                                                     <br><br><strong>Exchange
-                                                                        Fee</strong><br><?php echo $event->getBuyOrder()->getDisplayFeesSpent() ?>
+                                                                        Fee</strong><br><?php echo $event->getBuyOrder()->getDisplayFeesSpent(); ?>
                                                                     <br><br><b>Exchange
-                                                                        Rate<br></b><?php echo $event->getBuyOrder()->getDisplayAveragePrice() ?><?php if ($tag = $event->getTag()): ?>
+                                                                        Rate<br></b><?php echo $event->getBuyOrder()->getDisplayAveragePrice(); ?><?php if ($tag = $event->getTag()) { ?>
                                                                         <br><br><strong>Tag</strong>
-                                                                        <br><?php echo $tag ?><br><?php endif ?>
+                                                                        <br><?php echo $tag; ?><br><?php } ?>
                                                                 </p></td>
                                                         </tr>
                                                         <!--<![endif]-->
@@ -413,7 +413,7 @@
                                                                     visit the <a target="_blank"
                                                                                  href="https://t.me/bitcoindca"
                                                                                  style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">Telegram
-                                                                        Channel</a> where other users of Bitcoin DCA can
+                                                                        Channel</a>, where other Bitcoin DCA users can
                                                                     assist you.</p>
                                                                 <h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">
                                                                     <br></h2>
@@ -421,8 +421,8 @@
                                                                     Where did your satoshis go</h2>
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
                                                                     Bitcoin DCA left them in your online wallet
-                                                                    at <?php echo $this->exchange ?>.
-                                                                    It is recommended to withdraw any funds you have
+                                                                    at <?php echo $this->exchange; ?>.
+                                                                    The recommendation is to withdraw any funds you have
                                                                     there because you don't own the private keys,
                                                                     amongst <a target="_blank"
                                                                                href="https://cryptonews.com/guides/why-it-is-risky-to-leave-your-cryptocurrency-in-exchange.htm"
@@ -490,8 +490,8 @@
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px">
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#999999">
-                                                                    “<?php echo $quote ?>”
-                                                                    — <?php echo $quoteAuthor ?></p></td>
+                                                                    “<?php echo $quote; ?>”
+                                                                    — <?php echo $quoteAuthor; ?></p></td>
                                                         </tr>
                                                     </table>
                                                 </td>

@@ -67,6 +67,6 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     public function testSupported(): void
     {
         $component = new AddressFromMasterPublicKeyComponent();
-        static::assertSame(PHP_INT_SIZE === 8, $component->supported());
+        static::assertSame(\PHP_INT_SIZE === 8, $component->supported());
     }
 }
