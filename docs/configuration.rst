@@ -91,7 +91,7 @@ KRAKEN_API_KEY
 """"""""""""""
 This is the identifying part of the API key that you created on the Kraken exchange.
 
-**Example**: ``BITVAVO_API_KEY=1006e89gd84e8f3a5209b2762d1bbef36eds5e6108e7696f6117556830b0e3dy``
+**Example**: ``KRAKEN_API_KEY=1006e89gd84e8f3a5209b2762d1bbef36eds5e6108e7696f6117556830b0e3dy``
 
 KRAKEN_PRIVATE_KEY
 """"""""""""""""""
