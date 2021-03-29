@@ -78,8 +78,8 @@ This is the private part of your API connection to Bitvavo.
 
 **Example**: ``BITVAVO_API_SECRET=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
 
-BITVAVO_API_SECRET (optional)
-"""""""""""""""""""""""""""""
+BITVAVO_API_URL (optional)
+""""""""""""""""""""""""""
 The endpoint where the tool should connect to.
 
 **Example**: ``BITVAVO_API_URL=https://api.bitvavo.com/v2/``
@@ -97,13 +97,13 @@ KRAKEN_PRIVATE_KEY
 """"""""""""""""""
 This is the private part of your API connection to Kraken. It’s an encoded secret granting access to your Kraken account.
 
-**Example**: ``BITVAVO_API_SECRET=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
+**Example**: ``KRAKEN_PRIVATE_KEY=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
 
 KRAKEN_WITHDRAW_DESCRIPTION
 """""""""""""""""""""""""""
 Kraken secured the platform by limiting API usage to pre-whitelisted withdrawal addresses. This makes it a lot more secure but unfortunately limits the tool to one withdrawal address thus disabling XPUB generation. On Kraken, go to Funding and create a new Bitcoin withdrawal address and for description use something without special symbols or spaces. Configure the value here.
 
-**Example**: ``BITVAVO_API_SECRET=bitcoin-dca``
+**Example**: ``KRAKEN_WITHDRAW_DESCRIPTION=bitcoin-dca``
 
 KRAKEN_API_URL (optional)
 """""""""""""""""""""""""
