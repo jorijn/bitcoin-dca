@@ -14,7 +14,7 @@ Configuring a XPUB
 ------------------
 For the sake of demonstration, we'll be using the following XPUB here:
 
-.. code-block::
+.. code-block:: bash
    :caption: /home/bob/.bitcoin-dca
 
    WITHDRAW_XPUB=zpub6rLtzSoXnXKPXHroRKGCwuRVHjgA5YL6oUkdZnCfbDLdtAKNXb1FX1EmPUYR1uYMRBpngvkdJwxqhLvM46trRy5MRb7oYdSLbb4w5VC4i3z
@@ -27,7 +27,7 @@ Verifying the configured XPUB
 
 You can verify that Bitcoin DCA will derive the correct addresses using the following command:
 
-.. code-block::
+.. code-block:: bash
    :caption: Verifying the configured XPUB
 
    $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latest verify-xpub
@@ -46,11 +46,12 @@ You can verify that Bitcoin DCA will derive the correct addresses using the foll
    │ 9 │ bc1q2ufc8j9uw6x7hwqfsdakungk63etanxtkplel0 │               │
    └───┴────────────────────────────────────────────┴───────────────┘
 
-   [WARNING] Make sure these addresses match those in your client, do not use the withdraw function if they do not.
+.. note:: 
+   Make sure these addresses match those in your client, do not use the withdraw function if they do not.
 
 You can check that the correct address is being used when attempting to withdraw your Bitcoin:
 
-.. code-block::
+.. code-block:: bash
    :caption: Here, it takes address #0 (bc1qvqatyv2xynyanrej2fcutj6w5yugy0gc9jx2nn) for withdrawal
 
    $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latestwithdraw --all
