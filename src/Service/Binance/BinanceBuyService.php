@@ -15,7 +15,6 @@ class BinanceBuyService implements BuyServiceInterface
     protected BinanceClientInterface $client;
     protected string $baseCurrency;
     protected string $tradingPair;
-    protected int $lastTransactTime;
 
     public function __construct(BinanceClientInterface $client, string $baseCurrency)
     {
@@ -42,9 +41,6 @@ class BinanceBuyService implements BuyServiceInterface
             ],
         ]);
 
-        // save transaction time for checking order details
-        $this->lastTransactTime = $response['transactTime'];
-
         if ('FILLED' !== $response['status']) {
             throw new PendingBuyOrderException($response['orderId']);
         }
@@ -70,7 +66,7 @@ class BinanceBuyService implements BuyServiceInterface
             'extra' => ['security_type' => 'USER_DATA'],
             'body' => [
                 'symbol' => $this->tradingPair,
-                'startTime' => $this->lastTransactTime ?? 1619940185745,
+                'startTime' => $response['time'],
             ],
         ]);
 
@@ -79,7 +75,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->request('DELETE', '/api/v3/order', [
+        $this->client->request('DELETE', 'api/v3/order', [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
