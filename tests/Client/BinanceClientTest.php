@@ -116,7 +116,7 @@ final class BinanceClientTest extends TestCase
      * @covers ::parse
      * @covers ::request
      */
-    public function testSignatureAndApiKeyIsAddedToPostRequest(): void
+    public function testCredentialsAreAddedToPostRequest(): void
     {
         $path = 'path_'.random_int(1000, 2000);
         $body = ['foo' => 'bar_'.random_int(1000, 2000)];
@@ -126,11 +126,8 @@ final class BinanceClientTest extends TestCase
             ->method('request')
             ->with('POST', $path, static::callback(function (array $options) {
                 self::assertArrayHasKey('body', $options);
-                self::assertArrayHasKey('headers', $options);
                 self::assertArrayHasKey('timestamp', $options['body']);
                 self::assertArrayHasKey('signature', $options['body']);
-                self::assertArrayHasKey('X-MBX-APIKEY', $options['headers']);
-                self::assertSame($this->apiKey, $options['headers']['X-MBX-APIKEY']);
 
                 return true;
             }))
