@@ -94,13 +94,21 @@ final class BinanceClientTest extends TestCase
         $this->httpClient
             ->expects(static::once())
             ->method('request')
-            ->with('GET', $path, static::callback(function (array $options) {
+            ->with('GET', $path, static::callback(function (array $options) use ($body) {
                 self::assertArrayHasKey('query', $options);
                 self::assertArrayHasKey('headers', $options);
                 self::assertArrayHasKey('timestamp', $options['query']);
                 self::assertArrayHasKey('signature', $options['query']);
                 self::assertArrayHasKey('X-MBX-APIKEY', $options['headers']);
                 self::assertSame($this->apiKey, $options['headers']['X-MBX-APIKEY']);
+
+                $expectedHash = hash_hmac(
+                    BinanceClient::HASH_ALGO,
+                    http_build_query($body + ['timestamp' => $options['query']['timestamp']], '', '&'),
+                    $this->apiSecret
+                );
+
+                self::assertSame($expectedHash, $options['query']['signature']);
 
                 return true;
             }))
