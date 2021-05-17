@@ -12,6 +12,8 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class BinanceBuyService implements BuyServiceInterface
 {
+    public const ORDER_URL = 'api/v3/order';
+
     protected BinanceClientInterface $client;
     protected string $baseCurrency;
     protected string $tradingPair;
@@ -30,7 +32,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
-        $response = $this->client->request('POST', 'api/v3/order', [
+        $response = $this->client->request('POST', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -50,7 +52,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $response = $this->client->request('GET', 'api/v3/order', [
+        $response = $this->client->request('GET', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -75,7 +77,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->request('DELETE', 'api/v3/order', [
+        $this->client->request('DELETE', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,

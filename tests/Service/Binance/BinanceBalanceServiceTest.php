@@ -36,7 +36,7 @@ final class BinanceBalanceServiceTest extends TestCase
     {
         $responseStub = [
             'balances' => [
-                ['asset' => 'BTC', 'free' => '1.000', 'locked' => '1.000'],
+                ['asset' => 'BTC', 'free' => '1.001', 'locked' => '1.001'],
                 ['asset' => 'XRP', 'free' => '0.000', 'locked' => '0.000'], // as it should be
             ],
         ];
@@ -63,7 +63,7 @@ final class BinanceBalanceServiceTest extends TestCase
         static::assertArrayHasKey('BTC', $response);
         static::assertArrayNotHasKey('XRP', $response);
 
-        static::assertSame(['BTC', '2.000', '1.000'], $response['BTC']);
+        static::assertSame(['BTC', '2.002', '1.001'], $response['BTC']);
     }
 
     /**

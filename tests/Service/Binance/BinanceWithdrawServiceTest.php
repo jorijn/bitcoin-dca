@@ -19,9 +19,11 @@ use PHPUnit\Framework\TestCase;
  */
 final class BinanceWithdrawServiceTest extends TestCase
 {
+    private const URL_ASSET_DETAIL = 'sapi/v1/asset/assetDetail';
+
     /** @var BinanceClientInterface|MockObject */
-    protected $client;
-    protected BinanceWithdrawService $service;
+    private $client;
+    private BinanceWithdrawService $service;
 
     protected function setUp(): void
     {
@@ -131,7 +133,7 @@ final class BinanceWithdrawServiceTest extends TestCase
             ->method('request')
             ->with(
                 'GET',
-                'sapi/v1/asset/assetDetail',
+                self::URL_ASSET_DETAIL,
                 static::callback(function (array $options) {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('security_type', $options['extra']);
@@ -151,14 +153,14 @@ final class BinanceWithdrawServiceTest extends TestCase
      */
     public function testGetWithdrawalFeeButBitcoinIsMissing(): void
     {
-        $fee = '0.0005';
+        $fee = '0.0004';
 
         $this->client
             ->expects(static::once())
             ->method('request')
             ->with(
                 'GET',
-                'sapi/v1/asset/assetDetail',
+                self::URL_ASSET_DETAIL,
             )
             ->willReturn(['ETH' => ['withdrawStatus' => true, 'withdrawFee' => $fee]])
         ;
@@ -174,14 +176,14 @@ final class BinanceWithdrawServiceTest extends TestCase
      */
     public function testGetWithdrawalFeeButWithdrawalIsDisabled(): void
     {
-        $fee = '0.0005';
+        $fee = '0.0006';
 
         $this->client
             ->expects(static::once())
             ->method('request')
             ->with(
                 'GET',
-                'sapi/v1/asset/assetDetail',
+                self::URL_ASSET_DETAIL,
             )
             ->willReturn(['BTC' => ['withdrawStatus' => false, 'withdrawFee' => $fee]])
         ;
