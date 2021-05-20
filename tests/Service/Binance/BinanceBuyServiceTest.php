@@ -55,7 +55,7 @@ final class BinanceBuyServiceTest extends TestCase
         $amount = random_int(100, 200);
 
         $apiResponse = [
-            'executedQty' => '0.004',
+            'executedQty' => '0.005',
             'cummulativeQuoteQty' => $amount,
             'transactTime' => 123,
             'status' => 'FILLED',
@@ -70,7 +70,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                'api/v3/order',
+                BinanceBuyService::ORDER_URL,
                 static::callback(function (array $options) use ($amount) {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
@@ -95,9 +95,9 @@ final class BinanceBuyServiceTest extends TestCase
 
         $result = $this->service->initiateBuy($amount);
 
-        static::assertSame(400000, $result->getAmountInSatoshis());
+        static::assertSame(500000, $result->getAmountInSatoshis());
         static::assertSame(0, $result->getFeesInSatoshis());
-        static::assertSame('0.004 BTC', $result->getDisplayAmountBought());
+        static::assertSame('0.005 BTC', $result->getDisplayAmountBought());
         static::assertSame($amount.' '.$this->baseCurrency, $result->getDisplayAmountSpent());
         static::assertSame('1500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
         static::assertSame('2.0 BNB', $result->getDisplayFeesSpent());
@@ -114,13 +114,13 @@ final class BinanceBuyServiceTest extends TestCase
         $amount = random_int(100, 200);
 
         $apiResponse = [
-            'executedQty' => '0.004',
+            'executedQty' => '0.006',
             'cummulativeQuoteQty' => $amount,
             'transactTime' => 123,
             'status' => 'FILLED',
             'fills' => [
-                ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '1000.25'],
-                ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '2000.75'],
+                ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '5000.25'],
+                ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '6000.75'],
             ],
         ];
 
@@ -129,18 +129,18 @@ final class BinanceBuyServiceTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                'api/v3/order',
+                BinanceBuyService::ORDER_URL,
             )
             ->willReturn($apiResponse)
         ;
 
         $result = $this->service->initiateBuy($amount);
 
-        static::assertSame(400000, $result->getAmountInSatoshis());
+        static::assertSame(600000, $result->getAmountInSatoshis());
         static::assertSame(30000, $result->getFeesInSatoshis());
-        static::assertSame('0.004 BTC', $result->getDisplayAmountBought());
+        static::assertSame('0.006 BTC', $result->getDisplayAmountBought());
         static::assertSame($amount.' '.$this->baseCurrency, $result->getDisplayAmountSpent());
-        static::assertSame('1500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
+        static::assertSame('5500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
         static::assertSame('0.0003 BTC', $result->getDisplayFeesSpent());
     }
 
@@ -165,7 +165,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                'api/v3/order',
+                BinanceBuyService::ORDER_URL,
             )
             ->willReturn($apiResponse)
         ;
@@ -191,7 +191,7 @@ final class BinanceBuyServiceTest extends TestCase
         $time = time();
 
         $getResponse = [
-            'executedQty' => '0.004',
+            'executedQty' => '0.006',
             'cummulativeQuoteQty' => $amount,
             'transactTime' => 123,
             'orderId' => $orderId,
@@ -200,8 +200,8 @@ final class BinanceBuyServiceTest extends TestCase
         ];
 
         $infoResponse = [
-            ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '1000.25'],
-            ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '2000.75'],
+            ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '2000.25'],
+            ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '3000.75'],
         ];
 
         $this->client
@@ -210,7 +210,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'GET',
-                    'api/v3/order',
+                    BinanceBuyService::ORDER_URL,
                     static::callback(function (array $options) use ($orderId) {
                         self::assertArrayHasKey('extra', $options);
                         self::assertArrayHasKey('body', $options);
@@ -244,11 +244,11 @@ final class BinanceBuyServiceTest extends TestCase
 
         $result = $this->service->checkIfOrderIsFilled($orderId);
 
-        static::assertSame(400000, $result->getAmountInSatoshis());
+        static::assertSame(600000, $result->getAmountInSatoshis());
         static::assertSame(30000, $result->getFeesInSatoshis());
-        static::assertSame('0.004 BTC', $result->getDisplayAmountBought());
+        static::assertSame('0.006 BTC', $result->getDisplayAmountBought());
         static::assertSame($amount.' '.$this->baseCurrency, $result->getDisplayAmountSpent());
-        static::assertSame('1500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
+        static::assertSame('2500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
         static::assertSame('0.0003 BTC', $result->getDisplayFeesSpent());
     }
 
@@ -265,7 +265,7 @@ final class BinanceBuyServiceTest extends TestCase
         $time = time();
 
         $getResponse = [
-            'executedQty' => '0.004',
+            'executedQty' => '0.005',
             'cummulativeQuoteQty' => $amount,
             'transactTime' => 123,
             'orderId' => $orderId,
@@ -278,7 +278,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->method('request')
             ->with(
                 'GET',
-                'api/v3/order',
+                BinanceBuyService::ORDER_URL,
                 static::callback(function (array $options) use ($orderId) {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
@@ -315,7 +315,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->method('request')
             ->with(
                 'DELETE',
-                'api/v3/order',
+                BinanceBuyService::ORDER_URL,
                 static::callback(function (array $options) use ($orderId) {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
