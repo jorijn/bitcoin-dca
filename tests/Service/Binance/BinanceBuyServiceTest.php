@@ -75,17 +75,16 @@ final class BinanceBuyServiceTest extends TestCase
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
                     self::assertSame(['security_type' => 'TRADE'], $options['extra']);
-
-                    self::assertArrayHasKey('symbol', $options['body']);
                     self::assertSame($this->tradingPair, $options['body']['symbol']);
                     self::assertArrayHasKey('quoteOrderQty', $options['body']);
                     self::assertSame($amount, $options['body']['quoteOrderQty']);
+                    self::assertArrayHasKey('symbol', $options['body']);
                     self::assertArrayHasKey('side', $options['body']);
-                    self::assertSame('BUY', $options['body']['side']);
-                    self::assertArrayHasKey('type', $options['body']);
                     self::assertSame('MARKET', $options['body']['type']);
                     self::assertArrayHasKey('newOrderRespType', $options['body']);
                     self::assertSame('FULL', $options['body']['newOrderRespType']);
+                    self::assertSame('BUY', $options['body']['side']);
+                    self::assertArrayHasKey('type', $options['body']);
 
                     return true;
                 })
@@ -119,8 +118,8 @@ final class BinanceBuyServiceTest extends TestCase
             'transactTime' => 123,
             'status' => 'FILLED',
             'fills' => [
-                ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '5000.25'],
-                ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '6000.75'],
+                ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.004', 'price' => '5000.25'],
+                ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.004', 'price' => '6000.75'],
             ],
         ];
 
@@ -212,13 +211,13 @@ final class BinanceBuyServiceTest extends TestCase
                     'GET',
                     BinanceBuyService::ORDER_URL,
                     static::callback(function (array $options) use ($orderId) {
+                        self::assertArrayHasKey('symbol', $options['body']);
+                        self::assertSame(['security_type' => 'TRADE'], $options['extra']);
+                        self::assertArrayHasKey('orderId', $options['body']);
+                        self::assertSame($this->tradingPair, $options['body']['symbol']);
+                        self::assertSame($orderId, $options['body']['orderId']);
                         self::assertArrayHasKey('extra', $options);
                         self::assertArrayHasKey('body', $options);
-                        self::assertSame(['security_type' => 'TRADE'], $options['extra']);
-                        self::assertArrayHasKey('symbol', $options['body']);
-                        self::assertSame($this->tradingPair, $options['body']['symbol']);
-                        self::assertArrayHasKey('orderId', $options['body']);
-                        self::assertSame($orderId, $options['body']['orderId']);
 
                         return true;
                     }),
@@ -228,12 +227,12 @@ final class BinanceBuyServiceTest extends TestCase
                     'api/v3/myTrades',
                     static::callback(function (array $options) use ($time) {
                         self::assertArrayHasKey('extra', $options);
-                        self::assertArrayHasKey('body', $options);
-                        self::assertSame(['security_type' => 'USER_DATA'], $options['extra']);
                         self::assertArrayHasKey('symbol', $options['body']);
                         self::assertSame($this->tradingPair, $options['body']['symbol']);
                         self::assertArrayHasKey('startTime', $options['body']);
+                        self::assertArrayHasKey('body', $options);
                         self::assertSame($time, $options['body']['startTime']);
+                        self::assertSame(['security_type' => 'USER_DATA'], $options['extra']);
 
                         return true;
                     }),
