@@ -136,12 +136,12 @@ final class BinanceBuyServiceTest extends TestCase
 
         $result = $this->service->initiateBuy($amount);
 
-        static::assertSame(600000, $result->getAmountInSatoshis());
         static::assertSame(30000, $result->getFeesInSatoshis());
-        static::assertSame('0.006 BTC', $result->getDisplayAmountBought());
-        static::assertSame($amount.' '.$this->baseCurrency, $result->getDisplayAmountSpent());
         static::assertSame('5500.5 '.$this->baseCurrency, $result->getDisplayAveragePrice());
         static::assertSame('0.0003 BTC', $result->getDisplayFeesSpent());
+        static::assertSame($amount.' '.$this->baseCurrency, $result->getDisplayAmountSpent());
+        static::assertSame('0.006 BTC', $result->getDisplayAmountBought());
+        static::assertSame(600000, $result->getAmountInSatoshis());
     }
 
     /**
@@ -200,8 +200,8 @@ final class BinanceBuyServiceTest extends TestCase
         ];
 
         $infoResponse = [
-            ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '2000.25'],
-            ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.002', 'price' => '3000.75'],
+            ['commission' => '0.0002', 'commissionAsset' => 'BTC', 'qty' => '0.003', 'price' => '2000.25'],
+            ['commission' => '0.0001', 'commissionAsset' => 'BTC', 'qty' => '0.003', 'price' => '3000.75'],
         ];
 
         $this->client
