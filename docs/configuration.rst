@@ -38,7 +38,7 @@ EXCHANGE
 """"""""
 This configuration value determines which exchange will be used for buys and withdrawals. The default value is BL3P.
 
-Available options: ``bl3p``, ``bitvavo``, ``kraken``
+Available options: ``bl3p``, ``bitvavo``, ``kraken``, ``binance``
 
 **Example**: ``EXCHANGE=bl3p``
 
@@ -127,6 +127,35 @@ If your Kraken account is verified with a German address, you will need to accep
 See https://support.kraken.com/hc/en-us/articles/360036157952
 
 If you agree, fill this value with ``agree``, like this: ``KRAKEN_TRADING_AGREEMENT=agree``
+
+Exchange: Binance
+^^^^^^^^^^^^^^^^^
+
+Your Binance API key should hold at least the following permissions:
+
+* Enable Reading
+* Enable Spot & Margin Trading
+* Enable Withdrawals
+
+You should enable IP access restrictions to use withdrawal through the API. Enter the IP address that matches your outgoing connection. When in doubt, you can check your IP here: https://nordvpn.com/nl/ip-lookup/
+
+BINANCE_API_KEY
+"""""""""""""""
+This is the identifying part of the API key that you created on the Binance exchange.
+
+**Example**: ``BINANCE_API_KEY=mkYEtmPzI9q9qrwvYzTe44nB495joEM17bhUDspFEkKHjzLmKwT1exvQYxGcL6db``
+
+BINANCE_API_SECRET
+""""""""""""""""""
+This is the private part of your API connection to Binance. It’s a secret granting access to your Binance account.
+
+**Example**: ``BINANCE_API_SECRET=xXFw9vEiSdgllWfLs55uGC3ZBS3VyZMy1aGj4mYYlIIhX6hQ98AsGsQHLSKI4uj6``
+
+BINANCE_API_URL (optional)
+"""""""""""""""""""""""""
+The endpoint where the tool should connect to.
+
+**Default**: ``BINANCE_API_URL=https://api.binance.com/``
 
 Feeding configuration into the DCA tool
 ---------------------------------------

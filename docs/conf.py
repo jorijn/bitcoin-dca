@@ -1,7 +1,7 @@
 import sphinx_rtd_theme
 
 project = 'Bitcoin DCA'
-copyright = '2020, Jorijn Schrijvershof'
+copyright = '2021, Jorijn Schrijvershof'
 author = 'Jorijn Schrijvershof'
 extensions = []
 templates_path = ['_templates']
@@ -14,3 +14,8 @@ html_theme_options = {
     'navigation_depth': 4,
 }
 master_doc = 'index'
+html_logo = '../resources/images/logo-white.png'
+
+# I use a privacy focussed service https://usefathom.com/ to track how the documentation
+# is being used. This allows me to improve its contents.
+html_js_files = [('https://krill.jorijn.com/script.js', {'data-site': 'MXGDAIWO'})]

@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class PendingBuyOrderExceptionTest extends TestCase
 {
     /**
+     * @covers ::__construct
      * @covers ::getOrderId
      */
     public function testGetOrderId(): void

@@ -15,7 +15,7 @@ Welcome to Bitcoin DCA's documentation!
 
 About this software
 -------------------
-This DCA (Dollar Cost Averaging) tool is built with flexibility in mind, allowing you to specify your own schedule for buying and withdrawing.
+This self-hosted DCA (Dollar Cost Averaging) tool is built with flexibility in mind, allowing you to specify your schedule for buying and withdrawing.
 
 A few examples of possible scenario's:
 
@@ -31,23 +31,27 @@ Supported Exchanges
 
    * - Exchange
      - URL
-     - Currencies
      - XPUB withdraw supported
+     - Currencies
    * - BL3P
      - https://bl3p.eu/
+     - Yes
      - EUR
-     - No *
    * - Bitvavo
      - https://bitvavo.com/
-     - EUR
      - No *
+     - EUR
    * - Kraken
      - https://kraken.com/
-     - USD EUR CAD JPY GBP CHF AUD
      - No
+     - USD EUR CAD JPY GBP CHF AUD
+   * - Binance
+     - https://binance.com/
+     - Yes
+     - USDT BUSD EUR USDC USDT GBP AUD TRY BRL DAI TUSD RUB UAH PAX BIDR NGN IDRT VAI
 
 .. note::
-   Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require you to provide proof of address ownership, thus temporarily disabling Bitcoin-DCA's XPUB feature.
+   Due to regulatory changes in The Netherlands, Bitvavo currently requires you to provide proof of address ownership, thus (temporarily) disabling Bitcoin-DCA's XPUB feature.
 
 Telegram / Support
 ------------------
@@ -57,4 +61,4 @@ Contributing
 ------------
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
-Like my work? Buy me a 🍺 by sending some sats to https://jorijn.com/donate/
+Like my work? Please buy me a 🍺 by sending some sats to https://jorijn.com/donate/
