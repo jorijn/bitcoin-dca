@@ -3,6 +3,7 @@ name: Create and publish the Bitcoin-DCA Docker image
 on:
   release:
     types: [published] # run when a release has been published
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
