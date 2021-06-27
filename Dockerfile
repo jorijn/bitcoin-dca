@@ -70,6 +70,6 @@ COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 # compile the container for performance reasons
-RUN /app/bin/bitcoin-dca >/dev/null
+RUN /app/bin/bitcoin-dca
 
 ENTRYPOINT ["docker-entrypoint"]
