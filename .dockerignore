@@ -5,3 +5,4 @@ var/cache/*
 .env.dist
 .php_cs
 resources/xpub_derive/venv
+Dockerfile
