@@ -33,6 +33,7 @@ parameters:
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
   env(EXCHANGE): 'bl3p'
   env(BASE_CURRENCY): 'EUR'
+  env(DEBUG): 'false'
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
