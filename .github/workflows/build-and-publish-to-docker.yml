@@ -45,7 +45,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: docker.io/jorijn/${{ env.IMAGE_NAME }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: docker.io/${{ env.IMAGE_NAME }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       -
         name: Extract build metadata to version.json
@@ -58,6 +58,7 @@ jobs:
             "version": "${GITHUB_REF##*/}",
             "run_id": "${GITHUB_RUN_ID}"
           }
+          FILE;
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
