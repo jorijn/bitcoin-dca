@@ -27,6 +27,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: false
           target: test
+          load: true
           tags: jorijn/bitcoin-dca:ci
 
       - name: Run the PHP tests (again) for generating coverage output
