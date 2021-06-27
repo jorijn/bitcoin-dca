@@ -180,7 +180,7 @@ Now, when running the tool you can use ``--env-file`` like this:
 .. code-block:: bash
    :caption: Providing configuration with Docker's --env-file
 
-   $ docker run --rm -it --env-file=/home/username/.bitcoin-dca jorijn/bitcoin-dca:latest balance
+   $ docker run --rm -it --env-file=/home/username/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest balance
 
 Using inline arguments
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -192,4 +192,4 @@ For maximum control, you can also feed configuration into the tool like this:
 .. code-block:: bash
    :caption: Providing configuration by specifying each configuration item separately
 
-   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd WITHDRAW_ADDRESS=abcd jorijn/bitcoin-dca:latest balance
+   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd WITHDRAW_ADDRESS=abcd ghcr.io/jorijn/bitcoin-dca:latest balance

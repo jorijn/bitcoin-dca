@@ -27,7 +27,7 @@ You can test that it work with:
 .. code-block:: bash
    :caption: Checking the Exchange balance
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest balance
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest balance
 
 If successful, you should see a table containing your balances on the exchange:
 
@@ -50,14 +50,14 @@ Buying €10,00 of Bitcoin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: bash
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest buy 10
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest buy 10
 
 Withdrawing to your hardware wallet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca jorijn/bitcoin-dca:latest withdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest withdraw --all
 
 **It will ask you:** Ready to withdraw 0.00412087 BTC to Bitcoin Address bc1abcdefghijklmopqrstuvwxuz123456? A fee of 0.0003 will be taken as withdraw fee [y/N]:
 
