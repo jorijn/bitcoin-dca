@@ -70,10 +70,3 @@ jobs:
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
 #          cache-from: type=gha
 #          cache-to: type=gha
-
-      - name: Update repo description
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: jorijn/bitcoin-dca
