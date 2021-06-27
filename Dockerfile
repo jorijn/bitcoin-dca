@@ -1,6 +1,3 @@
-ARG PHP_VERSION="7.4"
-ARG ALPINE_VERSION="3.12"
-
 ##################################################################################################################
 # Dependency Stage
 ##################################################################################################################
@@ -25,7 +22,7 @@ RUN composer install \
 ##################################################################################################################
 # Base Stage
 ##################################################################################################################
-FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION} as base_image
+FROM php:7.4-cli-alpine3.12 as base_image
 
 RUN apk --no-cache update \
     && apk --no-cache add gmp-dev python3 py3-pip \
@@ -51,9 +48,16 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
+# php code coverage
+RUN apk --no-cache update \
+    && apk --no-cache add autoconf g++ make \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov
+
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
+# this does make the tests run multiple times, but with different architectures
 RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
-RUN composer run-script test
+RUN vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
 
 ##################################################################################################################
 # Production Stage

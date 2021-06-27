@@ -127,6 +127,11 @@ services:
     arguments:
       - base_uri: '%env(string:BL3P_API_URL)%'
 
+  http_client.bl3p.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.bitvavo
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
+
   api.client.bitvavo:
     class: Jorijn\Bitcoin\Dca\Client\BitvavoClient
     arguments:
@@ -142,6 +147,11 @@ services:
       - create
     arguments:
       - base_uri: '%env(string:BITVAVO_API_URL)%'
+
+  http_client.bitvavo.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.bitvavo
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
 
   api.client.kraken:
     class: Jorijn\Bitcoin\Dca\Client\KrakenClient
@@ -159,6 +169,11 @@ services:
     arguments:
       - base_uri: '%env(string:KRAKEN_API_URL)%'
 
+  http_client.kraken.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.kraken
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
+
   api.client.binance:
     class: Jorijn\Bitcoin\Dca\Client\BinanceClient
     arguments:
@@ -173,6 +188,11 @@ services:
       - create
     arguments:
       - base_uri: '%env(string:BINANCE_API_URL)%'
+
+  http_client.binance.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.binance
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
 
   ######################################################################
   # Address Providers
