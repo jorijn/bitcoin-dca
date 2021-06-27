@@ -67,8 +67,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha
+          cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
+#          cache-from: type=gha
+#          cache-to: type=gha
 
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v2

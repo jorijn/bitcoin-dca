@@ -25,8 +25,9 @@ jobs:
           target: test
           load: true
           tags: jorijn/bitcoin-dca:ci
-          cache-from: type=gha
-          cache-to: type=gha
+          cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
+#          cache-from: type=gha
+#          cache-to: type=gha
 
       - name: Run the PHP tests (again) for generating coverage output
         run: docker run --rm jorijn/bitcoin-dca:ci -v ${{ env.GITHUB_WORKSPACE }}:/app/ vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
