@@ -29,8 +29,8 @@ jobs:
 #          cache-from: type=gha
 #          cache-to: type=gha
 
-      - name: Run the PHP tests (again) for generating coverage output
-        run: docker run --rm jorijn/bitcoin-dca:ci -v ${{ env.GITHUB_WORKSPACE }}:/app/ vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
+      - name: Extract the logging artifacts from the container that was built
+        run: docker run --rm -v ${{ env.GITHUB_WORKSPACE }}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
 
       - name: Upload logging artifacts
         uses: actions/upload-artifact@v2
