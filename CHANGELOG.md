@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [v1.3.2] - 2021-06-27
+### Fixed
+* Missed a default setting for diagnostics
+
 ## [v1.3.1] - 2021-06-27
 ### Added
 * The HTTP client will now log relevant information about API calls when `DEBUG=1` is supplied in the configuration.
@@ -61,7 +65,8 @@ Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require
 ### Added
 * A Python based fallback mechanism for 32bits systems. Unfortunately a bug prevented Raspberry Pi users from using Xpubs properly. The system will automatically use the native, more advanced method or derivation for systems that are capable and degrade to the Python tool without people noticing.
 
-[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.2...HEAD
+[v1.3.2]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.1...v1.3.2
 [v1.3.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.0...v1.3.1
 [v1.3.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.2.3...v1.3.0
 [v1.2.3]: https://github.com/Jorijn/bitcoin-dca/compare/v1.2.2...v1.2.3
