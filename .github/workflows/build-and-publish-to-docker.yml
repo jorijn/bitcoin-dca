@@ -58,7 +58,6 @@ jobs:
             "version": "${GITHUB_REF##*/}",
             "run_id": "${GITHUB_RUN_ID}"
           }
-          FILE;
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
