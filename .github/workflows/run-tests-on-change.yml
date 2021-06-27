@@ -1,0 +1,63 @@
+name: Run the Bitcoin-DCA automated tests every time some code changes
+
+on:
+  push:
+
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build the Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: false
+          target: test
+          tags: jorijn/bitcoin-dca:ci
+
+      - name: Run the PHP tests (again) for generating coverage output
+        run: docker run --rm jorijn/bitcoin-dca:ci -v ${{ env.GITHUB_WORKSPACE }}:/app/ vendor/bin/phpunit --testdox --coverage-clover tests_coverage.xml --log-junit tests_log.xml
+
+      - name: Upload logging artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: test_coverage_and_logging
+          path: |
+            tests_coverage.xml
+            tests_log.xml
+
+  sonarcloud:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: test_coverage_and_logging
+          path: /tmp
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.php.coverage.reportPaths=/tmp/tests_coverage.xml
+            -Dsonar.php.tests.reportPaths=/tmp/tests_log.xml

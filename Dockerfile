@@ -48,7 +48,11 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
+# php code coverage
+RUN pecl install pcov && docker-php-ext-enable pcov
+
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
+# this does make the tests run multiple times, but with different architectures
 RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
 RUN composer run-script test
 
