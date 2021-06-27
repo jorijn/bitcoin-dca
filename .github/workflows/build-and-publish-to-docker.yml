@@ -56,7 +56,7 @@ jobs:
             "commit_id": "${GITHUB_SHA}",
             "build_date": "$(date)",
             "version": "${GITHUB_REF##*/}",
-            "run_id": "${GITHUB_RUN_ID}",
+            "run_id": "${GITHUB_RUN_ID}"
           }
 
       - name: Build and push Docker image
