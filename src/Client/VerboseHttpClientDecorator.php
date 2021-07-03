@@ -51,7 +51,7 @@ class VerboseHttpClientDecorator implements HttpClientInterface
             $this->logger->debug(
                 '[API call] exception was raised',
                 [
-                    'reason' => $exception->getMessage() ?: get_class($exception),
+                    'reason' => $exception->getMessage() ?: \get_class($exception),
                     'exception' => $exception,
                 ]
             );

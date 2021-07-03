@@ -46,6 +46,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Command\BuyCommand
     arguments:
       - '@service.buy'
+      - '@serializer'
       - '%env(BASE_CURRENCY)%'
     tags:
       - { name: console.command, command: 'buy' }
@@ -430,3 +431,35 @@ services:
     arguments:
       - 'bitcoin-dca'
       - ['@logger.stream_handler']
+
+  serializer:
+    class: Symfony\Component\Serializer\Serializer
+    public: true
+    arguments:
+      - []
+      - []
+
+  serializer.encoder.json:
+    class: Symfony\Component\Serializer\Encoder\JsonEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.xml:
+    class: Symfony\Component\Serializer\Encoder\XmlEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.csv:
+    class: Symfony\Component\Serializer\Encoder\CsvEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.yaml:
+    class: Symfony\Component\Serializer\Encoder\YamlEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.normalizer.object:
+    class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+    tags:
+      - serializer.normalizer
