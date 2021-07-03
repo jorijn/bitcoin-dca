@@ -74,14 +74,7 @@ class BuyCommand extends Command
         }
 
         try {
-            $orderInformation = (new CompletedBuyOrder())
-                ->setAmountInSatoshis(3231)
-                ->setFeesInSatoshis(12)
-                ->setDisplayAmountBought('0.000003231 BTC')
-                ->setDisplayAmountSpent('1 EUR')
-                ->setDisplayAveragePrice('29361.85 EUR')
-                ->setDisplayFeesSpent('EUR 0,01')
-            ;
+            $orderInformation = $this->buyService->buy((int) $amount, $input->getOption('tag'));
 
             $this->displayFormattedPurchaseOrder($orderInformation, $io, $input->getOption('output'));
 
@@ -103,7 +96,7 @@ class BuyCommand extends Command
             case 'json':
             case 'xml':
             case 'yaml':
-                $io->write($this->serializer->serialize($orderInformation, $requestedFormat));
+                $io->writeln($this->serializer->serialize($orderInformation, $requestedFormat));
 
                 break;
 
