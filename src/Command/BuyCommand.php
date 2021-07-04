@@ -14,11 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class BuyCommand extends Command
+class BuyCommand extends Command implements MachineReadableOutputCommandInterface
 {
     protected BuyService $buyService;
     protected SerializerInterface $serializer;
     protected string $baseCurrency;
+    private bool $isDisplayingMachineReadableOutput = false;
 
     public function __construct(BuyService $buyService, SerializerInterface $serializer, string $baseCurrency)
     {
@@ -86,6 +87,11 @@ class BuyCommand extends Command
         return 1;
     }
 
+    public function isDisplayingMachineReadableOutput(): bool
+    {
+        return $this->isDisplayingMachineReadableOutput;
+    }
+
     private function displayFormattedPurchaseOrder(
         CompletedBuyOrder $orderInformation,
         SymfonyStyle $io,
@@ -96,7 +102,8 @@ class BuyCommand extends Command
             case 'json':
             case 'xml':
             case 'yaml':
-                $io->writeln($this->serializer->serialize($orderInformation, $requestedFormat));
+                $this->isDisplayingMachineReadableOutput = true;
+                $io->write($this->serializer->serialize($orderInformation, $requestedFormat));
 
                 break;
 
