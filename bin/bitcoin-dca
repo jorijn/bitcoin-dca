@@ -56,4 +56,5 @@ $container = new BitcoinDcaContainer();
 
 $application = $container->get('application');
 $application->setCommandLoader($container->get('console.command_loader'));
+$application->setDispatcher($container->get('event_dispatcher'));
 $application->run();

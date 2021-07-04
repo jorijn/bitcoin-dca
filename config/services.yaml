@@ -2,6 +2,8 @@ parameters:
   application_title: 'Bitcoin DCA Tool'
   application_version: 'DEVELOPMENT'
   buy_fill_timeout: 30
+  version_updates.hostname: 'https://api.github.com'
+  version_updates.path: '/repos/jorijn/bitcoin-dca/releases/latest'
 
   # BL3P settings
   env(BL3P_API_URL): 'https://api.bl3p.eu/1/'
@@ -34,6 +36,7 @@ parameters:
   env(EXCHANGE): 'bl3p'
   env(BASE_CURRENCY): 'EUR'
   env(DEBUG): 'false'
+  env(DISABLE_VERSION_CHECK): 'false'
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -196,6 +199,14 @@ services:
     decorates: http_client.binance
     arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
 
+  http_client.version_updates:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%version_updates.hostname%'
+
   ######################################################################
   # Address Providers
   ######################################################################
@@ -276,6 +287,16 @@ services:
       - '@logger'
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
+
+  event_listener.check_for_updates:
+    class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
+    arguments:
+      - '@http_client.version_updates'
+      - '%application_version%'
+      - '%version_updates.path%'
+      - '%env(bool:DISABLE_VERSION_CHECK)%'
+    tags:
+      - { name: kernel.event_listener, event: console.terminate, method: onConsoleTerminated }
 
   ######################################################################
   # Services

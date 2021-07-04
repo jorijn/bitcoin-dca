@@ -99,6 +99,7 @@ final class BuyCommandTest extends TestCase
     /**
      * @covers ::displayFormattedPurchaseOrder
      * @covers ::execute
+     * @covers ::isDisplayingMachineReadableOutput
      * @dataProvider providerOfTags
      */
     public function testNotUnattendedAndConfirmsBuy(string $tag = null): void
@@ -162,6 +163,7 @@ final class BuyCommandTest extends TestCase
     /**
      * @covers ::displayFormattedPurchaseOrder
      * @covers ::execute
+     * @covers ::isDisplayingMachineReadableOutput
      * @dataProvider providerOfDifferentFormats
      */
     public function testUnattendedBuyWithAlternativeOutputFormat(string $requestedFormat): void
