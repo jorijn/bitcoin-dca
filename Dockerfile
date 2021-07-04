@@ -45,6 +45,8 @@ WORKDIR /app/
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
+COPY --from=vendor /usr/bin/composer /usr/bin/composer
+
 # php code coverage
 RUN apk --no-cache update \
     && apk --no-cache add autoconf g++ make \
