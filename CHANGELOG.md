@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [v1.4.1] - 2021-07-04
+### Added
+* Bitcoin-DCA will now check for updates after executing the command and let you know if a newer version is available. This can be disabled by setting `DISABLE_VERSION_CHECK=true`.
+
 ## [v1.4.0] - 2021-07-04
 ### Added
 * Added an `--output` option to the buying command. This enables the user to print information about the purchase in the following formats:
@@ -73,7 +77,8 @@ Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require
 ### Added
 * A Python based fallback mechanism for 32bits systems. Unfortunately a bug prevented Raspberry Pi users from using Xpubs properly. The system will automatically use the native, more advanced method or derivation for systems that are capable and degrade to the Python tool without people noticing.
 
-[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.1...HEAD
+[v1.4.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.0...v1.4.1
 [v1.4.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.2...v1.4.0
 [v1.3.2]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.1...v1.3.2
 [v1.3.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.0...v1.3.1
