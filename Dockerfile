@@ -28,6 +28,7 @@ RUN composer require bitwasp/bitcoin:^1.0 \
     --no-scripts \
     --prefer-dist \
     --classmap-authoritative \
+    --update-no-dev \
     --no-ansi || echo "skipping bitwasp/bitcoin, failed system requirements"
 
 WORKDIR /app/resources/xpub_derive
