@@ -71,6 +71,6 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
     public function supported(): bool
     {
         // this component only works on PHP 64-bits
-        return \PHP_INT_SIZE === 8;
+        return \PHP_INT_SIZE === 8 && class_exists(Bitcoin::class);
     }
 }

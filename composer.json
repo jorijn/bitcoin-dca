@@ -19,7 +19,6 @@
         "ext-json": "*",
         "ext-iconv": "*",
         "ext-bcmath": "*",
-        "bitwasp/bitcoin": "^1.0",
         "symfony/event-dispatcher": "^5.0",
         "monolog/monolog": "^2.0",
         "symfony/http-client": "^5.0",

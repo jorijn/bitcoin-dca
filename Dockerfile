@@ -1,25 +1,4 @@
 ##################################################################################################################
-# Dependency Stage
-##################################################################################################################
-FROM composer:latest AS vendor
-
-WORKDIR /app/
-
-COPY composer.json composer.lock /app/
-
-COPY . /app/
-
-RUN composer install \
-    --ignore-platform-reqs \
-    --no-interaction \
-    --no-plugins \
-    --no-scripts \
-    --prefer-dist \
-    --classmap-authoritative \
-    --no-ansi \
-    --no-dev
-
-##################################################################################################################
 # Base Stage
 ##################################################################################################################
 FROM php:7.4-cli-alpine3.12 as base_image
@@ -28,8 +7,28 @@ RUN apk --no-cache update \
     && apk --no-cache add gmp-dev python3 py3-pip \
     && docker-php-ext-install -j$(nproc) gmp bcmath
 
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 COPY . /app/
-COPY --from=vendor /app/vendor/ /app/vendor/
+
+WORKDIR /app/
+
+RUN composer install \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist \
+    --classmap-authoritative \
+    --no-ansi \
+    --no-dev
+
+RUN composer require bitwasp/bitcoin:^1.0 \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist \
+    --classmap-authoritative \
+    --no-ansi || echo "skipping bitwasp/bitcoin, failed system requirements"
 
 WORKDIR /app/resources/xpub_derive
 
