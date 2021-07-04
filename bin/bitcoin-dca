@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\Serializer\DependencyInjection\SerializerPass;
 
 if (file_exists(__DIR__.'/../.env')) {
     $dotenv = new Dotenv();
@@ -29,6 +30,7 @@ if (!$containerConfigCache->isFresh()) {
 
     $containerBuilder->addCompilerPass(new AddConsoleCommandPass());
     $containerBuilder->addCompilerPass(new RegisterListenersPass());
+    $containerBuilder->addCompilerPass(new SerializerPass());
     $containerBuilder->setParameter('application.path', dirname(__DIR__));
 
     $versionFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'version.json';

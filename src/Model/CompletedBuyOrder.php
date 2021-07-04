@@ -8,11 +8,22 @@ class CompletedBuyOrder
 {
     private int $amountInSatoshis = 0;
     private int $feesInSatoshis = 0;
+    private \DateTimeInterface $purchaseMadeAt;
 
     private ?string $displayAmountBought;
     private ?string $displayAmountSpent;
     private ?string $displayAveragePrice;
     private ?string $displayFeesSpent;
+
+    public function __construct()
+    {
+        $this->purchaseMadeAt = new \DateTimeImmutable();
+    }
+
+    public function getPurchaseMadeAt(): string
+    {
+        return $this->purchaseMadeAt->format(\DateTimeInterface::ATOM);
+    }
 
     public function getAmountInSatoshis(): int
     {

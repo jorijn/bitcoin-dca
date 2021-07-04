@@ -36,5 +36,14 @@ final class CompletedBuyOrderTest extends TestCase
         static::assertSame($averagePrice, $dto->getDisplayAveragePrice());
         static::assertSame($amountSpent, $dto->getDisplayAmountSpent());
         static::assertSame($amountBought, $dto->getDisplayAmountBought());
+
+        static::assertEqualsWithDelta(
+            new \DateTimeImmutable(),
+            \DateTimeImmutable::createFromFormat(
+                \DateTimeInterface::ATOM,
+                $dto->getPurchaseMadeAt()
+            ),
+            10
+        );
     }
 }

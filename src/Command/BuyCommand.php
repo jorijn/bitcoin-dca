@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Command;
 
+use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,18 +12,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class BuyCommand extends Command
 {
     protected BuyService $buyService;
+    protected SerializerInterface $serializer;
     protected string $baseCurrency;
 
-    public function __construct(BuyService $buyService, string $baseCurrency)
+    public function __construct(BuyService $buyService, SerializerInterface $serializer, string $baseCurrency)
     {
         parent::__construct(null);
 
         $this->buyService = $buyService;
         $this->baseCurrency = $baseCurrency;
+        $this->serializer = $serializer;
     }
 
     public function configure(): void
@@ -40,6 +44,12 @@ class BuyCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'If supplied, this will increase the balance in the database for this tag with the purchased amount of Bitcoin'
+            )
+            ->addOption(
+                'output',
+                'o',
+                InputOption::VALUE_REQUIRED,
+                'If supplied, determines how the purchase order is displayed. Available options: human, csv, yaml, xml, json. Default: human'
             )
             ->setDescription('Places a buy order on the exchange')
         ;
@@ -66,14 +76,7 @@ class BuyCommand extends Command
         try {
             $orderInformation = $this->buyService->buy((int) $amount, $input->getOption('tag'));
 
-            $io->success(sprintf(
-                'Bought: %s, %s: %s, price: %s, spent fees: %s',
-                $orderInformation->getDisplayAmountBought(),
-                $this->baseCurrency,
-                $orderInformation->getDisplayAmountSpent(),
-                $orderInformation->getDisplayAveragePrice(),
-                $orderInformation->getDisplayFeesSpent()
-            ));
+            $this->displayFormattedPurchaseOrder($orderInformation, $io, $input->getOption('output'));
 
             return 0;
         } catch (\Throwable $exception) {
@@ -81,5 +84,35 @@ class BuyCommand extends Command
         }
 
         return 1;
+    }
+
+    private function displayFormattedPurchaseOrder(
+        CompletedBuyOrder $orderInformation,
+        SymfonyStyle $io,
+        ?string $requestedFormat
+    ): void {
+        switch ($requestedFormat) {
+            case 'csv':
+            case 'json':
+            case 'xml':
+            case 'yaml':
+                $io->writeln($this->serializer->serialize($orderInformation, $requestedFormat));
+
+                break;
+
+            default:
+                $io->success(
+                    sprintf(
+                        'Bought: %s, %s: %s, price: %s, spent fees: %s',
+                        $orderInformation->getDisplayAmountBought(),
+                        $this->baseCurrency,
+                        $orderInformation->getDisplayAmountSpent(),
+                        $orderInformation->getDisplayAveragePrice(),
+                        $orderInformation->getDisplayFeesSpent()
+                    )
+                );
+
+                break;
+        }
     }
 }

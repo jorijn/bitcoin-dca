@@ -12,6 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BuyCommand
@@ -27,17 +28,30 @@ final class BuyCommandTest extends TestCase
 
     /** @var BuyService|MockObject */
     private $buyService;
+    /** @var MockObject|SerializerInterface */
+    private $serializer;
 
     private BuyCommand $command;
-    private string $baseCurency;
+    private string $baseCurrency;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->baseCurency = 'BC'.random_int(1, 9);
+        $this->baseCurrency = 'BC'.random_int(1, 9);
         $this->buyService = $this->createMock(BuyService::class);
-        $this->command = new BuyCommand($this->buyService, $this->baseCurency);
+        $this->serializer = $this->createMock(SerializerInterface::class);
+        $this->command = new BuyCommand($this->buyService, $this->serializer, $this->baseCurrency);
+    }
+
+    public function providerOfDifferentFormats(): array
+    {
+        return [
+            ['yaml'],
+            ['json'],
+            ['xml'],
+            ['csv'],
+        ];
     }
 
     public function providerOfTags(): array
@@ -54,10 +68,12 @@ final class BuyCommandTest extends TestCase
     public function testAmountIsNotNumeric(): void
     {
         $commandTester = $this->createCommandTester();
-        $commandTester->execute([
-            self::COMMAND => $this->command->getName(),
-            self::AMOUNT => 'string'.random_int(1000, 2000),
-        ]);
+        $commandTester->execute(
+            [
+                self::COMMAND => $this->command->getName(),
+                self::AMOUNT => 'string'.random_int(1000, 2000),
+            ]
+        );
 
         static::assertStringContainsString('Amount should be numeric, e.g. 10', $commandTester->getDisplay(true));
         static::assertSame(1, $commandTester->getStatusCode());
@@ -81,6 +97,7 @@ final class BuyCommandTest extends TestCase
     }
 
     /**
+     * @covers ::displayFormattedPurchaseOrder
      * @covers ::execute
      * @dataProvider providerOfTags
      */
@@ -90,42 +107,91 @@ final class BuyCommandTest extends TestCase
 
         $commandTester = $this->createCommandTester();
         $commandTester->setInputs(['yes']);
-        $commandTester->execute([
-            self::COMMAND => $this->command->getName(),
-            self::AMOUNT => $amount,
-        ] + (!empty($tag) ? ['--tag' => $tag] : []));
+        $commandTester->execute(
+            [
+                self::COMMAND => $this->command->getName(),
+                self::AMOUNT => $amount,
+            ] + (!empty($tag) ? ['--tag' => $tag] : [])
+        );
 
         static::assertSame(0, $commandTester->getStatusCode());
-        static::assertStringContainsString(sprintf(
-            '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
-            $orderInformation->getDisplayAmountBought(),
-            $this->baseCurency,
-            $orderInformation->getDisplayAmountSpent(),
-            $orderInformation->getDisplayAveragePrice(),
-            $orderInformation->getDisplayFeesSpent(),
-        ), $commandTester->getDisplay(true));
+        static::assertStringContainsString(
+            sprintf(
+                '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
+                $orderInformation->getDisplayAmountBought(),
+                $this->baseCurrency,
+                $orderInformation->getDisplayAmountSpent(),
+                $orderInformation->getDisplayAveragePrice(),
+                $orderInformation->getDisplayFeesSpent(),
+            ),
+            $commandTester->getDisplay(true)
+        );
     }
 
+    /**
+     * @covers ::displayFormattedPurchaseOrder
+     * @covers ::execute
+     */
     public function testUnattendedBuy(string $tag = null): void
     {
         [$amount, $orderInformation] = $this->prepareBuyTest($tag);
 
         $commandTester = $this->createCommandTester();
-        $commandTester->execute([
-            self::COMMAND => $this->command->getName(),
-            self::AMOUNT => $amount,
-            '--yes' => null,
-        ] + (!empty($tag) ? ['--tag' => $tag] : []));
+        $commandTester->execute(
+            [
+                self::COMMAND => $this->command->getName(),
+                self::AMOUNT => $amount,
+                '--yes' => null,
+            ] + (!empty($tag) ? ['--tag' => $tag] : [])
+        );
 
         static::assertSame(0, $commandTester->getStatusCode());
-        static::assertStringContainsString(sprintf(
-            '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
-            $orderInformation->getDisplayAmountBought(),
-            $this->baseCurency,
-            $orderInformation->getDisplayAmountSpent(),
-            $orderInformation->getDisplayAveragePrice(),
-            $orderInformation->getDisplayFeesSpent(),
-        ), $commandTester->getDisplay(true));
+        static::assertStringContainsString(
+            sprintf(
+                '[OK] Bought: %s, %s: %s, price: %s, spent fees: %s',
+                $orderInformation->getDisplayAmountBought(),
+                $this->baseCurrency,
+                $orderInformation->getDisplayAmountSpent(),
+                $orderInformation->getDisplayAveragePrice(),
+                $orderInformation->getDisplayFeesSpent(),
+            ),
+            $commandTester->getDisplay(true)
+        );
+    }
+
+    /**
+     * @covers ::displayFormattedPurchaseOrder
+     * @covers ::execute
+     * @dataProvider providerOfDifferentFormats
+     */
+    public function testUnattendedBuyWithAlternativeOutputFormat(string $requestedFormat): void
+    {
+        [$amount, $orderInformation] = $this->prepareBuyTest(null);
+
+        $mockedSerializerOutput = 'output_'.random_int(1000, 2000);
+
+        $this->serializer
+            ->expects(static::once())
+            ->method('serialize')
+            ->with($orderInformation, $requestedFormat)
+            ->willReturn($mockedSerializerOutput)
+        ;
+
+        $commandTester = $this->createCommandTester();
+        $commandTester->execute(
+            [
+                self::COMMAND => $this->command->getName(),
+                self::AMOUNT => $amount,
+                '--yes' => null,
+                '--output' => $requestedFormat,
+            ]
+        );
+
+        static::assertStringContainsString(
+            $mockedSerializerOutput,
+            $commandTester->getDisplay(true)
+        );
+        static::assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
