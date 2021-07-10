@@ -18,6 +18,16 @@ if (file_exists(__DIR__.'/../.env')) {
     $dotenv->loadEnv(__DIR__.'/../.env');
 }
 
+set_error_handler(
+    static function ($errno, $errstr, $errfile, $errline) {
+        if (0 === error_reporting()) {
+            return false;
+        }
+
+        throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+);
+
 $containerCache = __DIR__.'/../var/cache/container.php';
 $containerConfigCache = new ConfigCache($containerCache, $_SERVER['DEBUG'] ?? false);
 

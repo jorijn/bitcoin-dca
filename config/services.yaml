@@ -37,6 +37,7 @@ parameters:
   env(BASE_CURRENCY): 'EUR'
   env(DEBUG): 'false'
   env(DISABLE_VERSION_CHECK): 'false'
+  env(EXPORT_CSV): ~
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -297,6 +298,15 @@ services:
       - '%env(bool:DISABLE_VERSION_CHECK)%'
     tags:
       - { name: kernel.event_listener, event: console.terminate, method: onConsoleTerminated }
+
+  event_listener.write_order_to_csv:
+    class: Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener
+    arguments:
+      - '@serializer'
+      - '@logger'
+      - '%env(EXPORT_CSV)%'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onSuccessfulBuy }
 
   ######################################################################
   # Services
