@@ -2268,23 +2268,23 @@
         },
         {
             "name": "symfony/serializer",
-            "version": "v5.3.2",
+            "version": "v5.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",
-                "reference": "96f6ff6582d1bf1bf08281b563a6c7c917efe6c1"
+                "reference": "f04e368e3cb35948550c7e95cc8918cb7e761c0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/serializer/zipball/96f6ff6582d1bf1bf08281b563a6c7c917efe6c1",
-                "reference": "96f6ff6582d1bf1bf08281b563a6c7c917efe6c1",
+                "url": "https://api.github.com/repos/symfony/serializer/zipball/f04e368e3cb35948550c7e95cc8918cb7e761c0c",
+                "reference": "f04e368e3cb35948550c7e95cc8918cb7e761c0c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
                 "symfony/deprecation-contracts": "^2.1",
                 "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-php80": "^1.15"
+                "symfony/polyfill-php80": "^1.16"
             },
             "conflict": {
                 "doctrine/annotations": "<1.12",
@@ -2350,7 +2350,7 @@
             "description": "Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON.",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/serializer/tree/v5.3.2"
+                "source": "https://github.com/symfony/serializer/tree/v5.3.4"
             },
             "funding": [
                 {
@@ -2366,7 +2366,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-06-10T18:05:39+00:00"
+            "time": "2021-07-21T13:18:10+00:00"
         },
         {
             "name": "symfony/service-contracts",
