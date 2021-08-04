@@ -32,4 +32,4 @@ Now, when running this tool you need to mount the new storage directory onto the
 .. code-block:: bash
    :caption: Running withdraw with a persistent storage directory
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca -v /home/bob/applications/bitcoin-dca:/app/var/storage jorijn/bitcoin-dca:latest withdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca -v /home/bob/applications/bitcoin-dca:/app/var/storage ghcr.io/jorijn/bitcoin-dca:latest withdraw --all

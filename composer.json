@@ -1,6 +1,6 @@
 {
     "name": "jorijn/bitcoin-dca",
-    "description": "Tool for automatically buying and withdrawing Bitcoin on Bl3P",
+    "description": "Tool for automatically buying and withdrawing Bitcoin",
     "type": "project",
     "license": "MIT",
     "authors": [
@@ -23,6 +23,8 @@
         "symfony/event-dispatcher": "^5.0",
         "monolog/monolog": "^2.0",
         "symfony/http-client": "^5.0",
+        "symfony/serializer": "^5.3",
+        "symfony/property-access": "^5.3",
         "symfony/mailer": "^5.1",
         "league/html-to-markdown": "^4.9"
     },
@@ -40,8 +42,6 @@
         "test": "vendor/bin/phpunit --testdox"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "friendsofphp/php-cs-fixer": "^2.16",
         "phpunit/phpunit": "^9.1"
     }
 }

@@ -22,7 +22,7 @@ RUN composer install \
 ##################################################################################################################
 # Base Stage
 ##################################################################################################################
-FROM php:7.4-cli-alpine as base_image
+FROM php:7.4-cli-alpine3.12 as base_image
 
 RUN apk --no-cache update \
     && apk --no-cache add gmp-dev python3 py3-pip \
@@ -48,9 +48,16 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
+# php code coverage
+RUN apk --no-cache update \
+    && apk --no-cache add autoconf g++ make \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov
+
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
+# this does make the tests run multiple times, but with different architectures
 RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
-RUN composer run-script test
+RUN vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
 
 ##################################################################################################################
 # Production Stage
@@ -63,6 +70,6 @@ COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 # compile the container for performance reasons
-RUN /app/bin/bitcoin-dca >/dev/null
+RUN /app/bin/bitcoin-dca
 
 ENTRYPOINT ["docker-entrypoint"]

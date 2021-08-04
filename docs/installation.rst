@@ -22,7 +22,7 @@ Use these commands to download this tool from Docker Hub:
 
 .. code-block:: bash
 
-   $ docker pull jorijn/bitcoin-dca:latest
+   $ docker pull ghcr.io/jorijn/bitcoin-dca:latest
 
 Upgrading
 ^^^^^^^^^
@@ -30,8 +30,8 @@ Using these commands you can download the newest version from Docker Hub:
 
 .. code-block:: bash
 
-   $ docker image rm jorijn/bitcoin-dca
-   $ docker pull jorijn/bitcoin-dca:latest
+   $ docker image rm ghcr.io/jorijn/bitcoin-dca
+   $ docker pull ghcr.io/jorijn/bitcoin-dca:latest
 
 Build your own (more control)
 -----------------------------
@@ -42,7 +42,7 @@ If you desire more control, pull this project from `GitHub <https://github.com/J
    cd ~
    git clone https://github.com/Jorijn/bitcoin-dca.git
    cd bitcoin-dca
-   docker build . -t jorijn/bitcoin-dca:latest
+   docker build . -t ghcr.io/jorijn/bitcoin-dca:latest
 
 When an upgrade is available, run ``git pull`` to fetch the latest changes and build the docker container again.
 

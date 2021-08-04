@@ -2,6 +2,8 @@ parameters:
   application_title: 'Bitcoin DCA Tool'
   application_version: 'DEVELOPMENT'
   buy_fill_timeout: 30
+  version_updates.hostname: 'https://api.github.com'
+  version_updates.path: '/repos/jorijn/bitcoin-dca/releases/latest'
 
   # BL3P settings
   env(BL3P_API_URL): 'https://api.bl3p.eu/1/'
@@ -23,6 +25,11 @@ parameters:
   env(KRAKEN_FEE_STRATEGY): 'include'
   env(KRAKEN_TRADING_AGREEMENT): ~
 
+  # binance settings
+  env(BINANCE_API_URL): 'https://api.binance.com/'
+  env(BINANCE_API_KEY): ~
+  env(BINANCE_API_SECRET): ~
+
   # generic application settings
   env(WITHDRAW_ADDRESS): '%env(BL3P_WITHDRAW_ADDRESS)%'
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
@@ -32,6 +39,9 @@ parameters:
   env(MAILER_TO): ~
   env(MAILER_FROM): ~
   env(MAILER_SUBJECT_PREFIX): '%application_title%'
+  env(DEBUG): 'false'
+  env(DISABLE_VERSION_CHECK): 'false'
+  env(EXPORT_CSV): ~
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -44,6 +54,7 @@ services:
     class: Jorijn\Bitcoin\Dca\Command\BuyCommand
     arguments:
       - '@service.buy'
+      - '@serializer'
       - '%env(BASE_CURRENCY)%'
     tags:
       - { name: console.command, command: 'buy' }
@@ -118,6 +129,19 @@ services:
       - '%env(string:BL3P_PUBLIC_KEY)%'
       - '%env(string:BL3P_PRIVATE_KEY)%'
 
+  http_client.bl3p:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:BL3P_API_URL)%'
+
+  http_client.bl3p.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.bitvavo
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
+
   api.client.bitvavo:
     class: Jorijn\Bitcoin\Dca\Client\BitvavoClient
     arguments:
@@ -125,6 +149,19 @@ services:
       - '@logger'
       - '%env(string:BITVAVO_API_KEY)%'
       - '%env(string:BITVAVO_API_SECRET)%'
+
+  http_client.bitvavo:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%env(string:BITVAVO_API_URL)%'
+
+  http_client.bitvavo.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.bitvavo
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
 
   api.client.kraken:
     class: Jorijn\Bitcoin\Dca\Client\KrakenClient
@@ -161,11 +198,38 @@ services:
     arguments:
       - base_uri: '%env(string:KRAKEN_API_URL)%'
 
-  http_client:
+  http_client.kraken.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.kraken
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
+
+  api.client.binance:
+    class: Jorijn\Bitcoin\Dca\Client\BinanceClient
+    arguments:
+      - '@http_client.binance'
+      - '%env(string:BINANCE_API_KEY)%'
+      - '%env(string:BINANCE_API_SECRET)%'
+
+  http_client.binance:
     class: Symfony\Contracts\HttpClient\HttpClientInterface
     factory:
       - Symfony\Component\HttpClient\HttpClient
       - create
+    arguments:
+      - base_uri: '%env(string:BINANCE_API_URL)%'
+
+  http_client.binance.verbose:
+    class: Jorijn\Bitcoin\Dca\Client\VerboseHttpClientDecorator
+    decorates: http_client.binance
+    arguments: [ '@.inner', '@logger', '%env(bool:DEBUG)%' ]
+
+  http_client.version_updates:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+    arguments:
+      - base_uri: '%version_updates.hostname%'
 
   ######################################################################
   # Address Providers
@@ -263,6 +327,25 @@ services:
       - '%application.path%/resources/notification-quotes.json'
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
+  event_listener.check_for_updates:
+    class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
+    arguments:
+      - '@http_client.version_updates'
+      - '%application_version%'
+      - '%version_updates.path%'
+      - '%env(bool:DISABLE_VERSION_CHECK)%'
+    tags:
+      - { name: kernel.event_listener, event: console.terminate, method: onConsoleTerminated }
+
+  event_listener.write_order_to_csv:
+    class: Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener
+    arguments:
+      - '@serializer'
+      - '@logger'
+      - '%env(EXPORT_CSV)%'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onSuccessfulBuy }
 
   ######################################################################
   # Services
@@ -373,6 +456,31 @@ services:
     tags:
       - { name: exchange-balance-service }
 
+  ##
+  ## Binance
+  ##
+  service.buy.binance:
+    class: Jorijn\Bitcoin\Dca\Service\Binance\BinanceBuyService
+    arguments:
+      - '@api.client.binance'
+      - '%env(BASE_CURRENCY)%'
+    tags:
+      - { name: exchange-buy-service }
+
+  service.withdraw.binance:
+    class: Jorijn\Bitcoin\Dca\Service\Binance\BinanceWithdrawService
+    arguments:
+      - '@api.client.binance'
+    tags:
+      - { name: exchange-withdraw-service }
+
+  service.balance.binance:
+    class: Jorijn\Bitcoin\Dca\Service\Binance\BinanceBalanceService
+    arguments:
+      - '@api.client.binance'
+    tags:
+      - { name: exchange-balance-service }
+
   ######################################################################
   # Third Party Components
   ######################################################################
@@ -400,6 +508,38 @@ services:
     arguments:
       - 'bitcoin-dca'
       - ['@logger.stream_handler']
+
+  serializer:
+    class: Symfony\Component\Serializer\Serializer
+    public: true
+    arguments:
+      - []
+      - []
+
+  serializer.encoder.json:
+    class: Symfony\Component\Serializer\Encoder\JsonEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.xml:
+    class: Symfony\Component\Serializer\Encoder\XmlEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.csv:
+    class: Symfony\Component\Serializer\Encoder\CsvEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.encoder.yaml:
+    class: Symfony\Component\Serializer\Encoder\YamlEncoder
+    tags:
+      - serializer.encoder
+
+  serializer.normalizer.object:
+    class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+    tags:
+      - serializer.normalizer
 
   ######################################################################
   # Symfony Mailer

@@ -38,7 +38,7 @@ EXCHANGE
 """"""""
 This configuration value determines which exchange will be used for buys and withdrawals. The default value is BL3P.
 
-Available options: ``bl3p``, ``bitvavo``, ``kraken``
+Available options: ``bl3p``, ``bitvavo``, ``kraken``, ``binance``
 
 **Example**: ``EXCHANGE=bl3p``
 
@@ -78,8 +78,8 @@ This is the private part of your API connection to Bitvavo.
 
 **Example**: ``BITVAVO_API_SECRET=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
 
-BITVAVO_API_SECRET (optional)
-"""""""""""""""""""""""""""""
+BITVAVO_API_URL (optional)
+""""""""""""""""""""""""""
 The endpoint where the tool should connect to.
 
 **Example**: ``BITVAVO_API_URL=https://api.bitvavo.com/v2/``
@@ -91,19 +91,19 @@ KRAKEN_API_KEY
 """"""""""""""
 This is the identifying part of the API key that you created on the Kraken exchange.
 
-**Example**: ``BITVAVO_API_KEY=1006e89gd84e8f3a5209b2762d1bbef36eds5e6108e7696f6117556830b0e3dy``
+**Example**: ``KRAKEN_API_KEY=1006e89gd84e8f3a5209b2762d1bbef36eds5e6108e7696f6117556830b0e3dy``
 
 KRAKEN_PRIVATE_KEY
 """"""""""""""""""
 This is the private part of your API connection to Kraken. It’s an encoded secret granting access to your Kraken account.
 
-**Example**: ``BITVAVO_API_SECRET=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
+**Example**: ``KRAKEN_PRIVATE_KEY=aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==``
 
 KRAKEN_WITHDRAW_DESCRIPTION
 """""""""""""""""""""""""""
 Kraken secured the platform by limiting API usage to pre-whitelisted withdrawal addresses. This makes it a lot more secure but unfortunately limits the tool to one withdrawal address thus disabling XPUB generation. On Kraken, go to Funding and create a new Bitcoin withdrawal address and for description use something without special symbols or spaces. Configure the value here.
 
-**Example**: ``BITVAVO_API_SECRET=bitcoin-dca``
+**Example**: ``KRAKEN_WITHDRAW_DESCRIPTION=bitcoin-dca``
 
 KRAKEN_API_URL (optional)
 """""""""""""""""""""""""
@@ -128,6 +128,35 @@ See https://support.kraken.com/hc/en-us/articles/360036157952
 
 If you agree, fill this value with ``agree``, like this: ``KRAKEN_TRADING_AGREEMENT=agree``
 
+Exchange: Binance
+^^^^^^^^^^^^^^^^^
+
+Your Binance API key should hold at least the following permissions:
+
+* Enable Reading
+* Enable Spot & Margin Trading
+* Enable Withdrawals
+
+You should enable IP access restrictions to use withdrawal through the API. Enter the IP address that matches your outgoing connection. When in doubt, you can check your IP here: https://nordvpn.com/nl/ip-lookup/
+
+BINANCE_API_KEY
+"""""""""""""""
+This is the identifying part of the API key that you created on the Binance exchange.
+
+**Example**: ``BINANCE_API_KEY=mkYEtmPzI9q9qrwvYzTe44nB495joEM17bhUDspFEkKHjzLmKwT1exvQYxGcL6db``
+
+BINANCE_API_SECRET
+""""""""""""""""""
+This is the private part of your API connection to Binance. It’s a secret granting access to your Binance account.
+
+**Example**: ``BINANCE_API_SECRET=xXFw9vEiSdgllWfLs55uGC3ZBS3VyZMy1aGj4mYYlIIhX6hQ98AsGsQHLSKI4uj6``
+
+BINANCE_API_URL (optional)
+"""""""""""""""""""""""""
+The endpoint where the tool should connect to.
+
+**Default**: ``BINANCE_API_URL=https://api.binance.com/``
+
 Feeding configuration into the DCA tool
 ---------------------------------------
 
@@ -151,7 +180,7 @@ Now, when running the tool you can use ``--env-file`` like this:
 .. code-block:: bash
    :caption: Providing configuration with Docker's --env-file
 
-   $ docker run --rm -it --env-file=/home/username/.bitcoin-dca jorijn/bitcoin-dca:latest balance
+   $ docker run --rm -it --env-file=/home/username/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest balance
 
 Using inline arguments
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -163,4 +192,4 @@ For maximum control, you can also feed configuration into the tool like this:
 .. code-block:: bash
    :caption: Providing configuration by specifying each configuration item separately
 
-   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd WITHDRAW_ADDRESS=abcd jorijn/bitcoin-dca:latest balance
+   $ docker run --rm -it -e BL3P_PUBLIC_KEY=abcd -e BL3P_PRIVATE_KEY=abcd WITHDRAW_ADDRESS=abcd ghcr.io/jorijn/bitcoin-dca:latest balance

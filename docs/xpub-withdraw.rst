@@ -30,7 +30,7 @@ You can verify that Bitcoin DCA will derive the correct addresses using the foll
 .. code-block::
    :caption: Verifying the configured XPUB
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latest verify-xpub
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby ghcr.io/jorijn/bitcoin-dca:latest verify-xpub
    ┌───┬────────────────────────────────────────────┬───────────────┐
    │ # │ Address                                    │ Next Withdraw │
    ├───┼────────────────────────────────────────────┼───────────────┤
@@ -53,7 +53,7 @@ You can check that the correct address is being used when attempting to withdraw
 .. code-block::
    :caption: Here, it takes address #0 (bc1qvqatyv2xynyanrej2fcutj6w5yugy0gc9jx2nn) for withdrawal
 
-   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby jorijn/bitcoin-dca:latestwithdraw --all
+   $ docker run --rm -it --env-file=/home/bob/.bitcoin-dca-bobby ghcr.io/jorijn/bitcoin-dca:latestwithdraw --all
    Ready to withdraw 0.0013 BTC to Bitcoin Address bc1qvqatyv2xynyanrej2fcutj6w5yugy0gc9jx2nn? A fee of 0.0003 will be taken as withdraw fee. (yes/no) [no]:
 
 After successful withdrawal, the tool will increase the inner index and use address #1 the next time a withdrawal is being made.
