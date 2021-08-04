@@ -25,6 +25,11 @@ class CompletedBuyOrder
     private ?string $displayAveragePrice;
     private ?string $displayFeesSpent;
 
+    public function __construct()
+    {
+        $this->purchaseMadeAt = new \DateTimeImmutable();
+    }
+
     public function getDisplayAmountSpentCurrency(): ?string
     {
         return $this->displayAmountSpentCurrency;
@@ -35,11 +40,6 @@ class CompletedBuyOrder
         $this->displayAmountSpentCurrency = $displayAmountSpentCurrency;
 
         return $this;
-    }
-
-    public function __construct()
-    {
-        $this->purchaseMadeAt = new \DateTimeImmutable();
     }
 
     public function getPurchaseMadeAt(): string
