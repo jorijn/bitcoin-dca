@@ -89,7 +89,7 @@ class MockExchangeBuyService implements BuyServiceInterface
             ->setDisplayAveragePrice($this->bitcoinPrice.' '.$this->baseCurrency)
             ->setDisplayAmountSpent((string) $amount)
             ->setDisplayFeesSpent($this->feeAmount.' '.$this->feeCurrency)
-            ->setDisplayAmountSpentCurrency($this->feeCurrency)
+            ->setDisplayAmountSpentCurrency($this->baseCurrency)
         ;
     }
 }

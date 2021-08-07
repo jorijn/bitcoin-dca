@@ -322,7 +322,7 @@
                                                                     <tr style="border-collapse:collapse">
                                                                         <td align="right" style="padding:0;Margin:0"><p
                                                                                     style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:28px;color:#333333">
-                                                                                <strong>Purchased Bitcoin<br>Spent&nbsp;EUR<br>Exchange&nbsp;Fee<br>Exchange&nbsp;Rate<?php if ($tag) { ?>
+                                                                                <strong>Purchased Bitcoin<br>Spent&nbsp;<?php echo $buyOrder->getDisplayAmountSpentCurrency(); ?><br>Exchange&nbsp;Fee<br>Exchange&nbsp;Rate<?php if ($tag) { ?>
                                                                                         <br>Tag<?php } ?></strong>
                                                                             </p></td>
                                                                     </tr>
