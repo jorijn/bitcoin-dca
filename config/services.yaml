@@ -303,7 +303,7 @@ services:
       - '%env(MAILER_FROM)%'
       - '%env(MAILER_SUBJECT_PREFIX)%'
       - '%env(EXCHANGE)%'
-      - '%application.path%/resources/templates/buy_notification.html.php'
+      - '%application.path%/resources/templates/buy_notification.email.html.php'
       - '%application.path%/resources/images/logo-small.png'
       - '%application.path%/resources/images/github-logo-colored.png'
       - '%application.path%/resources/notification-quotes.json'
