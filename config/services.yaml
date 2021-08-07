@@ -474,6 +474,13 @@ services:
     tags:
       - { name: exchange-buy-service, priority: 1000 }
 
+  service.withdraw.mockexchange:
+    class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeWithdrawService
+    arguments:
+      - '%env(bool:TESTING)%'
+    tags:
+      - { name: exchange-withdraw-service, priority: 1000 }
+
   ######################################################################
   # Third Party Components
   ######################################################################
