@@ -11,14 +11,16 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
-namespace Jorijn\Bitcoin\Dca\EventListener;
+namespace Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
-use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use JetBrains\PhpStorm\ArrayShape;
+use Jorijn\Bitcoin\Dca\Exception\UnableToGetRandomQuoteException;
+use Jorijn\Bitcoin\Dca\Model\Quote;
 use League\HTMLToMarkdown\HtmlConverterInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
-class NotifyOnBuyListener
+abstract class AbstractSendEmailListener
 {
     protected MailerInterface $notifier;
     protected string $to;
@@ -55,27 +57,49 @@ class NotifyOnBuyListener
         $this->quotesLocation = $quotesLocation;
     }
 
-    public function onBuy(BuySuccessEvent $event): void
+    protected function getRandomQuote(): Quote
     {
-        $quotes = json_decode(file_get_contents($this->quotesLocation), true, 512, JSON_THROW_ON_ERROR);
-        // @noinspection PhpUnusedLocalVariableInspection
+        try {
+            $quotes = json_decode(file_get_contents($this->quotesLocation), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new UnableToGetRandomQuoteException($e->getMessage(), $e->getCode(), $e);
+        }
+
         ['quote' => $quote, 'author' => $quoteAuthor] = $quotes[array_rand($quotes)];
 
+        return new Quote($quote, $quoteAuthor);
+    }
+
+    #[ArrayShape(['quote' => "string", 'quoteAuthor' => "string", 'exchange' => "string"])]
+    protected function getTemplateVariables(): array
+    {
+        $quote = $this->getRandomQuote();
+
+        return [
+            'quote' => $quote->getQuote(),
+            'quoteAuthor' => $quote->getAuthor(),
+            'exchange' => $this->exchange,
+        ];
+    }
+
+    protected function renderTemplate(string $templateLocation, array $templateVariables): string
+    {
+        extract($templateVariables, EXTR_OVERWRITE);
         ob_start();
 
-        include $this->templateLocation;
-        $html = ob_get_clean();
+        /** @noinspection PhpIncludeInspection */
+        include $templateLocation;
 
-        $email = (new Email())
+        return ob_get_clean();
+    }
+
+    protected function createEmail(): Email
+    {
+        return (new Email())
             ->from($this->from)
             ->to($this->to)
-            ->subject(sprintf('[%s] %s', $this->subjectPrefix, 'You just saved some sats!'))
-            ->html($html)
             ->embedFromPath($this->logoLocation, 'logo')
             ->embedFromPath($this->iconLocation, 'github-icon')
-            ->text($this->htmlConverter->convert($html))
         ;
-
-        $this->notifier->send($email);
     }
 }

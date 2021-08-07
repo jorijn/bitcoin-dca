@@ -40,6 +40,7 @@ parameters:
   env(MAILER_FROM): ~
   env(MAILER_SUBJECT_PREFIX): '%application_title%'
   env(DEBUG): 'false'
+  env(TESTING): 'false'
   env(DISABLE_VERSION_CHECK): 'false'
   env(EXPORT_CSV): ~
 
@@ -103,7 +104,7 @@ services:
   ######################################################################
   component.derive_from_master_public_key:
     class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface
-    factory: ['@factory.derive_from_master_public_key.component', 'createDerivationComponent']
+    factory: [ '@factory.derive_from_master_public_key.component', 'createDerivationComponent' ]
 
   component.derive_from_master_public_key_bitwasp:
     class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent
@@ -170,25 +171,6 @@ services:
       - '@logger'
       - '%env(string:KRAKEN_API_KEY)%'
       - '%env(string:KRAKEN_PRIVATE_KEY)%'
-
-  ######################################################################
-  # HTTP Clients
-  ######################################################################
-  http_client.bl3p:
-    class: Symfony\Contracts\HttpClient\HttpClientInterface
-    factory:
-      - Symfony\Component\HttpClient\HttpClient
-      - create
-    arguments:
-      - base_uri: '%env(string:BL3P_API_URL)%'
-
-  http_client.bitvavo:
-    class: Symfony\Contracts\HttpClient\HttpClientInterface
-    factory:
-      - Symfony\Component\HttpClient\HttpClient
-      - create
-    arguments:
-      - base_uri: '%env(string:BITVAVO_API_URL)%'
 
   http_client.kraken:
     class: Symfony\Contracts\HttpClient\HttpClientInterface
@@ -313,7 +295,7 @@ services:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
 
   event_listener.buy_notification:
-    class: Jorijn\Bitcoin\Dca\EventListener\NotifyOnBuyListener
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
     arguments:
       - '@mailer'
       - '@html_to_markdown'
@@ -481,6 +463,17 @@ services:
     tags:
       - { name: exchange-balance-service }
 
+  ##
+  ## MockExchange (fake one that allows automated testing without spending $$$)
+  ##
+  service.buy.mockexchange:
+    arguments:
+      - '%env(bool:TESTING)%'
+      - '%env(BASE_CURRENCY)%'
+    class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeBuyService
+    tags:
+      - { name: exchange-buy-service, priority: 1000 }
+
   ######################################################################
   # Third Party Components
   ######################################################################
@@ -495,8 +488,7 @@ services:
     class: League\HTMLToMarkdown\HtmlConverter
     public: true
     arguments:
-      -
-        - strip_tags: true
+      - - strip_tags: true
 
   logger.stream_handler:
     class: Monolog\Handler\StreamHandler
@@ -507,14 +499,14 @@ services:
     class: Monolog\Logger
     arguments:
       - 'bitcoin-dca'
-      - ['@logger.stream_handler']
+      - [ '@logger.stream_handler' ]
 
   serializer:
     class: Symfony\Component\Serializer\Serializer
     public: true
     arguments:
-      - []
-      - []
+      - [ ]
+      - [ ]
 
   serializer.encoder.json:
     class: Symfony\Component\Serializer\Encoder\JsonEncoder
@@ -551,7 +543,6 @@ services:
       - ~
       - '@event_dispatcher'
 
-
   mailer.transport.esmtp.dsn:
     class: Symfony\Component\Mailer\Transport\Dsn
     factory:
@@ -560,11 +551,17 @@ services:
     arguments:
       - '%env(MAILER_DSN)%'
 
+  mailer.transport.esmtp.http_client:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+
   mailer.transport.esmtp.factory:
     class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory
     arguments:
       - '@event_dispatcher'
-      - '@http_client'
+      - '@mailer.transport.esmtp.http_client'
       - '@logger'
 
   mailer.transport.esmtp:
