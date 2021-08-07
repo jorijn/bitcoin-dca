@@ -1,14 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
+<html style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta name="x-apple-disable-message-reformatting">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="telephone=no" name="format-detection">
-    <title>Bitcoin DCA Buy Notification</title>
+    <title>Withdraw notification</title>
     <!--[if (mso 16)]>
     <style type="text/css">
         a {
@@ -29,39 +28,85 @@
     </xml>
     <![endif]-->
     <style type="text/css">
-        @media only screen and (max-width: 600px) {
+        #outlook a {
+            padding: 0;
+        }
+
+        .ExternalClass {
+            width: 100%;
+        }
+
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+        .es-button {
+            mso-style-priority: 100 !important;
+            text-decoration: none !important;
+        }
+
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+
+        .es-desk-hidden {
+            display: none;
+            float: left;
+            overflow: hidden;
+            width: 0;
+            max-height: 0;
+            line-height: 0;
+            mso-hide: all;
+        }
+
+        [data-ogsb] .es-button {
+            border-width: 0 !important;
+            padding: 10px 20px 10px 20px !important;
+        }
+
+        @media only screen and (max-width: 600px), screen and (max-device-width: 600px) {
             p, ul li, ol li, a {
-                font-size: 16px !important;
                 line-height: 150% !important
+            }
+
+            h1, h2, h3, h1 a, h2 a, h3 a {
+                line-height: 120% !important
             }
 
             h1 {
                 font-size: 30px !important;
-                text-align: center;
-                line-height: 120% !important
+                text-align: center
             }
 
             h2 {
                 font-size: 26px !important;
-                text-align: center;
-                line-height: 120% !important
+                text-align: center
             }
 
             h3 {
                 font-size: 20px !important;
-                text-align: center;
-                line-height: 120% !important
+                text-align: center
             }
 
-            h1 a {
+            .es-header-body h1 a, .es-content-body h1 a, .es-footer-body h1 a {
                 font-size: 30px !important
             }
 
-            h2 a {
+            .es-header-body h2 a, .es-content-body h2 a, .es-footer-body h2 a {
                 font-size: 26px !important
             }
 
-            h3 a {
+            .es-header-body h3 a, .es-content-body h3 a, .es-footer-body h3 a {
                 font-size: 20px !important
             }
 
@@ -70,6 +115,10 @@
             }
 
             .es-header-body p, .es-header-body ul li, .es-header-body ol li, .es-header-body a {
+                font-size: 16px !important
+            }
+
+            .es-content-body p, .es-content-body ul li, .es-content-body ol li, .es-content-body a {
                 font-size: 16px !important
             }
 
@@ -105,7 +154,7 @@
                 display: block !important
             }
 
-            a.es-button {
+            a.es-button, button.es-button {
                 font-size: 20px !important;
                 display: block !important;
                 border-left-width: 0px !important;
@@ -165,7 +214,6 @@
             }
 
             tr.es-desk-hidden, td.es-desk-hidden, table.es-desk-hidden {
-                display: table-row !important;
                 width: auto !important;
                 overflow: visible !important;
                 float: none !important;
@@ -173,8 +221,20 @@
                 line-height: inherit !important
             }
 
-            .es-desk-menu-hidden {
+            tr.es-desk-hidden {
+                display: table-row !important
+            }
+
+            table.es-desk-hidden {
+                display: table !important
+            }
+
+            td.es-desk-menu-hidden {
                 display: table-cell !important
+            }
+
+            .es-menu td {
+                width: 1% !important
             }
 
             table.es-table-not-adapt, .esd-block-html table {
@@ -188,47 +248,6 @@
             table.es-social td {
                 display: inline-block !important
             }
-        }
-
-        #outlook a {
-            padding: 0;
-        }
-
-        .ExternalClass {
-            width: 100%;
-        }
-
-        .ExternalClass,
-        .ExternalClass p,
-        .ExternalClass span,
-        .ExternalClass font,
-        .ExternalClass td,
-        .ExternalClass div {
-            line-height: 100%;
-        }
-
-        .es-button {
-            mso-style-priority: 100 !important;
-            text-decoration: none !important;
-        }
-
-        a[x-apple-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-        }
-
-        .es-desk-hidden {
-            display: none;
-            float: left;
-            overflow: hidden;
-            width: 0;
-            max-height: 0;
-            line-height: 0;
-            mso-hide: all;
         }
     </style>
 </head>
@@ -251,7 +270,7 @@
                                    align="center"
                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
                                 <tr style="border-collapse:collapse">
-                                    <td style="padding:10px;Margin:0;background-color:#FFFFFF" bgcolor="#ffffff"
+                                    <td style="padding:10px;Margin:0;background-color:#ffffff" bgcolor="#ffffff"
                                         align="left">
                                         <table width="100%" cellspacing="0" cellpadding="0"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
@@ -263,7 +282,7 @@
                                                         <tr style="border-collapse:collapse">
                                                             <td align="center" style="padding:0;Margin:0;font-size:0px">
                                                                 <img src="cid:logo"
-                                                                     alt="Bitcoin DCA" width="200"
+                                                                     alt width="200"
                                                                      style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic">
                                                             </td>
                                                         </tr>
@@ -287,71 +306,15 @@
                                                             <td align="left" class="es-m-txt-c"
                                                                 style="padding:0;Margin:0;padding-bottom:10px"><h1
                                                                         style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:30px;font-style:normal;font-weight:normal;color:#333333;text-align:center">
-                                                                    Hey, you
-                                                                    bought <?php echo number_format($buyOrder->getAmountInSatoshis()); ?>
-                                                                    satoshis!</h1></td>
+                                                                    Hey, your wallet just got topped up!</h1></td>
                                                         </tr>
                                                         <tr style="border-collapse:collapse">
                                                             <td align="center" class="es-m-txt-c"
                                                                 style="padding:0;Margin:0;padding-bottom:20px"><p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:27px;color:#999999">
-                                                                    Your automated Bitcoin DCA tool just bought some
-                                                                    more satoshis.&nbsp;Here's a transaction overview of
-                                                                    your latest purchase.</p></td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr class="es-mobile-hidden" style="border-collapse:collapse">
-                                    <td class="esdev-adapt-off" align="left"
-                                        style="padding:0;Margin:0;padding-bottom:20px;padding-left:20px;padding-right:20px">
-                                        <table cellpadding="0" cellspacing="0" class="esdev-mso-table"
-                                               style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
-                                            <tr style="border-collapse:collapse">
-                                                <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                    <table cellpadding="0" cellspacing="0" class="es-left" align="left"
-                                                           style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                        <tr style="border-collapse:collapse">
-                                                            <td align="left" style="padding:0;Margin:0;width:270px">
-                                                                <table cellpadding="0" cellspacing="0" width="100%"
-                                                                       role="presentation"
-                                                                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                                    <tr style="border-collapse:collapse">
-                                                                        <td align="right" style="padding:0;Margin:0"><p
-                                                                                    style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:28px;color:#333333">
-                                                                                <strong>Purchased Bitcoin<br>Spent&nbsp;EUR<br>Exchange&nbsp;Fee<br>Exchange&nbsp;Rate<?php if ($tag) { ?>
-                                                                                        <br>Tag<?php } ?></strong>
-                                                                            </p></td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                            <td style="padding:0;Margin:0;width:20px"></td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                    <table cellpadding="0" cellspacing="0" class="es-right"
-                                                           align="right"
-                                                           style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-                                                        <tr style="border-collapse:collapse">
-                                                            <td align="left" style="padding:0;Margin:0;width:270px">
-                                                                <table cellpadding="0" cellspacing="0" width="100%"
-                                                                       role="presentation"
-                                                                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                                    <tr style="border-collapse:collapse">
-                                                                        <td align="left" style="padding:0;Margin:0"><p
-                                                                                    style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:28px;color:#333333">
-                                                                                <?php echo $buyOrder->getDisplayAmountBought(); ?>
-                                                                                <br><?php echo $buyOrder->getDisplayAmountSpent(); ?>
-                                                                                <br><?php echo $buyOrder->getDisplayFeesSpent(); ?>
-                                                                                <br><?php echo $buyOrder->getDisplayAveragePrice(); ?><?php if ($tag) { ?>
-                                                                                    <br><?php echo $tag; ?><?php } ?>
-                                                                            </p></td>
-                                                                    </tr>
-                                                                </table>
+                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:27px;color:#999999;font-size:18px">
+                                                                    Your automated Bitcoin DCA tool just completed a
+                                                                    withdraw for <?php echo number_format($completedWithdraw->getNetAmount()); ?> satoshis.&nbsp;Here's a
+                                                                    transaction overview of your latest withdraw.</p>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -380,62 +343,33 @@
                                                     <table cellpadding="0" cellspacing="0" width="100%"
                                                            role="presentation"
                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                        <!--[if !mso]><!-- -->
-                                                        <tr class="es-desk-hidden"
-                                                            style="display:none;float:left;overflow:hidden;width:0;max-height:0;line-height:0;mso-hide:all;border-collapse:collapse">
+                                                        <tr style="border-collapse:collapse">
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-bottom:10px"><p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
-                                                                    <strong>Purchased
-                                                                        Bitcoin</strong><br><?php echo $buyOrder->getDisplayAmountBought(); ?>
-                                                                    <br><br><strong>Spent
-                                                                        <?php echo $buyOrder->getDisplayAmountSpentCurrency(); ?></strong><br><?php echo $buyOrder->getDisplayAmountSpent(); ?>
-                                                                    <br><br><strong>Exchange
-                                                                        Fee</strong><br><?php echo $buyOrder->getDisplayFeesSpent(); ?>
-                                                                    <br><br><b>Exchange
-                                                                        Rate<br></b><?php echo $buyOrder->getDisplayAveragePrice(); ?><?php if ($tag) { ?>
-                                                                        <br><br><strong>Tag</strong>
-                                                                        <br><?php echo $tag; ?><br><?php } ?>
+                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333;font-size:14px;white-space:nowrap">
+                                                                    <strong>Withdrawed Bitcoin</strong><br><?php
+                                                                    use Jorijn\Bitcoin\Dca\Bitcoin;
+
+                                                                    echo bcdiv($completedWithdraw->getNetAmount(), Bitcoin::SATOSHIS, Bitcoin::DECIMALS); ?> BTC<br><br><strong>Recipient&nbsp;Address</strong><br><?php echo $completedWithdraw->getRecipientAddress(); ?><?php if ($tag) { ?><br><br><strong>Tag</strong><br><?php echo $tag; ?><?php } ?>
                                                                 </p></td>
                                                         </tr>
-                                                        <!--<![endif]-->
                                                         <tr style="border-collapse:collapse">
                                                             <td align="left" style="padding:0;Margin:0"><h2
                                                                         style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">
                                                                     Configuring the interval</h2>
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333;font-size:14px">
                                                                     You can configure the interval at which Bitcoin DCA
-                                                                    buys satoshis for you. You can find out how for your
-                                                                    specific platform <a target="_blank"
-                                                                                         href="https://bitcoin-dca.readthedocs.io/en/latest/scheduling.htmlt"
-                                                                                         style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">in
+                                                                    withdraws your satoshis from <?php ucfirst($exchange); ?>. You can find
+                                                                    out how for your specific platform <a
+                                                                            target="_blank"
+                                                                            href="https://bitcoin-dca.readthedocs.io/en/latest/scheduling.html"
+                                                                            style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#1376C8;font-size:14px">in
                                                                         the documentation</a>. If you need any help,
                                                                     visit the <a target="_blank"
                                                                                  href="https://t.me/bitcoindca"
-                                                                                 style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">Telegram
-                                                                        Channel</a>, where other Bitcoin DCA users can
-                                                                    assist you.</p>
-                                                                <h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">
-                                                                    <br></h2>
-                                                                <h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">
-                                                                    Where did your satoshis go</h2>
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
-                                                                    Bitcoin DCA left them in your online wallet
-                                                                    at <?php echo $exchange; ?>.
-                                                                    The recommendation is to withdraw any funds you have
-                                                                    there because you don't own the private keys,
-                                                                    amongst <a target="_blank"
-                                                                               href="https://cryptonews.com/guides/why-it-is-risky-to-leave-your-cryptocurrency-in-exchange.htm"
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">other</a>
-                                                                    <a target="_blank"
-                                                                       href="https://www.publish0x.com/conscious-crypto/five-reasons-not-to-leave-your-crypto-coins-on-an-exchange-xdlro"
-                                                                       style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">reasons</a>.
-                                                                    You can <a target="_blank"
-                                                                               href="https://bitcoin-dca.readthedocs.io/en/latest/scheduling.html"
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:underline;color:#1376C8">configure</a>
-                                                                    Bitcoin DCA to do this for you at regular intervals.
-                                                                    If you already have done so, sit back and relax.&nbsp;🍺
-                                                                </p></td>
+                                                                                 style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#1376C8;font-size:14px">Telegram
+                                                                        Channel</a> where other users of Bitcoin DCA can
+                                                                    assist you.</p></td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -452,10 +386,10 @@
                     <tr style="border-collapse:collapse">
                         <td align="center" style="padding:0;Margin:0">
                             <table class="es-footer-body"
-                                   style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px"
+                                   style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#ffffff;width:600px"
                                    cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center">
                                 <tr style="border-collapse:collapse">
-                                    <td style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;background-color:#FFFFFF"
+                                    <td style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;background-color:#ffffff"
                                         bgcolor="#ffffff" align="left">
                                         <table width="100%" cellspacing="0" cellpadding="0"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
@@ -476,7 +410,7 @@
                                                                             style="padding:0;Margin:0"><a
                                                                                     target="_blank"
                                                                                     href="https://github.com/Jorijn/bitcoin-dca"
-                                                                                    style="max-width:32px;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:11px;text-decoration:underline;color:#1376C8"><img
+                                                                                    style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#1376C8;font-size:11px;max-width:32px"><img
                                                                                         title="GitHub"
                                                                                         src="cid:github-icon"
                                                                                         alt="GitHub" width="32"
@@ -489,9 +423,9 @@
                                                         <tr style="border-collapse:collapse">
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#999999">
-                                                                    “<?php echo $quote; ?>”
-                                                                    — <?php echo $quoteAuthor; ?></p></td>
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#999999;font-size:11px">
+                                                                    “<?php echo $quote; ?>” — David
+                                                                    <?php echo $quoteAuthor; ?></p></td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -500,7 +434,7 @@
                                     </td>
                                 </tr>
                                 <tr style="border-collapse:collapse">
-                                    <td style="padding:0;Margin:0;padding-bottom:20px;padding-left:20px;padding-right:20px;background-color:#FFFFFF"
+                                    <td style="padding:0;Margin:0;padding-bottom:20px;padding-left:20px;padding-right:20px;background-color:#ffffff"
                                         bgcolor="#ffffff" align="left">
                                         <table width="100%" cellspacing="0" cellpadding="0"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
@@ -512,12 +446,12 @@
                                                         <tr style="border-collapse:collapse">
                                                             <td class="es-m-txt-c" align="center"
                                                                 style="padding:0;Margin:0"><p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#00CE8D">
+                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:17px;color:#00ce8d;font-size:11px">
                                                                     <strong><a target="_blank"
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:11px;text-decoration:none;color:#00CE8D"
+                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;color:#00ce8d;font-size:11px"
                                                                                href="https://github.com/Jorijn/bitcoin-dca">GitHub</a>&nbsp;&nbsp;<a
                                                                                 target="_blank"
-                                                                                style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:11px;text-decoration:none;color:#00CE8D"
+                                                                                style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;color:#00ce8d;font-size:11px"
                                                                                 href="https://bitcoin-dca.readthedocs.io/en/latest/">Documentation</a></strong>
                                                                 </p></td>
                                                         </tr>

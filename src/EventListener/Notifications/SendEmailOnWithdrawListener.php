@@ -13,17 +13,17 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
-use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 
-class SendEmailOnBuyListener extends AbstractSendEmailListener
+class SendEmailOnWithdrawListener extends AbstractSendEmailListener
 {
-    public const NOTIFICATION_SUBJECT_LINE = 'You bought %s sats on %s';
+    public const NOTIFICATION_SUBJECT_LINE = 'You withdrew %s satoshis from %s';
 
-    public function onBuy(BuySuccessEvent $event): void
+    public function onWithdraw(WithdrawSuccessEvent $event): void
     {
         $templateVariables = array_merge(
             [
-                'buyOrder' => $event->getBuyOrder(),
+                'completedWithdraw' => $event->getCompletedWithdraw(),
                 'tag' => $event->getTag(),
             ],
             $this->getTemplateVariables()
@@ -38,7 +38,7 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
                     $this->subjectPrefix,
                     sprintf(
                         self::NOTIFICATION_SUBJECT_LINE,
-                        number_format($event->getBuyOrder()->getAmountInSatoshis()),
+                        number_format($event->getCompletedWithdraw()->getNetAmount()),
                         ucfirst($this->exchange)
                     )
                 )

@@ -294,8 +294,9 @@ services:
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
 
-  event_listener.buy_notification:
-    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
+  event_listener.notify_via_email:
+    abstract: true
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendEmailListener
     arguments:
       - '@mailer'
       - '@html_to_markdown'
@@ -303,12 +304,25 @@ services:
       - '%env(MAILER_FROM)%'
       - '%env(MAILER_SUBJECT_PREFIX)%'
       - '%env(EXCHANGE)%'
-      - '%application.path%/resources/templates/buy_notification.email.html.php'
       - '%application.path%/resources/images/logo-small.png'
       - '%application.path%/resources/images/github-logo-colored.png'
       - '%application.path%/resources/notification-quotes.json'
+
+  event_listener.notify_via_email_on_buy:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
+    parent: event_listener.notify_via_email
+    calls:
+      - setTemplateLocation: ['%application.path%/resources/templates/buy_notification.email.html.php']
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
+  event_listener.notify_via_email_on_withdraw:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnWithdrawListener
+    parent: event_listener.notify_via_email
+    calls:
+      - setTemplateLocation: ['%application.path%/resources/templates/withdraw_notification.email.html.php']
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
 
   event_listener.check_for_updates:
     class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener

@@ -40,7 +40,6 @@ abstract class AbstractSendEmailListener
         string $from,
         string $subjectPrefix,
         string $exchange,
-        string $templateLocation,
         string $logoLocation,
         string $iconLocation,
         string $quotesLocation
@@ -49,12 +48,16 @@ abstract class AbstractSendEmailListener
         $this->to = $to;
         $this->from = $from;
         $this->subjectPrefix = $subjectPrefix;
-        $this->templateLocation = $templateLocation;
         $this->htmlConverter = $htmlConverter;
         $this->logoLocation = $logoLocation;
         $this->iconLocation = $iconLocation;
         $this->exchange = ucfirst($exchange);
         $this->quotesLocation = $quotesLocation;
+    }
+
+    public function setTemplateLocation(string $templateLocation): void
+    {
+        $this->templateLocation = $templateLocation;
     }
 
     protected function getRandomQuote(): Quote
@@ -84,6 +87,10 @@ abstract class AbstractSendEmailListener
 
     protected function renderTemplate(string $templateLocation, array $templateVariables): string
     {
+        if (!$this->templateLocation) {
+            throw new \InvalidArgumentException('template location has not been set yet');
+        }
+
         extract($templateVariables, EXTR_OVERWRITE);
         ob_start();
 
