@@ -359,7 +359,7 @@
                                                                     Configuring the interval</h2>
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333;font-size:14px">
                                                                     You can configure the interval at which Bitcoin DCA
-                                                                    withdraws your satoshis from <?php ucfirst($exchange); ?>. You can find
+                                                                    withdraws your satoshis from <?php echo ucfirst($exchange); ?>. You can find
                                                                     out how for your specific platform <a
                                                                             target="_blank"
                                                                             href="https://bitcoin-dca.readthedocs.io/en/latest/scheduling.html"
