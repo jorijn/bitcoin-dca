@@ -35,15 +35,19 @@ parameters:
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
   env(EXCHANGE): 'bl3p'
   env(BASE_CURRENCY): 'EUR'
+  env(DEBUG): 'false'
+  env(TESTING): 'false'
+  env(DISABLE_VERSION_CHECK): 'false'
+  env(EXPORT_CSV): ~
+
+  # notification settings
   env(NOTIFICATION_EMAIL_ENABLED): 'false'
   env(NOTIFICATION_EMAIL_DSN): 'null://null'
   env(NOTIFICATION_EMAIL_TO): ~
   env(NOTIFICATION_EMAIL_FROM): '%env(NOTIFICATION_EMAIL_TO)%'
   env(NOTIFICATION_EMAIL_SUBJECT_PREFIX): '%application_title%'
-  env(DEBUG): 'false'
-  env(TESTING): 'false'
-  env(DISABLE_VERSION_CHECK): 'false'
-  env(EXPORT_CSV): ~
+  env(NOTIFICATION_TELEGRAM_ENABLED): 'false'
+  env(NOTIFICATION_TELEGRAM_DSN): ~
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -321,6 +325,16 @@ services:
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
 
+  event_listener.notify_via_telegram_on_buy:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnBuyListener
+    arguments:
+      - '@notifier.telegram.transport'
+      - '@event_dispatcher'
+      - '%env(EXCHANGE)%'
+      - '%env(bool:NOTIFICATION_TELEGRAM_ENABLED)%'
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
   event_listener.check_for_updates:
     class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
     arguments:
@@ -330,6 +344,7 @@ services:
       - '%env(bool:DISABLE_VERSION_CHECK)%'
     tags:
       - { name: kernel.event_listener, event: console.terminate, method: onConsoleTerminated }
+      - { name: kernel.event_listener, event: Symfony\Component\Notifier\Event\MessageEvent, method: onMessageEvent }
 
   event_listener.write_order_to_csv:
     class: Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener
@@ -594,6 +609,38 @@ services:
       - 'create'
     arguments:
       - '@mailer.transport.esmtp.dsn'
+
+  ######################################################################
+  # Telegram Notifier
+  ######################################################################
+  notifier.telegram.transport:
+    class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransport
+    lazy: true
+    factory:
+      - '@notifier.telegram.transport_factory'
+      - 'create'
+    arguments:
+      - '@notifier.telegram.dsn'
+
+  notifier.telegram.transport_factory:
+    lazy: true
+    class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransportFactory
+    arguments:
+      - '@event_dispatcher'
+      - '@notifier.telegram.http_client'
+
+  notifier.telegram.http_client:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    lazy: true
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+
+  notifier.telegram.dsn:
+    class: Symfony\Component\Notifier\Transport\Dsn
+    lazy: true
+    arguments:
+      - '%env(NOTIFICATION_TELEGRAM_DSN)%'
 
   ######################################################################
   # Configuration Objects
