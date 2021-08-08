@@ -21,6 +21,10 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
 
     public function onWithdraw(WithdrawSuccessEvent $event): void
     {
+        if (!$this->isEnabled) {
+            return;
+        }
+
         $templateVariables = array_merge(
             [
                 'completedWithdraw' => $event->getCompletedWithdraw(),
@@ -35,11 +39,11 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
             ->subject(
                 sprintf(
                     '[%s] %s',
-                    $this->subjectPrefix,
+                    $this->emailConfiguration->getSubjectPrefix(),
                     sprintf(
                         self::NOTIFICATION_SUBJECT_LINE,
                         number_format($event->getCompletedWithdraw()->getNetAmount()),
-                        ucfirst($this->exchange)
+                        ucfirst($this->templateInformation->getExchange())
                     )
                 )
             )

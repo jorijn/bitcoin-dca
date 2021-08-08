@@ -15,6 +15,8 @@ namespace Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Jorijn\Bitcoin\Dca\Exception\UnableToGetRandomQuoteException;
+use Jorijn\Bitcoin\Dca\Model\NotificationEmailConfiguration;
+use Jorijn\Bitcoin\Dca\Model\NotificationEmailTemplateInformation;
 use Jorijn\Bitcoin\Dca\Model\Quote;
 use League\HTMLToMarkdown\HtmlConverterInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -23,36 +25,24 @@ use Symfony\Component\Mime\Email;
 abstract class AbstractSendEmailListener
 {
     protected MailerInterface $notifier;
-    protected string $to;
-    protected string $from;
-    protected string $subjectPrefix;
-    protected string $templateLocation;
     protected HtmlConverterInterface $htmlConverter;
-    protected string $logoLocation;
-    protected string $iconLocation;
-    protected string $exchange;
-    protected string $quotesLocation;
+    protected NotificationEmailConfiguration $emailConfiguration;
+    protected NotificationEmailTemplateInformation $templateInformation;
+    protected string $templateLocation;
+    protected bool $isEnabled;
 
     public function __construct(
         MailerInterface $notifier,
         HtmlConverterInterface $htmlConverter,
-        string $to,
-        string $from,
-        string $subjectPrefix,
-        string $exchange,
-        string $logoLocation,
-        string $iconLocation,
-        string $quotesLocation
+        NotificationEmailConfiguration $emailConfiguration,
+        NotificationEmailTemplateInformation $templateInformation,
+        bool $isEnabled
     ) {
         $this->notifier = $notifier;
-        $this->to = $to;
-        $this->from = $from;
-        $this->subjectPrefix = $subjectPrefix;
         $this->htmlConverter = $htmlConverter;
-        $this->logoLocation = $logoLocation;
-        $this->iconLocation = $iconLocation;
-        $this->exchange = ucfirst($exchange);
-        $this->quotesLocation = $quotesLocation;
+        $this->isEnabled = $isEnabled;
+        $this->emailConfiguration = $emailConfiguration;
+        $this->templateInformation = $templateInformation;
     }
 
     public function setTemplateLocation(string $templateLocation): void
@@ -63,7 +53,7 @@ abstract class AbstractSendEmailListener
     protected function getRandomQuote(): Quote
     {
         try {
-            $quotes = json_decode(file_get_contents($this->quotesLocation), true, 512, JSON_THROW_ON_ERROR);
+            $quotes = json_decode(file_get_contents($this->templateInformation->getQuotesLocation()), true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new UnableToGetRandomQuoteException($e->getMessage(), $e->getCode(), $e);
         }
@@ -81,7 +71,7 @@ abstract class AbstractSendEmailListener
         return [
             'quote' => $quote->getQuote(),
             'quoteAuthor' => $quote->getAuthor(),
-            'exchange' => $this->exchange,
+            'exchange' => $this->templateInformation->getExchange(),
         ];
     }
 
@@ -103,10 +93,10 @@ abstract class AbstractSendEmailListener
     protected function createEmail(): Email
     {
         return (new Email())
-            ->from($this->from)
-            ->to($this->to)
-            ->embedFromPath($this->logoLocation, 'logo')
-            ->embedFromPath($this->iconLocation, 'github-icon')
+            ->from($this->emailConfiguration->getFrom())
+            ->to($this->emailConfiguration->getTo())
+            ->embedFromPath($this->templateInformation->getLogoLocation(), 'logo')
+            ->embedFromPath($this->templateInformation->getIconLocation(), 'github-icon')
         ;
     }
 }

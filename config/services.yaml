@@ -35,10 +35,11 @@ parameters:
   env(WITHDRAW_XPUB): '%env(BL3P_WITHDRAW_XPUB)%'
   env(EXCHANGE): 'bl3p'
   env(BASE_CURRENCY): 'EUR'
-  env(MAILER_DSN): 'null://null'
-  env(MAILER_TO): ~
-  env(MAILER_FROM): ~
-  env(MAILER_SUBJECT_PREFIX): '%application_title%'
+  env(NOTIFICATION_EMAIL_ENABLED): 'false'
+  env(NOTIFICATION_EMAIL_DSN): 'null://null'
+  env(NOTIFICATION_EMAIL_TO): ~
+  env(NOTIFICATION_EMAIL_FROM): '%env(NOTIFICATION_EMAIL_TO)%'
+  env(NOTIFICATION_EMAIL_SUBJECT_PREFIX): '%application_title%'
   env(DEBUG): 'false'
   env(TESTING): 'false'
   env(DISABLE_VERSION_CHECK): 'false'
@@ -300,13 +301,9 @@ services:
     arguments:
       - '@mailer'
       - '@html_to_markdown'
-      - '%env(MAILER_TO)%'
-      - '%env(MAILER_FROM)%'
-      - '%env(MAILER_SUBJECT_PREFIX)%'
-      - '%env(EXCHANGE)%'
-      - '%application.path%/resources/images/logo-small.png'
-      - '%application.path%/resources/images/github-logo-colored.png'
-      - '%application.path%/resources/notification-quotes.json'
+      - '@configuration.notifications.email'
+      - '@configuration.notifications.email.template'
+      - '%env(bool:NOTIFICATION_EMAIL_ENABLED)%'
 
   event_listener.notify_via_email_on_buy:
     class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
@@ -559,6 +556,7 @@ services:
   ######################################################################
   mailer:
     class: Symfony\Component\Mailer\Mailer
+    lazy: true
     arguments:
       - '@mailer.transport.esmtp'
       - ~
@@ -566,20 +564,23 @@ services:
 
   mailer.transport.esmtp.dsn:
     class: Symfony\Component\Mailer\Transport\Dsn
+    lazy: true
     factory:
       - 'Symfony\Component\Mailer\Transport\Dsn'
       - 'fromString'
     arguments:
-      - '%env(MAILER_DSN)%'
+      - '%env(NOTIFICATION_EMAIL_DSN)%'
 
   mailer.transport.esmtp.http_client:
     class: Symfony\Contracts\HttpClient\HttpClientInterface
+    lazy: true
     factory:
       - Symfony\Component\HttpClient\HttpClient
       - create
 
   mailer.transport.esmtp.factory:
     class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory
+    lazy: true
     arguments:
       - '@event_dispatcher'
       - '@mailer.transport.esmtp.http_client'
@@ -587,8 +588,27 @@ services:
 
   mailer.transport.esmtp:
     class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport
+    lazy: true
     factory:
       - '@mailer.transport.esmtp.factory'
       - 'create'
     arguments:
       - '@mailer.transport.esmtp.dsn'
+
+  ######################################################################
+  # Configuration Objects
+  ######################################################################
+  configuration.notifications.email:
+    class: Jorijn\Bitcoin\Dca\Model\NotificationEmailConfiguration
+    arguments:
+      - '%env(NOTIFICATION_EMAIL_TO)%'
+      - '%env(NOTIFICATION_EMAIL_FROM)%'
+      - '%env(NOTIFICATION_EMAIL_SUBJECT_PREFIX)%'
+
+  configuration.notifications.email.template:
+    class: Jorijn\Bitcoin\Dca\Model\NotificationEmailTemplateInformation
+    arguments:
+      - '%env(EXCHANGE)%'
+      - '%application.path%/resources/images/logo-small.png'
+      - '%application.path%/resources/images/github-logo-colored.png'
+      - '%application.path%/resources/notification-quotes.json'

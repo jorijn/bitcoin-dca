@@ -21,6 +21,10 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
 
     public function onBuy(BuySuccessEvent $event): void
     {
+        if (!$this->isEnabled) {
+            return;
+        }
+
         $templateVariables = array_merge(
             [
                 'buyOrder' => $event->getBuyOrder(),
@@ -35,11 +39,11 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
             ->subject(
                 sprintf(
                     '[%s] %s',
-                    $this->subjectPrefix,
+                    $this->emailConfiguration->getSubjectPrefix(),
                     sprintf(
                         self::NOTIFICATION_SUBJECT_LINE,
                         number_format($event->getBuyOrder()->getAmountInSatoshis()),
-                        ucfirst($this->exchange)
+                        ucfirst($this->templateInformation->getExchange())
                     )
                 )
             )
