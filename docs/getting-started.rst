@@ -12,7 +12,7 @@ Configuration
 -------------
 Create a new file somewhere that will contain the configuration needed for the tool to operate. If your account is called ``bob`` and your home directory is `/home/bob` lets create a new file in ``/home/bob/.bitcoin-dca``:
 
-.. code-block::
+.. code-block:: bash
    :caption: /home/bob/.bitcoin-dca
 
    BL3P_PRIVATE_KEY=bl3p private key here
@@ -31,7 +31,7 @@ You can test that it work with:
 
 If successful, you should see a table containing your balances on the exchange:
 
-.. code-block::
+.. code-block:: bash
 
    +----------+----------------+----------------+
    | Currency | Balance        | Available      |
