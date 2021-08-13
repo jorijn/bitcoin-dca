@@ -121,7 +121,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
      */
     public function testFeeCalculation(): void
     {
-        static::assertSame(30000, $this->service->getWithdrawFeeInSatoshis());
+        static::assertSame(5000, $this->service->getWithdrawFeeInSatoshis());
     }
 
     private function createBalanceStructure(int $balance): array

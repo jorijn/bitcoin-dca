@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [v1.5.1] - 2021-08-13
+### Changed
+* BL3P changed their withdrawal fee from 30k sat to 5k sat. This change updates to code to display the correct fee.
+
 ## [v1.5.0] - 2021-07-10
 ### Added
 * When you buy Bitcoin and supply `EXPORT_CSV=/location/to/file.csv`, Bitcoin-DCA will export the order information to that file in CSV format.
@@ -90,7 +94,8 @@ Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require
 ### Added
 * A Python based fallback mechanism for 32bits systems. Unfortunately a bug prevented Raspberry Pi users from using Xpubs properly. The system will automatically use the native, more advanced method or derivation for systems that are capable and degrade to the Python tool without people noticing.
 
-[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.1...HEAD
+[v1.5.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.0...v1.5.1
 [v1.5.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.1...v1.5.0
 [v1.4.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.0...v1.4.1
 [v1.4.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.3.2...v1.4.0
