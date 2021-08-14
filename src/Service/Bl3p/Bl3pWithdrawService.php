@@ -52,7 +52,7 @@ class Bl3pWithdrawService implements WithdrawServiceInterface
 
     public function getWithdrawFeeInSatoshis(): int
     {
-        return 30000;
+        return 5000;
     }
 
     public function supportsExchange(string $exchange): bool
