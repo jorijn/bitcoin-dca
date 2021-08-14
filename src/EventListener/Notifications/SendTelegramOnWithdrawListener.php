@@ -13,29 +13,28 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
-use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Symfony\Component\Notifier\Bridge\Telegram\TelegramOptions;
 use Symfony\Component\Notifier\Message\ChatMessage;
 
-class SendTelegramOnBuyListener extends AbstractSendTelegramListener
+class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
 {
-    public function onBuy(BuySuccessEvent $event): void
+    public function onWithdraw(WithdrawSuccessEvent $event): void
     {
         if (!$this->isEnabled) {
             return;
         }
 
-        $formattedSats = number_format($event->getBuyOrder()->getAmountInSatoshis());
+        $withdraw = $event->getCompletedWithdraw();
+        $formattedSats = number_format($withdraw->getNetAmount());
 
         $htmlMessage = <<<TLGRM
-<strong>💰 Bitcoin-DCA just bought {$formattedSats} sat.</strong>
+<strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
 
 Transaction overview:
 
-Purchased: <strong>{$event->getBuyOrder()->getDisplayAmountBought()}</strong>
-Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()} {$event->getBuyOrder()->getDisplayAmountSpentCurrency()}</strong>
-Fee: <strong>{$event->getBuyOrder()->getDisplayFeesSpent()}</strong>
-Price: <strong>{$event->getBuyOrder()->getDisplayAveragePrice()}</strong>
+Address: <strong>{$withdraw->getRecipientAddress()}</strong>
+ID: <strong>{$withdraw->getId()}</strong>
 TLGRM;
 
         if ($event->getTag()) {

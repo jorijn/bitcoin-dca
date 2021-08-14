@@ -327,13 +327,24 @@ services:
 
   event_listener.notify_via_telegram_on_buy:
     class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnBuyListener
+    parent: event_listener.notify_via_telegram
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
+  event_listener.notify_via_telegram_on_withdraw:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnWithdrawListener
+    parent: event_listener.notify_via_telegram
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
+
+  event_listener.notify_via_telegram:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendTelegramListener
+    abstract: true
     arguments:
       - '@notifier.telegram.transport'
       - '@event_dispatcher'
       - '%env(EXCHANGE)%'
       - '%env(bool:NOTIFICATION_TELEGRAM_ENABLED)%'
-    tags:
-      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
 
   event_listener.check_for_updates:
     class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
