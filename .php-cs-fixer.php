@@ -29,6 +29,9 @@ return (new PhpCsFixer\Config())
             'general_phpdoc_annotation_remove' => ['annotations' => ['expectedDeprecation']],
             'header_comment' => ['header' => $header],
             'array_syntax' => ['syntax' => 'short'],
+            'method_argument_space' => [
+                'on_multiline' => 'ensure_fully_multiline'
+            ],
         ]
     )
     ->setFinder($finder);
