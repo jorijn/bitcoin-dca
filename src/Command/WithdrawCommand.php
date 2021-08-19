@@ -81,9 +81,9 @@ class WithdrawCommand extends Command
         if (!$input->getOption('yes')) {
             $question = sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s BTC will be taken as withdrawal fee.',
-                bcdiv((string) $balanceToWithdraw , Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
+                bcdiv((string) $balanceToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
                 $addressToWithdrawTo,
-                bcdiv((string) $this->withdrawService->getWithdrawFeeInSatoshis() , Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
+                bcdiv((string) $this->withdrawService->getWithdrawFeeInSatoshis(), Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
             );
 
             if (!$io->confirm($question, false)) {
