@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="/resources/images/logo.png?raw=true" alt="Bitcoin DCA Logo">
+  <img src="/resources/images/dca-illustration.png?raw=true" alt="Bitcoin DCA">
 </p>
 
-# Automated self-hosted Bitcoin DCA tool for multiple Exchanges
+# Bitcoin-DCA: Automated self-hosted Bitcoin DCA tool for multiple Exchanges
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bitcoin-dca)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
