@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="/resources/images/logo.png?raw=true" alt="Bitcoin DCA Logo">
+  <img src="/resources/images/dca-illustration.png?raw=true" alt="Bitcoin DCA">
 </p>
 
-# Automated self-hosted Bitcoin DCA tool for multiple Exchanges
+# Bitcoin-DCA: Automated self-hosted Bitcoin DCA tool for multiple Exchanges
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jorijn/bitcoin-dca)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Jorijn_bitcoin-dca&metric=alert_status)](https://sonarcloud.io/dashboard?id=Jorijn_bitcoin-dca)
@@ -48,3 +48,9 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
 Like my work? Please buy me a 🍺 by sending some sats on https://jorijn.com/donate/
+
+<p>&nbsp;</p>
+<p align="center">
+  <img src="/resources/images/logo-small.png?raw=true" alt="Bitcoin DCA Logo" width="115" height="93">
+</p>
+
