@@ -1,6 +1,6 @@
 .env
 vendor
-.php_cs.cache
+.php-cs-fixer.cache
 .vscode
 resources/xpub_derive/.idea
 resources/xpub_derive/venv

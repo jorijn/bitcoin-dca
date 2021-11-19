@@ -28,7 +28,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
- * @covers ::___construct
+ * @covers ::__construct
  *
  * @internal
  */

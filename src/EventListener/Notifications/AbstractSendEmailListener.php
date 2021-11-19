@@ -36,7 +36,7 @@ abstract class AbstractSendEmailListener
         HtmlConverterInterface $htmlConverter,
         NotificationEmailConfiguration $emailConfiguration,
         NotificationEmailTemplateInformation $templateInformation,
-        bool $isEnabled
+        bool $isEnabled = false
     ) {
         $this->notifier = $notifier;
         $this->htmlConverter = $htmlConverter;
@@ -50,12 +50,16 @@ abstract class AbstractSendEmailListener
         $this->templateLocation = $templateLocation;
     }
 
-    protected function getRandomQuote(): Quote
+    public function getRandomQuote(): ?Quote
     {
         try {
             $quotes = json_decode(file_get_contents($this->templateInformation->getQuotesLocation()), true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new UnableToGetRandomQuoteException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        if (!\is_array($quotes) || empty($quotes) || 2 !== \count($quotes[0])) {
+            return null;
         }
 
         ['quote' => $quote, 'author' => $quoteAuthor] = $quotes[array_rand($quotes)];
@@ -64,33 +68,28 @@ abstract class AbstractSendEmailListener
     }
 
     #[ArrayShape(['quote' => "string", 'quoteAuthor' => "string", 'exchange' => "string"])]
-    protected function getTemplateVariables(): array
+    public function getTemplateVariables(): array
     {
         $quote = $this->getRandomQuote();
 
         return [
-            'quote' => $quote->getQuote(),
-            'quoteAuthor' => $quote->getAuthor(),
+            'quote' => $quote instanceof Quote ? $quote->getQuote() : '',
+            'quoteAuthor' => $quote instanceof Quote ? $quote->getAuthor() : '',
             'exchange' => $this->templateInformation->getExchange(),
         ];
     }
 
-    protected function renderTemplate(string $templateLocation, array $templateVariables): string
+    public function renderTemplate(string $templateLocation, array $templateVariables): string
     {
-        if (!$this->templateLocation) {
-            throw new \InvalidArgumentException('template location has not been set yet');
-        }
-
         extract($templateVariables, EXTR_OVERWRITE);
         ob_start();
 
-        /** @noinspection PhpIncludeInspection */
         include $templateLocation;
 
         return ob_get_clean();
     }
 
-    protected function createEmail(): Email
+    public function createEmail(): Email
     {
         return (new Email())
             ->from($this->emailConfiguration->getFrom())
