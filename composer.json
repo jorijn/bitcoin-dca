@@ -43,7 +43,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --testdox"
+        "test": "vendor/bin/phpunit --testdox",
+        "php-cs-fixer": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.1"
