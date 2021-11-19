@@ -151,6 +151,7 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
     }
 
     /**
+     * @covers ::getTemplateLocation
      * @covers ::setTemplateLocation
      */
     public function testTemplateLocationSetter(): void
@@ -158,12 +159,6 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
         $location = 'l'.mt_rand();
         $this->listener->setTemplateLocation($location);
 
-        $setLocation = \Closure::bind(
-            fn () => $this->templateLocation,
-            $this->listener,
-            $this->listener
-        )();
-
-        static::assertSame($location, $setLocation);
+        static::assertSame($this->listener->getTemplateLocation(), $location);
     }
 }

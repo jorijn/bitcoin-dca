@@ -50,6 +50,11 @@ abstract class AbstractSendEmailListener
         $this->templateLocation = $templateLocation;
     }
 
+    public function getTemplateLocation(): ?string
+    {
+        return $this->templateLocation;
+    }
+
     public function getRandomQuote(): ?Quote
     {
         try {
