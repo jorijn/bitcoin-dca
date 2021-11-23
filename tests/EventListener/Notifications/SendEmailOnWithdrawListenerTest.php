@@ -64,7 +64,7 @@ final class SendEmailOnWithdrawListenerTest extends TesterOfAbstractSendEmailLis
     public function testAssertThatEmailIsSentOnWithdrawEvent(): void
     {
         $address = 'a'.random_int(10000, 20000);
-        $id = (string)random_int(10, 20);
+        $id = (string) random_int(10, 20);
         $amount = random_int(10000, 20000);
         $withdraw = (new CompletedWithdraw($address, $amount, $id));
         $tag = 't'.random_int(1000, 2000);
