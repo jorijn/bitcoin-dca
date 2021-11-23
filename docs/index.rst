@@ -61,4 +61,3 @@ Contributing
 ------------
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
-Like my work? Please buy me a 🍺 by sending some sats to https://jorijn.com/donate/
