@@ -47,8 +47,6 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 ## Contributing
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
 
-Like my work? Please buy me a 🍺 by sending some sats on https://jorijn.com/donate/
-
 <p>&nbsp;</p>
 <p align="center">
   <img src="/resources/images/logo-small.png?raw=true" alt="Bitcoin DCA Logo" width="115" height="93">

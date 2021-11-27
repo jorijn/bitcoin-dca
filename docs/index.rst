@@ -63,3 +63,4 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 Contributing
 ------------
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
+
