@@ -37,6 +37,9 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 final class CheckForUpdatesListenerTest extends TestCase
 {
+    private const VERSION = 'v1.1.0';
+    private const API_PATH_AT_GITHUB = '/api/path/at/github';
+
     /** @var InputInterface|MockObject */
     private $input;
     /** @var BufferedOutput */
@@ -115,7 +118,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testVersionInformationIsAppendedToChatMessageDespiteShowingMachineReadableOutput(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, 'v1.1.0', '/api', false);
+        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
 
         $command = $this->createMock(BuyCommand::class);
         $command->expects(static::atLeastOnce())->method('isDisplayingMachineReadableOutput')->willReturn(true);
@@ -181,7 +184,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testApplicationIsOutdated(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, 'v1.1.0', '/api', false);
+        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
 
         $command = $this->createMock(Command::class);
 
@@ -217,7 +220,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testExceptionHandlingAfterHttpRequest(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, 'v1.1.0', '/api/path/at/github', false);
+        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, self::API_PATH_AT_GITHUB, false);
 
         $command = $this->createMock(Command::class);
         $input = $this->createMock(InputInterface::class);
@@ -225,7 +228,7 @@ final class CheckForUpdatesListenerTest extends TestCase
 
         $apiResponse = $this->createMock(ResponseInterface::class);
         $apiResponse->method('toArray')->willThrowException(new Exception('broken!'));
-        $httpClient->expects(static::exactly(2))->method('request')->with('GET', '/api/path/at/github')->willReturn(
+        $httpClient->expects(static::exactly(2))->method('request')->with('GET', self::API_PATH_AT_GITHUB)->willReturn(
             $apiResponse
         );
 
@@ -247,7 +250,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testListenerDoesNothingOnDifferentMessageType(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, 'v1.1.0', '/api/path/at/github', false);
+        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, self::API_PATH_AT_GITHUB, false);
         $messageEvent = new MessageEvent(new SmsMessage('1', ''));
 
         $messageEventSignature = serialize($messageEvent);
