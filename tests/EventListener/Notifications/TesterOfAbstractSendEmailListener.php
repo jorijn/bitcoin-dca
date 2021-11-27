@@ -21,6 +21,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\MailerInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class TesterOfAbstractSendEmailListener extends TestCase
 {
     /** @var MailerInterface|MockObject */
