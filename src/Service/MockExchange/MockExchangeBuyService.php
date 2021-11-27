@@ -17,6 +17,9 @@ use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
+/**
+ * @codeCoverageIgnore This file is solely used for testing
+ */
 class MockExchangeBuyService implements BuyServiceInterface
 {
     protected bool $isEnabled;

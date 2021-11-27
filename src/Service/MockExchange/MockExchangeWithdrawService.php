@@ -16,6 +16,9 @@ namespace Jorijn\Bitcoin\Dca\Service\MockExchange;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
 
+/**
+ * @codeCoverageIgnore This file is solely used for testing
+ */
 class MockExchangeWithdrawService implements WithdrawServiceInterface
 {
     protected bool $isEnabled;
