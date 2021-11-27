@@ -97,8 +97,8 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
      */
     public function testGettingOfTemplateVariables(): void
     {
-        $quote = 'q'.mt_rand();
-        $quoteAuthor = 'qa'.mt_rand();
+        $quote = 'q'.random_int(1000, 2000);
+        $quoteAuthor = 'qa'.random_int(1000, 2000);
 
         file_put_contents(
             $this->quotesLocation,
@@ -123,7 +123,7 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
     public function testRenderingOfTemplate(): void
     {
         $tplFile = tempnam(sys_get_temp_dir(), 'dcatpl');
-        $randomIdentifier = 'ri'.mt_rand();
+        $randomIdentifier = 'ri'.random_int(1000, 2000);
 
         try {
             file_put_contents($tplFile, '<?php echo $randomIdentifierVar; ?>');
@@ -156,7 +156,7 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
      */
     public function testTemplateLocationSetter(): void
     {
-        $location = 'l'.mt_rand();
+        $location = 'l'.random_int(1000, 2000);
         $this->listener->setTemplateLocation($location);
 
         static::assertSame($this->listener->getTemplateLocation(), $location);

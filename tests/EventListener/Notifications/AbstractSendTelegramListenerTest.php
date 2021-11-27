@@ -36,8 +36,8 @@ final class AbstractSendTelegramListenerTest extends TestCase
         $listener = $this->getMockForAbstractClass(AbstractSendTelegramListener::class, [
             $transport = new TelegramTransport(''),
             $dispatcher = new EventDispatcher(),
-            $exchange = 'e'.mt_rand(),
-            $enabled = (bool) mt_rand(0, 1),
+            $exchange = 'e'.random_int(1000, 2000),
+            $enabled = (bool) random_int(0, 1),
         ]);
 
         static::assertSame($transport, $listener->getTransport());
