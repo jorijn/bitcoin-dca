@@ -3,8 +3,6 @@
 Installation
 ============
 
-.. include:: ./includes/beta-warning.rst
-
 Requirements
 ------------
 * You need to have an account on a supported Exchange;

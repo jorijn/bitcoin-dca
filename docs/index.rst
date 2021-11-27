@@ -1,3 +1,5 @@
+.. image:: ../resources/images/dca-illustration.png
+
 Welcome to Bitcoin DCA's documentation!
 ====================================
 
@@ -11,6 +13,7 @@ Welcome to Bitcoin DCA's documentation!
    persistent-storage
    xpub-withdraw
    tagged-balance
+   getting-notified
    faq
 
 About this software
@@ -60,5 +63,3 @@ You can visit the Bitcoin DCA Support channel on Telegram: https://t.me/bitcoind
 Contributing
 ------------
 Contributions are highly welcome! Feel free to submit issues and pull requests on https://github.com/jorijn/bitcoin-dca.
-
-Like my work? Please buy me a 🍺 by sending some sats to https://jorijn.com/donate/

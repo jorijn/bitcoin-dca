@@ -584,42 +584,28 @@ services:
     class: Symfony\Component\Mailer\Mailer
     lazy: true
     arguments:
-      - '@mailer.transport.esmtp'
+      - '@mailer.transport'
       - ~
       - '@event_dispatcher'
 
-  mailer.transport.esmtp.dsn:
-    class: Symfony\Component\Mailer\Transport\Dsn
-    lazy: true
-    factory:
-      - 'Symfony\Component\Mailer\Transport\Dsn'
-      - 'fromString'
-    arguments:
-      - '%env(NOTIFICATION_EMAIL_DSN)%'
-
-  mailer.transport.esmtp.http_client:
+  mailer.transport.http_client:
     class: Symfony\Contracts\HttpClient\HttpClientInterface
     lazy: true
     factory:
       - Symfony\Component\HttpClient\HttpClient
       - create
 
-  mailer.transport.esmtp.factory:
-    class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory
-    lazy: true
-    arguments:
-      - '@event_dispatcher'
-      - '@mailer.transport.esmtp.http_client'
-      - '@logger'
-
-  mailer.transport.esmtp:
-    class: Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport
+  mailer.transport:
+    class: Symfony\Component\Mailer\Transport\TransportInterface
     lazy: true
     factory:
-      - '@mailer.transport.esmtp.factory'
-      - 'create'
+      - 'Symfony\Component\Mailer\Transport'
+      - 'fromDsn'
     arguments:
-      - '@mailer.transport.esmtp.dsn'
+      - '%env(NOTIFICATION_EMAIL_DSN)%'
+      - '@event_dispatcher'
+      - '@mailer.transport.http_client'
+      - '@logger'
 
   ######################################################################
   # Telegram Notifier

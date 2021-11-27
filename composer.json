@@ -30,7 +30,15 @@
         "league/html-to-markdown": "^4.9",
         "symfony/notifier": "^5.3",
         "symfony/telegram-notifier": "^5.3",
-        "symfony/proxy-manager-bridge": "^5.3"
+        "symfony/proxy-manager-bridge": "^5.3",
+        "symfony/amazon-mailer": "^5.3",
+        "symfony/google-mailer": "^5.3",
+        "symfony/mailchimp-mailer": "^5.3",
+        "symfony/mailgun-mailer": "^5.3",
+        "symfony/mailjet-mailer": "^5.3",
+        "symfony/postmark-mailer": "^5.3",
+        "symfony/sendgrid-mailer": "^5.3",
+        "symfony/sendinblue-mailer": "^5.3"
     },
     "autoload": {
         "psr-4": {

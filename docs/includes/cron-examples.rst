@@ -24,19 +24,10 @@ Example: Buying €50.00 of Bitcoin every week on monday, withdrawing everything
    0 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest buy 50 --yes --no-ansi
    0 0 1 * * $(command -v docker) run --rm --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest withdraw --all --yes --no-ansi
 
-Example: Send out an email when Bitcoin was bought
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-   0 3 * * mon $(command -v docker) run --rm --env-file=/home/bob/.bitcoin-dca ghcr.io/jorijn/bitcoin-dca:latest buy 50 --yes --no-ansi 2>&1 |mail -s "You just bought more Bitcoin!" youremail@here.com
-
 .. note::
    You can use the great tool at https://crontab.guru/ to try more combinations.
 
 Tips
 ----
 * You can create and run this tool with different configuration files, e.g. different withdrawal addresses for your spouse, children or other saving purposes.
-* On Linux, you can redirect the output to other tools, e.g. email yourself when Bitcoin is bought. Use ``--no-ansi`` to disable colored output.
 * Go nuts on security, use a different API keys for buying and withdrawal. You can even lock your BL3P account to only allow a single Bitcoin address for withdrawal through the API.
-* Although a bit technical, in a cron job, use ``2>&1`` to redirect any error output to the standard output stream. Basically this means that any error messages will show up in your email message too.
