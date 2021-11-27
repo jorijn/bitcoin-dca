@@ -23,6 +23,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class RemoteReleaseInformationTest extends TestCase
 {
+    private const V_1_0_0 = 'v1.0.0';
+    private const V_1_0_1 = 'v1.0.1';
+
     /**
      * @covers ::__construct
      * @covers ::getLocalVersion
@@ -34,14 +37,14 @@ final class RemoteReleaseInformationTest extends TestCase
     {
         $releaseInformation = ['r' => random_int(1000, 2000)];
 
-        $outdated = new RemoteReleaseInformation($releaseInformation, 'v1.0.0', 'v1.0.1');
+        $outdated = new RemoteReleaseInformation($releaseInformation, self::V_1_0_0, self::V_1_0_1);
         static::assertSame($releaseInformation, $outdated->getReleaseInformation());
-        static::assertSame('v1.0.0', $outdated->getLocalVersion());
-        static::assertSame('v1.0.1', $outdated->getRemoteVersion());
+        static::assertSame(self::V_1_0_0, $outdated->getLocalVersion());
+        static::assertSame(self::V_1_0_1, $outdated->getRemoteVersion());
         static::assertTrue($outdated->isOutdated());
 
-        $sameVersion = new RemoteReleaseInformation($releaseInformation, 'v1.0.0', 'v1.0.0');
-        $newerVersion = new RemoteReleaseInformation($releaseInformation, 'v1.0.1', 'v1.0.0');
+        $sameVersion = new RemoteReleaseInformation($releaseInformation, self::V_1_0_0, self::V_1_0_0);
+        $newerVersion = new RemoteReleaseInformation($releaseInformation, self::V_1_0_1, self::V_1_0_0);
 
         static::assertFalse($sameVersion->isOutdated());
         static::assertFalse($newerVersion->isOutdated());

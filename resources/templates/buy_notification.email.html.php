@@ -421,7 +421,7 @@
                                                                     Where did your satoshis go</h2>
                                                                 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#333333">
                                                                     Bitcoin DCA left them in your online wallet
-                                                                    at <?php echo $exchange; ?>.
+                                                                    at <?php echo ucfirst($exchange); ?>.
                                                                     The recommendation is to withdraw any funds you have
                                                                     there because you don't own the private keys,
                                                                     amongst <a target="_blank"

@@ -26,9 +26,10 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
         }
 
         $formattedSats = number_format($event->getBuyOrder()->getAmountInSatoshis());
+        $exchange = ucfirst($this->getExchange());
 
         $htmlMessage = <<<TLGRM
-<strong>💰 Bitcoin-DCA just bought {$formattedSats} sat.</strong>
+<strong>💰 Bitcoin-DCA just bought {$formattedSats} sat at {$exchange}.</strong>
 
 Transaction overview:
 
