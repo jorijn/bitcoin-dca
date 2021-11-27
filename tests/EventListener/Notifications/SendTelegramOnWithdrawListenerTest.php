@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
-use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
-use Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnBuyListener;
-use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
+use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
+use Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnWithdrawListener;
+use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -24,11 +24,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnBuyListener
+ * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnWithdrawListener
  *
  * @internal
  */
-final class SendTelegramOnBuyListenerTest extends TestCase
+final class SendTelegramOnWithdrawListenerTest extends TestCase
 {
     /** @var HttpClientInterface|mixed|MockObject */
     private $httpClient;
@@ -36,7 +36,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
     private $eventDispatcher;
     private TelegramTransport $transport;
     private string $exchange;
-    private SendTelegramOnBuyListener $listener;
+    private SendTelegramOnWithdrawListener $listener;
 
     protected function setUp(): void
     {
@@ -45,8 +45,8 @@ final class SendTelegramOnBuyListenerTest extends TestCase
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->transport = new TelegramTransport('', '', $this->httpClient);
-        $this->exchange = 'e'.random_int(1000, 2000);
-        $this->listener = new SendTelegramOnBuyListener(
+        $this->exchange = 'e'.random_int(2000, 3000);
+        $this->listener = new SendTelegramOnWithdrawListener(
             $this->transport,
             $this->eventDispatcher,
             $this->exchange,
@@ -55,41 +55,37 @@ final class SendTelegramOnBuyListenerTest extends TestCase
     }
 
     /**
-     * @covers ::onBuy
+     * @covers ::onWithdraw
      */
     public function testListenerDoesNotActWhenItIsDisables(): void
     {
-        $this->listener = new SendTelegramOnBuyListener(
+        $this->listener = new SendTelegramOnWithdrawListener(
             $this->transport,
             $this->eventDispatcher,
             $this->exchange,
             false
         );
 
-        $completedBuyOrder = (new CompletedBuyOrder());
-        $buyEvent = new BuySuccessEvent($completedBuyOrder);
+        $completedWithdraw = (new CompletedWithdraw('', 0, ''));
+        $buyEvent = new WithdrawSuccessEvent($completedWithdraw);
 
         $this->httpClient->expects(static::never())->method('request');
 
-        $this->listener->onBuy($buyEvent);
+        $this->listener->onWithdraw($buyEvent);
     }
 
     /**
-     * @covers ::onBuy
+     * @covers ::onWithdraw
      */
     public function testListenerSendsOutTelegramMessageOnBuyEvent(): void
     {
-        $completedBuyOrder = (new CompletedBuyOrder())
-            ->setAmountInSatoshis($amountInSatoshis = random_int(100000, 200000))
-            ->setDisplayAmountBought($displayAmountBought = (string) random_int(100000, 200000))
-            ->setDisplayAmountSpent($displayAmountSpent = (string) random_int(100000, 200000))
-            ->setDisplayFeesSpent($displayFeesSpent = (string) random_int(100000, 200000))
-            ->setDisplayAveragePrice($displayAveragePrice = (string) random_int(100000, 200000))
-            ->setDisplayAmountSpentCurrency($displayAmountSpentCurrency = (string) random_int(100000, 200000))
-        ;
-
+        $recipientAddress = 'ra'.random_int(1000, 2000);
+        $withdrawID = 'wid'.random_int(1000, 2000);
+        $amountInSatoshis = random_int(100000, 200000);
+        $completedWithdraw = new CompletedWithdraw($recipientAddress, $amountInSatoshis, $withdrawID);
         $tag = 't'.random_int(1000, 2000);
-        $buyEvent = new BuySuccessEvent($completedBuyOrder, $tag);
+        $withdrawEvent = new WithdrawSuccessEvent($completedWithdraw, $tag);
+
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
         $response->method('toArray')->willReturn(['result' => ['message_id' => 1]]);
@@ -103,11 +99,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
                 static::callback(function (array $body) use (
                     $tag,
                     $amountInSatoshis,
-                    $displayAmountBought,
-                    $displayAmountSpent,
-                    $displayFeesSpent,
-                    $displayAveragePrice,
-                    $displayAmountSpentCurrency
+                    $withdrawID
                 ) {
                     self::assertArrayHasKey('json', $body);
                     self::assertArrayHasKey('text', $body['json']);
@@ -117,11 +109,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
                     self::assertTrue($body['json']['disable_web_page_preview']);
 
                     self::assertStringContainsString(number_format($amountInSatoshis), $body['json']['text']);
-                    self::assertStringContainsString($displayAmountBought, $body['json']['text']);
-                    self::assertStringContainsString($displayAmountSpent, $body['json']['text']);
-                    self::assertStringContainsString($displayFeesSpent, $body['json']['text']);
-                    self::assertStringContainsString($displayAveragePrice, $body['json']['text']);
-                    self::assertStringContainsString($displayAmountSpentCurrency, $body['json']['text']);
+                    self::assertStringContainsString($withdrawID, $body['json']['text']);
                     self::assertStringContainsString($tag, $body['json']['text']);
 
                     return true;
@@ -130,6 +118,6 @@ final class SendTelegramOnBuyListenerTest extends TestCase
             ->willReturn($response)
         ;
 
-        $this->listener->onBuy($buyEvent);
+        $this->listener->onWithdraw($withdrawEvent);
     }
 }
