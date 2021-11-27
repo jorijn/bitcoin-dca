@@ -43,11 +43,11 @@ parameters:
   # notification settings
   env(NOTIFICATION_EMAIL_ENABLED): 'false'
   env(NOTIFICATION_EMAIL_DSN): 'null://null'
-  env(NOTIFICATION_EMAIL_TO): ~
+  env(NOTIFICATION_EMAIL_TO): ''
   env(NOTIFICATION_EMAIL_FROM): '%env(NOTIFICATION_EMAIL_TO)%'
   env(NOTIFICATION_EMAIL_SUBJECT_PREFIX): '%application_title%'
   env(NOTIFICATION_TELEGRAM_ENABLED): 'false'
-  env(NOTIFICATION_TELEGRAM_DSN): ~
+  env(NOTIFICATION_TELEGRAM_DSN): 'telegram://null:null@default?channel=0'
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
