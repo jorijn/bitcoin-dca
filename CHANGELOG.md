@@ -104,7 +104,8 @@ Due to regulatory changes in The Netherlands, BL3P and Bitvavo currently require
 ### Added
 * A Python based fallback mechanism for 32bits systems. Unfortunately a bug prevented Raspberry Pi users from using Xpubs properly. The system will automatically use the native, more advanced method or derivation for systems that are capable and degrade to the Python tool without people noticing.
 
-[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/Jorijn/bitcoin-dca/compare/v1.6.0...HEAD
+[v1.6.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.1...v1.6.0
 [v1.5.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.5.0...v1.5.1
 [v1.5.0]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.1...v1.5.0
 [v1.4.1]: https://github.com/Jorijn/bitcoin-dca/compare/v1.4.0...v1.4.1
