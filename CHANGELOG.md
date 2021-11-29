@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [v1.6.0] - 2021-11-29
+### Added
+* Added a configuration option to prevent Bitcoin DCA from checking for newer versions
+* Get notified on buy & withdraw via:
+  * Email;
+  * Telegram.
+
+See https://bitcoin-dca.readthedocs.io/en/latest/getting-notified.html for more information about this feature.
+
+## [Unreleased]
 ## [v1.5.1] - 2021-08-13
 ### Changed
 * BL3P changed their withdrawal fee from 30k sat to 5k sat. This change updates to code to display the correct fee.
