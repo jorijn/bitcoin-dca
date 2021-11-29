@@ -34,7 +34,7 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
 Transaction overview:
 
 Purchased: <strong>{$event->getBuyOrder()->getDisplayAmountBought()}</strong>
-Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()} {$event->getBuyOrder()->getDisplayAmountSpentCurrency()}</strong>
+Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()}</strong>
 Fee: <strong>{$event->getBuyOrder()->getDisplayFeesSpent()}</strong>
 Price: <strong>{$event->getBuyOrder()->getDisplayAveragePrice()}</strong>
 TLGRM;

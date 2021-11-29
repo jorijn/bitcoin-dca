@@ -81,11 +81,11 @@ final class SendTelegramOnBuyListenerTest extends TestCase
     {
         $completedBuyOrder = (new CompletedBuyOrder())
             ->setAmountInSatoshis($amountInSatoshis = random_int(100000, 200000))
-            ->setDisplayAmountBought($displayAmountBought = (string) random_int(100000, 200000))
-            ->setDisplayAmountSpent($displayAmountSpent = (string) random_int(100000, 200000))
-            ->setDisplayFeesSpent($displayFeesSpent = (string) random_int(100000, 200000))
-            ->setDisplayAveragePrice($displayAveragePrice = (string) random_int(100000, 200000))
-            ->setDisplayAmountSpentCurrency($displayAmountSpentCurrency = (string) random_int(100000, 200000))
+            ->setDisplayAmountBought($displayAmountBought = 'dab'.random_int(100000, 200000))
+            ->setDisplayAmountSpent($displayAmountSpent = 'das'.random_int(100000, 200000))
+            ->setDisplayFeesSpent($displayFeesSpent = 'dfs'.random_int(100000, 200000))
+            ->setDisplayAveragePrice($displayAveragePrice = 'dap'.random_int(100000, 200000))
+            ->setDisplayAmountSpentCurrency('dasc'.random_int(100000, 200000))
         ;
 
         $tag = 't'.random_int(1000, 2000);
@@ -106,8 +106,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
                     $displayAmountBought,
                     $displayAmountSpent,
                     $displayFeesSpent,
-                    $displayAveragePrice,
-                    $displayAmountSpentCurrency
+                    $displayAveragePrice
                 ) {
                     self::assertArrayHasKey('json', $body);
                     self::assertArrayHasKey('text', $body['json']);
@@ -121,7 +120,6 @@ final class SendTelegramOnBuyListenerTest extends TestCase
                     self::assertStringContainsString($displayAmountSpent, $body['json']['text']);
                     self::assertStringContainsString($displayFeesSpent, $body['json']['text']);
                     self::assertStringContainsString($displayAveragePrice, $body['json']['text']);
-                    self::assertStringContainsString($displayAmountSpentCurrency, $body['json']['text']);
                     self::assertStringContainsString($tag, $body['json']['text']);
 
                     return true;
