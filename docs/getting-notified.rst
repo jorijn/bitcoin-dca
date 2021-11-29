@@ -88,14 +88,15 @@ If you want to get notifications on Telegram from Bitcoin DCA you can follow the
 4. Pick a username for your new bot, it should end in ``bot`` and should be unique across the Telegram network. For example: `BobsTelegramDCABot`;
 5. Note the secret token you just received. It looks like ``12345:ABCDetc``;
 6. Talk to your new bot by clicking the ``t.me/BobsTelegramDCABot`` link you received. This will tell Telegram the bot is allowed to talk to you;
-7. Open a new chat with `GetMyID bot <https://t.me/getmyid_bot>`_;
-8. Note the ID you received, this is your unique Telegram ID.
+7. Open a new chat with `GetMyID bot <https://t.me/getmyid_bot>`_. This bot will tell you the ID of your Telegram account;
+8. Note the ID you received.
 
-Now, configure Bitcoin DCA with this information:
+Make sure you have talked to your new bot. It won't talk back, but this will let Telegram know it's allowed to send messages
+to you. Now, configure Bitcoin DCA with this information:
 
 .. code-block:: bash
    :caption: Example for connecting Bitcoin DCA to Telegram
 
    NOTIFICATION_TELEGRAM_ENABLED=1
-   NOTIFICATION_TELEGRAM_DSN=telegram://BOTFATHERSECRET@default?channel=YOURTELEGRAMID
+   NOTIFICATION_TELEGRAM_DSN=telegram://BOTFATHERSECRET@default?channel=YOURTELEGRAMACCOUNTID
    # example: NOTIFICATION_TELEGRAM_DSN=telegram://12345:ABCDetc@default?channel=123456
