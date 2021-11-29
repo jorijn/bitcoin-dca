@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "php": "^7.4",
         "symfony/console": "^5.0",
         "symfony/dotenv": "^5.0",
         "symfony/dependency-injection": "^5.0",
@@ -24,7 +25,20 @@
         "monolog/monolog": "^2.0",
         "symfony/http-client": "^5.0",
         "symfony/serializer": "^5.3",
-        "symfony/property-access": "^5.3"
+        "symfony/property-access": "^5.3",
+        "symfony/mailer": "^5.1",
+        "league/html-to-markdown": "^4.9",
+        "symfony/notifier": "^5.3",
+        "symfony/telegram-notifier": "^5.3",
+        "symfony/proxy-manager-bridge": "^5.3",
+        "symfony/amazon-mailer": "^5.3",
+        "symfony/google-mailer": "^5.3",
+        "symfony/mailchimp-mailer": "^5.3",
+        "symfony/mailgun-mailer": "^5.3",
+        "symfony/mailjet-mailer": "^5.3",
+        "symfony/postmark-mailer": "^5.3",
+        "symfony/sendgrid-mailer": "^5.3",
+        "symfony/sendinblue-mailer": "^5.3"
     },
     "autoload": {
         "psr-4": {
@@ -37,7 +51,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --testdox"
+        "test": "vendor/bin/phpunit --testdox",
+        "php-cs-fixer": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.1"

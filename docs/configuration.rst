@@ -3,12 +3,10 @@
 Configuration
 =============
 
-.. include:: ./includes/beta-warning.rst
-
 Bitcoin DCA uses `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ to configure the inner workings of the tool. An environment variable looks like this: ``SOME_CONFIGURATION_KEY=valuehere``.
 
 Getting Started Template
---------
+------------------------
 
 .. literalinclude:: ../.env.dist
    :language: bash
@@ -19,8 +17,8 @@ Available Configuration
 
 This part of the documentation is split up in generic application settings that decide how the tool should act for Dollar Cost Averaging. The last part is for exchange specific configuration like API keys.
 
-DCA Settings
-^^^^^^^^^^^^
+Application Settings
+^^^^^^^^^^^^^^^^^^^^
 
 WITHDRAW_ADDRESS
 """"""""""""""""
@@ -41,6 +39,19 @@ This configuration value determines which exchange will be used for buys and wit
 Available options: ``bl3p``, ``bitvavo``, ``kraken``, ``binance``
 
 **Example**: ``EXCHANGE=bl3p``
+
+DISABLE_VERSION_CHECK
+"""""""""""""""""""""
+Bitcoin DCA will contact GitHub every time it is executed to let you know if there is a newer version available.
+Newer versions bring important security updates and new features. It transmits no information about your local environment.
+You can audit `the code here <https://github.com/Jorijn/bitcoin-dca/blob/master/src/EventListener/CheckForUpdatesListener.php>`_.
+You can completely disable remote version checking by uncommenting this setting:
+
+**Example**: DISABLE_VERSION_CHECK=1
+
+Email & Telegram notifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To provide in-depth information about sending notifications through email and telegram, :ref:`please see this article <getting-notified>`.
 
 Exchange: BL3P
 ^^^^^^^^^^^^^^
@@ -152,7 +163,7 @@ This is the private part of your API connection to Binance. It’s a secret gran
 **Example**: ``BINANCE_API_SECRET=xXFw9vEiSdgllWfLs55uGC3ZBS3VyZMy1aGj4mYYlIIhX6hQ98AsGsQHLSKI4uj6``
 
 BINANCE_API_URL (optional)
-"""""""""""""""""""""""""
+""""""""""""""""""""""""""
 The endpoint where the tool should connect to.
 
 **Default**: ``BINANCE_API_URL=https://api.binance.com/``

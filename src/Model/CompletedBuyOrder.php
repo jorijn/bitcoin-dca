@@ -21,12 +21,25 @@ class CompletedBuyOrder
 
     private ?string $displayAmountBought;
     private ?string $displayAmountSpent;
+    private ?string $displayAmountSpentCurrency;
     private ?string $displayAveragePrice;
     private ?string $displayFeesSpent;
 
     public function __construct()
     {
         $this->purchaseMadeAt = new \DateTimeImmutable();
+    }
+
+    public function getDisplayAmountSpentCurrency(): ?string
+    {
+        return $this->displayAmountSpentCurrency;
+    }
+
+    public function setDisplayAmountSpentCurrency(?string $displayAmountSpentCurrency): self
+    {
+        $this->displayAmountSpentCurrency = $displayAmountSpentCurrency;
+
+        return $this;
     }
 
     public function getPurchaseMadeAt(): string

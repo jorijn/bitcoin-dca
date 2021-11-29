@@ -1,3 +1,5 @@
+.. image:: ../resources/images/dca-illustration.png
+
 Welcome to Bitcoin DCA's documentation!
 ====================================
 
@@ -11,6 +13,7 @@ Welcome to Bitcoin DCA's documentation!
    persistent-storage
    xpub-withdraw
    tagged-balance
+   getting-notified
    faq
 
 About this software

@@ -14,8 +14,11 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\EventListener;
 
 use Jorijn\Bitcoin\Dca\Command\MachineReadableOutputCommandInterface;
+use Jorijn\Bitcoin\Dca\Model\RemoteReleaseInformation;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Notifier\Event\MessageEvent;
+use Symfony\Component\Notifier\Message\ChatMessage;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CheckForUpdatesListener
@@ -23,6 +26,7 @@ class CheckForUpdatesListener
     public const TEST_VALID_VERSION = '/^v\d+\.\d+\.\d+$/';
 
     protected HttpClientInterface $githubClient;
+    protected RemoteReleaseInformation $remoteReleaseInformation;
     protected string $currentVersion;
     protected string $apiPath;
     protected bool $versionCheckDisabled;
@@ -53,19 +57,44 @@ class CheckForUpdatesListener
         }
 
         try {
-            $latestReleaseInformation = $this->githubClient->request('GET', $this->apiPath)->toArray();
-            $localVersion = preg_replace('/^v/', '', $this->currentVersion);
-            $remoteVersion = preg_replace('/^v/', '', $latestReleaseInformation['tag_name']);
+            $remoteReleaseInforation = $this->fetchRemoteVersionInformation();
 
-            if (version_compare($localVersion, $remoteVersion, '<')) {
-                $this->printUpdateNotice($consoleTerminateEvent, $latestReleaseInformation);
+            if ($remoteReleaseInforation->isOutdated()) {
+                $this->printUpdateNoticeToTerminal(
+                    $consoleTerminateEvent,
+                    $remoteReleaseInforation->getReleaseInformation()
+                );
             }
         } catch (\Throwable $exception) {
             // fail silently.
         }
     }
 
-    private function printUpdateNotice(
+    public function onMessageEvent(MessageEvent $messageEvent): void
+    {
+        if ($this->versionCheckDisabled || !preg_match(self::TEST_VALID_VERSION, $this->currentVersion)) {
+            return;
+        }
+
+        if (!$messageEvent->getMessage() instanceof ChatMessage) {
+            return;
+        }
+
+        try {
+            $remoteVersionInformation = $this->fetchRemoteVersionInformation();
+
+            if ($remoteVersionInformation->isOutdated()) {
+                $this->addUpdateNoticeToMessage(
+                    $messageEvent,
+                    $remoteVersionInformation->getReleaseInformation()
+                );
+            }
+        } catch (\Throwable $exception) {
+            // fail silently
+        }
+    }
+
+    private function printUpdateNoticeToTerminal(
         ConsoleTerminateEvent $consoleTerminateEvent,
         array $latestReleaseInformation
     ): void {
@@ -83,5 +112,36 @@ class CheckForUpdatesListener
             ' ',
             true
         );
+    }
+
+    private function fetchRemoteVersionInformation(): RemoteReleaseInformation
+    {
+        if (!isset($this->remoteReleaseInformation)) {
+            $latestReleaseInformation = $this->githubClient->request('GET', $this->apiPath)->toArray();
+            $localVersion = preg_replace('/^v/', '', $this->currentVersion);
+            $remoteVersion = preg_replace('/^v/', '', $latestReleaseInformation['tag_name']);
+
+            $this->remoteReleaseInformation = new RemoteReleaseInformation(
+                $latestReleaseInformation,
+                $localVersion,
+                $remoteVersion
+            );
+        }
+
+        return $this->remoteReleaseInformation;
+    }
+
+    private function addUpdateNoticeToMessage(MessageEvent $messageEvent, array $latestReleaseInformation): void
+    {
+        /** @var ChatMessage $message */
+        $message = $messageEvent->getMessage();
+        $notice = sprintf(
+            'Bitcoin DCA %s is available, your version is %s: %s',
+            $latestReleaseInformation['tag_name'],
+            $this->currentVersion,
+            $latestReleaseInformation['html_url']
+        );
+
+        $message->subject($message->getSubject().PHP_EOL.PHP_EOL.'<i>'.htmlspecialchars($notice).'</i>');
     }
 }

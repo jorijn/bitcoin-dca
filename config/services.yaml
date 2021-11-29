@@ -36,8 +36,18 @@ parameters:
   env(EXCHANGE): 'bl3p'
   env(BASE_CURRENCY): 'EUR'
   env(DEBUG): 'false'
+  env(TESTING): 'false'
   env(DISABLE_VERSION_CHECK): 'false'
   env(EXPORT_CSV): ~
+
+  # notification settings
+  env(NOTIFICATION_EMAIL_ENABLED): 'false'
+  env(NOTIFICATION_EMAIL_DSN): 'null://null'
+  env(NOTIFICATION_EMAIL_TO): ''
+  env(NOTIFICATION_EMAIL_FROM): '%env(NOTIFICATION_EMAIL_TO)%'
+  env(NOTIFICATION_EMAIL_SUBJECT_PREFIX): '%application_title%'
+  env(NOTIFICATION_TELEGRAM_ENABLED): 'false'
+  env(NOTIFICATION_TELEGRAM_DSN): 'telegram://null:null@default?channel=0'
 
   # xpub fallback settings
   env(XPUB_PYTHON_CLI): '/usr/bin/python3 /app/resources/xpub_derive/main.py'
@@ -99,7 +109,7 @@ services:
   ######################################################################
   component.derive_from_master_public_key:
     class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface
-    factory: ['@factory.derive_from_master_public_key.component', 'createDerivationComponent']
+    factory: [ '@factory.derive_from_master_public_key.component', 'createDerivationComponent' ]
 
   component.derive_from_master_public_key_bitwasp:
     class: Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent
@@ -289,6 +299,53 @@ services:
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdrawSucces }
 
+  event_listener.notify_via_email:
+    abstract: true
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendEmailListener
+    arguments:
+      - '@mailer'
+      - '@html_to_markdown'
+      - '@configuration.notifications.email'
+      - '@configuration.notifications.email.template'
+      - '%env(bool:NOTIFICATION_EMAIL_ENABLED)%'
+
+  event_listener.notify_via_email_on_buy:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
+    parent: event_listener.notify_via_email
+    calls:
+      - setTemplateLocation: ['%application.path%/resources/templates/buy_notification.email.html.php']
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
+  event_listener.notify_via_email_on_withdraw:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnWithdrawListener
+    parent: event_listener.notify_via_email
+    calls:
+      - setTemplateLocation: ['%application.path%/resources/templates/withdraw_notification.email.html.php']
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
+
+  event_listener.notify_via_telegram_on_buy:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnBuyListener
+    parent: event_listener.notify_via_telegram
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
+
+  event_listener.notify_via_telegram_on_withdraw:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendTelegramOnWithdrawListener
+    parent: event_listener.notify_via_telegram
+    tags:
+      - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
+
+  event_listener.notify_via_telegram:
+    class: Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendTelegramListener
+    abstract: true
+    arguments:
+      - '@notifier.telegram.transport'
+      - '@event_dispatcher'
+      - '%env(EXCHANGE)%'
+      - '%env(bool:NOTIFICATION_TELEGRAM_ENABLED)%'
+
   event_listener.check_for_updates:
     class: Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
     arguments:
@@ -298,6 +355,7 @@ services:
       - '%env(bool:DISABLE_VERSION_CHECK)%'
     tags:
       - { name: kernel.event_listener, event: console.terminate, method: onConsoleTerminated }
+      - { name: kernel.event_listener, event: Symfony\Component\Notifier\Event\MessageEvent, method: onMessageEvent }
 
   event_listener.write_order_to_csv:
     class: Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener
@@ -442,6 +500,24 @@ services:
     tags:
       - { name: exchange-balance-service }
 
+  ##
+  ## MockExchange (fake one that allows automated testing without spending $$$)
+  ##
+  service.buy.mockexchange:
+    arguments:
+      - '%env(bool:TESTING)%'
+      - '%env(BASE_CURRENCY)%'
+    class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeBuyService
+    tags:
+      - { name: exchange-buy-service, priority: 1000 }
+
+  service.withdraw.mockexchange:
+    class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeWithdrawService
+    arguments:
+      - '%env(bool:TESTING)%'
+    tags:
+      - { name: exchange-withdraw-service, priority: 1000 }
+
   ######################################################################
   # Third Party Components
   ######################################################################
@@ -452,6 +528,12 @@ services:
     class: Symfony\Component\EventDispatcher\EventDispatcher
     public: true
 
+  html_to_markdown:
+    class: League\HTMLToMarkdown\HtmlConverter
+    public: true
+    arguments:
+      - - strip_tags: true
+
   logger.stream_handler:
     class: Monolog\Handler\StreamHandler
     arguments:
@@ -461,14 +543,14 @@ services:
     class: Monolog\Logger
     arguments:
       - 'bitcoin-dca'
-      - ['@logger.stream_handler']
+      - [ '@logger.stream_handler' ]
 
   serializer:
     class: Symfony\Component\Serializer\Serializer
     public: true
     arguments:
-      - []
-      - []
+      - [ ]
+      - [ ]
 
   serializer.encoder.json:
     class: Symfony\Component\Serializer\Encoder\JsonEncoder
@@ -494,3 +576,83 @@ services:
     class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
     tags:
       - serializer.normalizer
+
+  ######################################################################
+  # Symfony Mailer
+  ######################################################################
+  mailer:
+    class: Symfony\Component\Mailer\Mailer
+    lazy: true
+    arguments:
+      - '@mailer.transport'
+      - ~
+      - '@event_dispatcher'
+
+  mailer.transport.http_client:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    lazy: true
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+
+  mailer.transport:
+    class: Symfony\Component\Mailer\Transport\TransportInterface
+    lazy: true
+    factory:
+      - 'Symfony\Component\Mailer\Transport'
+      - 'fromDsn'
+    arguments:
+      - '%env(NOTIFICATION_EMAIL_DSN)%'
+      - '@event_dispatcher'
+      - '@mailer.transport.http_client'
+      - '@logger'
+
+  ######################################################################
+  # Telegram Notifier
+  ######################################################################
+  notifier.telegram.transport:
+    class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransport
+    lazy: true
+    factory:
+      - '@notifier.telegram.transport_factory'
+      - 'create'
+    arguments:
+      - '@notifier.telegram.dsn'
+
+  notifier.telegram.transport_factory:
+    lazy: true
+    class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransportFactory
+    arguments:
+      - '@event_dispatcher'
+      - '@notifier.telegram.http_client'
+
+  notifier.telegram.http_client:
+    class: Symfony\Contracts\HttpClient\HttpClientInterface
+    lazy: true
+    factory:
+      - Symfony\Component\HttpClient\HttpClient
+      - create
+
+  notifier.telegram.dsn:
+    class: Symfony\Component\Notifier\Transport\Dsn
+    lazy: true
+    arguments:
+      - '%env(NOTIFICATION_TELEGRAM_DSN)%'
+
+  ######################################################################
+  # Configuration Objects
+  ######################################################################
+  configuration.notifications.email:
+    class: Jorijn\Bitcoin\Dca\Model\NotificationEmailConfiguration
+    arguments:
+      - '%env(NOTIFICATION_EMAIL_TO)%'
+      - '%env(NOTIFICATION_EMAIL_FROM)%'
+      - '%env(NOTIFICATION_EMAIL_SUBJECT_PREFIX)%'
+
+  configuration.notifications.email.template:
+    class: Jorijn\Bitcoin\Dca\Model\NotificationEmailTemplateInformation
+    arguments:
+      - '%env(EXCHANGE)%'
+      - '%application.path%/resources/images/logo-small.png'
+      - '%application.path%/resources/images/github-logo-colored.png'
+      - '%application.path%/resources/notification-quotes.json'
