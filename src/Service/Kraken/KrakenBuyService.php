@@ -135,7 +135,7 @@ class KrakenBuyService implements BuyServiceInterface
     protected function getTakerFeeFromSchedule(): int
     {
         $feeSchedule = $this->client->queryPrivate('TradeVolume', ['pair' => $this->tradingPair, 'fee_info' => 'true']);
-        $feePercentage = current($feeSchedule['fees'])['fee'];
+        $feePercentage = current($feeSchedule['fees'])['fee'] ?? 0;
         $feePercentage *= 10000;
 
         return (int) $feePercentage;
