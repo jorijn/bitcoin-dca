@@ -321,7 +321,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->willReturnOnConsecutiveCalls(
                 [
                     'fees' => [
-                        'XXBTZEUR' => [
+                        'XBT'.$this->baseCurrency => [
                             'fee' => $takerFeePercentage,
                         ],
                     ],
