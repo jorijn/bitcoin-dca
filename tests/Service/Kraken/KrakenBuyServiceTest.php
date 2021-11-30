@@ -291,22 +291,21 @@ final class KrakenBuyServiceTest extends TestCase
         $fee = (string) ($expectedAmount * $takerFeePercentage / 100);
 
         $this->client
-            ->expects(static::exactly(2))
+            ->expects(static::exactly(1))
             ->method('queryPublic')
             ->withConsecutive(
                 ['Ticker', ['pair' => 'XBT'.$this->baseCurrency]],
-                ['AssetPairs', ['pair' => 'XBT'.$this->baseCurrency, 'info' => 'fees']]
             )
             ->willReturnOnConsecutiveCalls(
                 ['XBT' => ['a' => [$price]]],
-                ['XBT'.$this->baseCurrency => ['fees' => [[0, $takerFeePercentage]]]]
             )
         ;
 
         $this->client
-            ->expects(static::exactly(3))
+            ->expects(static::exactly(4))
             ->method('queryPrivate')
             ->withConsecutive(
+                ['TradeVolume', ['pair' => 'XBT'.$this->baseCurrency, 'fee_info' => 'true']],
                 [
                     'AddOrder',
                     static::callback(function ($options) use ($expectedAmount, $price) {
@@ -320,6 +319,13 @@ final class KrakenBuyServiceTest extends TestCase
                 ['TradesHistory'],
             )
             ->willReturnOnConsecutiveCalls(
+                [
+                    'fees' => [
+                        'XXBTZEUR' => [
+                            'fee' => $takerFeePercentage,
+                        ],
+                    ],
+                ],
                 ['txid' => [$txId]], // add order call
                 [[]], // open orders call
                 [
