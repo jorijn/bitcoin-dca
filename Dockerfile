@@ -26,7 +26,7 @@ FROM php:8.0-cli-alpine3.12 as base_image
 
 RUN apk --no-cache update \
     && apk --no-cache add gmp-dev python3 py3-pip \
-    && docker-php-ext-install -j$(nproc) gmp bcmath
+    && docker-php-ext-install -j$(nproc) gmp bcmath opcache
 
 COPY . /app/
 COPY --from=vendor /app/vendor/ /app/vendor/
@@ -64,7 +64,7 @@ RUN vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log
 ##################################################################################################################
 FROM base_image as production_build
 
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/php.ini "$PHP_INI_DIR/php.ini"
 
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
