@@ -18,7 +18,7 @@ use Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -32,7 +32,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class WriteOrderToCsvListenerTest extends TestCase
 {
     private string $temporaryFile;
-    private TestLogger $logger;
     /** @var MockObject|SerializerInterface */
     private $serializer;
     private WriteOrderToCsvListener $listener;
@@ -42,9 +41,12 @@ final class WriteOrderToCsvListenerTest extends TestCase
         parent::setUp();
 
         $this->temporaryFile = tempnam(sys_get_temp_dir(), 'dca_csv');
-        $this->logger = new TestLogger();
         $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->listener = new WriteOrderToCsvListener($this->serializer, $this->logger, $this->temporaryFile);
+        $this->listener = new WriteOrderToCsvListener(
+            $this->serializer,
+            $this->createMock(LoggerInterface::class),
+            $this->temporaryFile
+        );
     }
 
     protected function tearDown(): void
@@ -58,12 +60,15 @@ final class WriteOrderToCsvListenerTest extends TestCase
 
     public function testListenerIsDisabled(): void
     {
-        $this->listener = new WriteOrderToCsvListener($this->serializer, $this->logger, null);
+        $this->listener = new WriteOrderToCsvListener(
+            $this->serializer,
+            $this->createMock(LoggerInterface::class),
+            null
+        );
 
         $event = new BuySuccessEvent(new CompletedBuyOrder());
         $this->listener->onSuccessfulBuy($event);
 
-        static::assertFalse($this->logger->hasErrorRecords());
         static::assertSame(0, filesize($this->temporaryFile));
     }
 
@@ -84,7 +89,6 @@ final class WriteOrderToCsvListenerTest extends TestCase
         $event = new BuySuccessEvent($order);
         $this->listener->onSuccessfulBuy($event);
 
-        static::assertFalse($this->logger->hasErrorRecords());
         static::assertSame($mockedCsvOutput, file_get_contents($this->temporaryFile));
     }
 
@@ -103,7 +107,6 @@ final class WriteOrderToCsvListenerTest extends TestCase
         $event = new BuySuccessEvent($order);
         $this->listener->onSuccessfulBuy($event);
 
-        static::assertFalse($this->logger->hasErrorRecords());
         static::assertSame($mockedCsvOutput, file_get_contents($this->temporaryFile));
     }
 
@@ -121,7 +124,6 @@ final class WriteOrderToCsvListenerTest extends TestCase
         $event = new BuySuccessEvent($order);
         $this->listener->onSuccessfulBuy($event);
 
-        static::assertTrue($this->logger->hasError('unable to write order to file'));
         static::assertSame(0, filesize($this->temporaryFile));
     }
 
@@ -143,7 +145,6 @@ final class WriteOrderToCsvListenerTest extends TestCase
         $event = new BuySuccessEvent($order);
         $this->listener->onSuccessfulBuy($event);
 
-        static::assertFalse($this->logger->hasErrorRecords());
         static::assertSame($preExistingContent.$mockedCsvOutput, file_get_contents($this->temporaryFile));
     }
 }

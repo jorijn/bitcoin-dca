@@ -29,15 +29,15 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
         $exchange = ucfirst($this->getExchange());
 
         $htmlMessage = <<<TLGRM
-<strong>💰 Bitcoin-DCA just bought {$formattedSats} sat at {$exchange}.</strong>
+            <strong>💰 Bitcoin-DCA just bought {$formattedSats} sat at {$exchange}.</strong>
 
-Transaction overview:
+            Transaction overview:
 
-Purchased: <strong>{$event->getBuyOrder()->getDisplayAmountBought()}</strong>
-Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()}</strong>
-Fee: <strong>{$event->getBuyOrder()->getDisplayFeesSpent()}</strong>
-Price: <strong>{$event->getBuyOrder()->getDisplayAveragePrice()}</strong>
-TLGRM;
+            Purchased: <strong>{$event->getBuyOrder()->getDisplayAmountBought()}</strong>
+            Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()}</strong>
+            Fee: <strong>{$event->getBuyOrder()->getDisplayFeesSpent()}</strong>
+            Price: <strong>{$event->getBuyOrder()->getDisplayAveragePrice()}</strong>
+            TLGRM;
 
         if ($event->getTag()) {
             $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($event->getTag()).'</strong>';

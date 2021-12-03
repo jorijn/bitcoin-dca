@@ -72,7 +72,7 @@ abstract class AbstractSendEmailListener
         return new Quote($quote, $quoteAuthor);
     }
 
-    #[ArrayShape(['quote' => "string", 'quoteAuthor' => "string", 'exchange' => "string"])]
+    #[ArrayShape(['quote' => 'string', 'quoteAuthor' => 'string', 'exchange' => 'string'])]
     public function getTemplateVariables(): array
     {
         $quote = $this->getRandomQuote();

@@ -29,13 +29,13 @@ class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
         $formattedSats = number_format($withdraw->getNetAmount());
 
         $htmlMessage = <<<TLGRM
-<strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
+            <strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
 
-Transaction overview:
+            Transaction overview:
 
-Address: <strong>{$withdraw->getRecipientAddress()}</strong>
-ID: <strong>{$withdraw->getId()}</strong>
-TLGRM;
+            Address: <strong>{$withdraw->getRecipientAddress()}</strong>
+            ID: <strong>{$withdraw->getId()}</strong>
+            TLGRM;
 
         if ($event->getTag()) {
             $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($event->getTag()).'</strong>';
