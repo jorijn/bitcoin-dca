@@ -35,17 +35,20 @@ WORKDIR /app/resources/xpub_derive
 
 RUN pip3 install --no-cache -r requirements.txt
 
+COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+ENTRYPOINT ["docker-entrypoint"]
+
 WORKDIR /app/
 
 ##################################################################################################################
-# Test Stage
+# Development Stage
 ##################################################################################################################
-FROM base_image as test
-
-WORKDIR /app/
+FROM base_image as development_build
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
+COPY docker/php-development.ini "$PHP_INI_DIR/php.ini"
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
 # php code coverage
@@ -53,6 +56,11 @@ RUN apk --no-cache update \
     && apk --no-cache add autoconf g++ make \
     && pecl install pcov \
     && docker-php-ext-enable pcov
+
+##################################################################################################################
+# Test Stage
+##################################################################################################################
+FROM development_build AS testing_stage
 
 # run the test script(s) from composer, this validates the application before allowing the build to succeed
 # this does make the tests run multiple times, but with different architectures
@@ -64,12 +72,7 @@ RUN vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log
 ##################################################################################################################
 FROM base_image as production_build
 
-COPY docker/php.ini "$PHP_INI_DIR/php.ini"
+COPY docker/php-production.ini "$PHP_INI_DIR/php.ini"
 
-COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
-
-# compile the container for performance reasons
+# run the app to precompile the DI container
 RUN /app/bin/bitcoin-dca
-
-ENTRYPOINT ["docker-entrypoint"]
