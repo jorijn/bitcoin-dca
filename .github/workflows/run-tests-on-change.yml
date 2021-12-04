@@ -29,7 +29,7 @@ jobs:
 
       - name: Extract the test logging artifacts from the container that was built
         run: |
-          docker run --rm -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
+          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
           sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
 
       - name: Upload logging artifacts
