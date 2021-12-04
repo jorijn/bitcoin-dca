@@ -34,14 +34,14 @@ final class AbstractSendTelegramListenerTest extends TestCase
     public function testGetterAndSetters(): void
     {
         $listener = $this->getMockForAbstractClass(AbstractSendTelegramListener::class, [
-            $transport = new TelegramTransport(''),
-            $dispatcher = new EventDispatcher(),
+            $telegramTransport = new TelegramTransport(''),
+            $eventDispatcher = new EventDispatcher(),
             $exchange = 'e'.random_int(1000, 2000),
             $enabled = (bool) random_int(0, 1),
         ]);
 
-        static::assertSame($transport, $listener->getTransport());
-        static::assertSame($dispatcher, $listener->getDispatcher());
+        static::assertSame($telegramTransport, $listener->getTransport());
+        static::assertSame($eventDispatcher, $listener->getDispatcher());
         static::assertSame($exchange, $listener->getExchange());
         static::assertSame($enabled, $listener->isEnabled());
     }

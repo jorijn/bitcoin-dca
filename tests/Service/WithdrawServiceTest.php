@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
 use Jorijn\Bitcoin\Dca\Exception\NoRecipientAddressAvailableException;
@@ -25,6 +26,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Throwable;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\WithdrawService
@@ -92,7 +95,7 @@ final class WithdrawServiceTest extends TestCase
             ->willReturn($fee)
         ;
 
-        $returnedFee = (new WithdrawService(
+        $withdrawFeeInSatoshis = (new WithdrawService(
             [$this->addressProvider],
             [$this->supportedService],
             $this->balanceRepository,
@@ -101,7 +104,7 @@ final class WithdrawServiceTest extends TestCase
             $this->configuredExchange
         ))->getWithdrawFeeInSatoshis();
 
-        static::assertSame($fee, $returnedFee);
+        static::assertSame($fee, $withdrawFeeInSatoshis);
     }
 
     /**
@@ -109,7 +112,7 @@ final class WithdrawServiceTest extends TestCase
      * @covers ::withdraw
      * @dataProvider providerOfTags
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function testWithdrawHappyFlow(?string $tag): void
     {
@@ -136,12 +139,14 @@ final class WithdrawServiceTest extends TestCase
         $this->dispatcher
             ->expects(static::once())
             ->method('dispatch')
-            ->with(static::callback(function (WithdrawSuccessEvent $event) use ($tag, $withdrawDTO) {
-                self::assertSame($withdrawDTO, $event->getCompletedWithdraw());
-                self::assertSame($tag, $event->getTag());
+            ->with(
+                static::callback(function (WithdrawSuccessEvent $event) use ($tag, $withdrawDTO): bool {
+                    self::assertSame($withdrawDTO, $event->getCompletedWithdraw());
+                    self::assertSame($tag, $event->getTag());
 
-                return true;
-            }))
+                    return true;
+                })
+            )
         ;
 
         $completedWithdraw = (new WithdrawService(
@@ -173,12 +178,12 @@ final class WithdrawServiceTest extends TestCase
             ->method('error')
         ;
 
-        $error = new \RuntimeException('random'.random_int(1000, 2000));
+        $runtimeException = new RuntimeException('random'.random_int(1000, 2000));
         $this->supportedService
             ->expects(static::once())
             ->method('withdraw')
             ->with($balance, $address)
-            ->willThrowException($error)
+            ->willThrowException($runtimeException)
         ;
 
         $this->dispatcher
@@ -186,7 +191,7 @@ final class WithdrawServiceTest extends TestCase
             ->method('dispatch')
         ;
 
-        $this->expectExceptionObject($error);
+        $this->expectExceptionObject($runtimeException);
 
         (new WithdrawService(
             [$this->addressProvider],
@@ -241,7 +246,7 @@ final class WithdrawServiceTest extends TestCase
     /**
      * @covers ::getRecipientAddress
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetRecipientAddress(): void
     {
@@ -251,7 +256,7 @@ final class WithdrawServiceTest extends TestCase
         $unsupportedAddressProvider
             ->expects(static::exactly(2))
             ->method('provide')
-            ->willThrowException(new \RuntimeException('test failure'))
+            ->willThrowException(new RuntimeException('test failure'))
         ;
 
         $this->addressProvider
@@ -260,7 +265,7 @@ final class WithdrawServiceTest extends TestCase
             ->willReturn($address)
         ;
 
-        $returnedAddress = (new WithdrawService(
+        $recipientAddress = (new WithdrawService(
             [$unsupportedAddressProvider, $this->addressProvider],
             [$this->supportedService],
             $this->balanceRepository,
@@ -269,7 +274,7 @@ final class WithdrawServiceTest extends TestCase
             $this->configuredExchange
         ))->getRecipientAddress();
 
-        static::assertSame($address, $returnedAddress);
+        static::assertSame($address, $recipientAddress);
 
         // test handling of no capable providers
         $this->expectException(NoRecipientAddressAvailableException::class);

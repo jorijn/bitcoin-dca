@@ -15,15 +15,8 @@ namespace Jorijn\Bitcoin\Dca\Model;
 
 class NotificationEmailConfiguration
 {
-    protected string $to;
-    protected string $from;
-    protected string $subjectPrefix;
-
-    public function __construct(string $to, string $from, string $subjectPrefix)
+    public function __construct(protected string $to, protected string $from, protected string $subjectPrefix)
     {
-        $this->to = $to;
-        $this->from = $from;
-        $this->subjectPrefix = $subjectPrefix;
     }
 
     public function getTo(): string

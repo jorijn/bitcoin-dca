@@ -99,13 +99,13 @@ final class VerifyXPubCommandTest extends TestCase
             ->method('derive')
             ->with(
                 $this->configuredKey,
-                static::callback(fn (string $derivation) => preg_match(
+                static::callback(fn (string $derivation): bool => preg_match(
                     '/^0\/(\d+)$/',
                     $derivation,
                     $matches
                 ) && $matches[0] ?? null > 0)
             )
-            ->willReturnCallback(function (string $configuredKey, string $derivation) use (&$derivedAddresses) {
+            ->willReturnCallback(function (string $configuredKey, string $derivation) use (&$derivedAddresses): string {
                 self::assertSame($configuredKey, $this->configuredKey);
                 preg_match('/^0\/(\d+)$/', $derivation, $matches);
 

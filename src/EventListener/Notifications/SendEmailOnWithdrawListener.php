@@ -19,7 +19,7 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
 {
     public const NOTIFICATION_SUBJECT_LINE = 'You withdrew %s satoshis from %s';
 
-    public function onWithdraw(WithdrawSuccessEvent $event): void
+    public function onWithdraw(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {
         if (!$this->isEnabled) {
             return;
@@ -27,8 +27,8 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
 
         $templateVariables = array_merge(
             [
-                'completedWithdraw' => $event->getCompletedWithdraw(),
-                'tag' => $event->getTag(),
+                'completedWithdraw' => $withdrawSuccessEvent->getCompletedWithdraw(),
+                'tag' => $withdrawSuccessEvent->getTag(),
             ],
             $this->getTemplateVariables()
         );
@@ -39,11 +39,11 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
             ->subject(
                 sprintf(
                     '[%s] %s',
-                    $this->emailConfiguration->getSubjectPrefix(),
+                    $this->notificationEmailConfiguration->getSubjectPrefix(),
                     sprintf(
                         self::NOTIFICATION_SUBJECT_LINE,
-                        number_format($event->getCompletedWithdraw()->getNetAmount()),
-                        ucfirst($this->templateInformation->getExchange())
+                        number_format($withdrawSuccessEvent->getCompletedWithdraw()->getNetAmount()),
+                        ucfirst($this->notificationEmailTemplateInformation->getExchange())
                     )
                 )
             )
@@ -51,6 +51,6 @@ class SendEmailOnWithdrawListener extends AbstractSendEmailListener
             ->text($this->htmlConverter->convert($html))
         ;
 
-        $this->notifier->send($email);
+        $this->mailer->send($email);
     }
 }

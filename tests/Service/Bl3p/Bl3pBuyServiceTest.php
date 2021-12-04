@@ -233,16 +233,6 @@ final class Bl3pBuyServiceTest extends TestCase
         $this->service->cancelBuyOrder($orderId);
     }
 
-    private function getNewOrderResult(string $orderId): array
-    {
-        return [Bl3pBuyService::DATA => [Bl3pBuyService::ORDER_ID => $orderId]];
-    }
-
-    private function getPendingOrderResult(): array
-    {
-        return [Bl3pBuyService::DATA => [Bl3pBuyService::STATUS => 'open']];
-    }
-
     private function getClosedOrderResult(string $feeCurrency = 'BTC'): array
     {
         $closedResult = [
@@ -281,5 +271,15 @@ final class Bl3pBuyServiceTest extends TestCase
             self::AVERAGE_COST_DISPLAYED => $averageCostDisplayed,
             self::CLOSED_RESULT => $closedResult,
         ];
+    }
+
+    private function getNewOrderResult(string $orderId): array
+    {
+        return [Bl3pBuyService::DATA => [Bl3pBuyService::ORDER_ID => $orderId]];
+    }
+
+    private function getPendingOrderResult(): array
+    {
+        return [Bl3pBuyService::DATA => [Bl3pBuyService::STATUS => 'open']];
     }
 }

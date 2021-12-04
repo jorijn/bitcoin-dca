@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
@@ -66,8 +67,8 @@ final class WriteOrderToCsvListenerTest extends TestCase
             null
         );
 
-        $event = new BuySuccessEvent(new CompletedBuyOrder());
-        $this->listener->onSuccessfulBuy($event);
+        $buySuccessEvent = new BuySuccessEvent(new CompletedBuyOrder());
+        $this->listener->onSuccessfulBuy($buySuccessEvent);
 
         static::assertSame(0, filesize($this->temporaryFile));
     }
@@ -76,53 +77,53 @@ final class WriteOrderToCsvListenerTest extends TestCase
     {
         unlink($this->temporaryFile);
 
-        $order = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
         $mockedCsvOutput = 'foo,bar';
 
         $this->serializer
             ->expects(static::once())
             ->method('serialize')
-            ->with($order, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
+            ->with($completedBuyOrder, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
             ->willReturn($mockedCsvOutput)
         ;
 
-        $event = new BuySuccessEvent($order);
-        $this->listener->onSuccessfulBuy($event);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);
+        $this->listener->onSuccessfulBuy($buySuccessEvent);
 
         static::assertSame($mockedCsvOutput, file_get_contents($this->temporaryFile));
     }
 
     public function testFileIsEmpty(): void
     {
-        $order = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
         $mockedCsvOutput = 'bar,baz';
 
         $this->serializer
             ->expects(static::once())
             ->method('serialize')
-            ->with($order, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
+            ->with($completedBuyOrder, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
             ->willReturn($mockedCsvOutput)
         ;
 
-        $event = new BuySuccessEvent($order);
-        $this->listener->onSuccessfulBuy($event);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);
+        $this->listener->onSuccessfulBuy($buySuccessEvent);
 
         static::assertSame($mockedCsvOutput, file_get_contents($this->temporaryFile));
     }
 
     public function testExceptionsAreHandled(): void
     {
-        $order = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
 
         $this->serializer
             ->expects(static::once())
             ->method('serialize')
-            ->with($order, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
-            ->willThrowException(new \Exception('broken'))
+            ->with($completedBuyOrder, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
+            ->willThrowException(new Exception('broken'))
         ;
 
-        $event = new BuySuccessEvent($order);
-        $this->listener->onSuccessfulBuy($event);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);
+        $this->listener->onSuccessfulBuy($buySuccessEvent);
 
         static::assertSame(0, filesize($this->temporaryFile));
     }
@@ -132,18 +133,18 @@ final class WriteOrderToCsvListenerTest extends TestCase
         $preExistingContent = 'already,exists'.PHP_EOL;
         file_put_contents($this->temporaryFile, $preExistingContent);
 
-        $order = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
         $mockedCsvOutput = 'foo,bar';
 
         $this->serializer
             ->expects(static::once())
             ->method('serialize')
-            ->with($order, 'csv', [CsvEncoder::NO_HEADERS_KEY => true])
+            ->with($completedBuyOrder, 'csv', [CsvEncoder::NO_HEADERS_KEY => true])
             ->willReturn($mockedCsvOutput)
         ;
 
-        $event = new BuySuccessEvent($order);
-        $this->listener->onSuccessfulBuy($event);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);
+        $this->listener->onSuccessfulBuy($buySuccessEvent);
 
         static::assertSame($preExistingContent.$mockedCsvOutput, file_get_contents($this->temporaryFile));
     }

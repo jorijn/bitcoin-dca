@@ -231,7 +231,7 @@ final class BitvavoBuyServiceTest extends TestCase
         static::assertFalse($this->service->supportsExchange('bitvivo'));
     }
 
-    private function getSimpleResponseStructure($feeCurrency = 'EUR'): array
+    private function getSimpleResponseStructure(string $feeCurrency = 'EUR'): array
     {
         $price = random_int(9000, 11000);
         $filledSatoshis = random_int(10000, 20000);
@@ -244,8 +244,16 @@ final class BitvavoBuyServiceTest extends TestCase
             self::FEE_PAID => $feePaid = (string) random_int(1, 10),
             self::FEE_CURRENCY => $feeCurrency,
             'fills' => [
-                $this->createFill(bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), 50, $price - 1000),
-                $this->createFill(bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), 50, $price + 1000),
+                $this->createFill(
+                    bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
+                    50,
+                    $price - 1000
+                ),
+                $this->createFill(
+                    bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
+                    50,
+                    $price + 1000
+                ),
             ],
         ];
 

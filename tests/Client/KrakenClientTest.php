@@ -50,7 +50,9 @@ final class KrakenClientTest extends TestCase
                 $method,
                 $url,
                 $options
-            ) => new MockResponse($this->testResponses[$method][$url] ?? []),
+            ): MockResponse => new MockResponse(
+                $this->testResponses[$method][$url] ?? []
+            ),
             self::BASE_URI
         );
 

@@ -19,28 +19,22 @@ use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 
 class XpubWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {
-    protected ValidationInterface $validation;
-    protected AddressFromMasterPublicKeyComponentInterface $keyFactory;
-    protected TaggedIntegerRepositoryInterface $xpubRepository;
-    protected ?string $configuredXPub;
-
     public function __construct(
-        ValidationInterface $validation,
-        AddressFromMasterPublicKeyComponentInterface $keyFactory,
-        TaggedIntegerRepositoryInterface $xpubRepository,
-        ?string $configuredXPub
+        protected ValidationInterface $validation,
+        protected AddressFromMasterPublicKeyComponentInterface $addressFromMasterPublicKeyComponent,
+        protected TaggedIntegerRepositoryInterface $taggedIntegerRepository,
+        protected ?string $configuredXPub
     ) {
-        $this->validation = $validation;
-        $this->keyFactory = $keyFactory;
-        $this->configuredXPub = $configuredXPub;
-        $this->xpubRepository = $xpubRepository;
     }
 
     public function provide(): string
     {
-        $activeIndex = $this->xpubRepository->get($this->configuredXPub);
+        $activeIndex = $this->taggedIntegerRepository->get($this->configuredXPub);
         $activeDerivationPath = sprintf('0/%d', $activeIndex);
-        $derivedAddress = $this->keyFactory->derive($this->configuredXPub, $activeDerivationPath);
+        $derivedAddress = $this->addressFromMasterPublicKeyComponent->derive(
+            $this->configuredXPub,
+            $activeDerivationPath
+        );
 
         $this->validation->validate($derivedAddress);
 

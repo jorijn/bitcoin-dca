@@ -13,11 +13,14 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Model;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+
 class CompletedBuyOrder
 {
     private int $amountInSatoshis = 0;
     private int $feesInSatoshis = 0;
-    private \DateTimeInterface $purchaseMadeAt;
+    private DateTimeInterface $purchaseMadeAt;
 
     private ?string $displayAmountBought;
     private ?string $displayAmountSpent;
@@ -27,7 +30,7 @@ class CompletedBuyOrder
 
     public function __construct()
     {
-        $this->purchaseMadeAt = new \DateTimeImmutable();
+        $this->purchaseMadeAt = new DateTimeImmutable();
     }
 
     public function getDisplayAmountSpentCurrency(): ?string
@@ -44,7 +47,7 @@ class CompletedBuyOrder
 
     public function getPurchaseMadeAt(): string
     {
-        return $this->purchaseMadeAt->format(\DateTimeInterface::ATOM);
+        return $this->purchaseMadeAt->format(DateTimeInterface::ATOM);
     }
 
     public function getAmountInSatoshis(): int

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-class NoDerivationComponentAvailableException extends \RuntimeException
+use RuntimeException;
+
+class NoDerivationComponentAvailableException extends RuntimeException
 {
 }

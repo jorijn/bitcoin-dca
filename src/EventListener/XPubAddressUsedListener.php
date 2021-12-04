@@ -17,37 +17,32 @@ use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class XPubAddressUsedListener
 {
-    protected TaggedIntegerRepositoryInterface $xpubRepository;
-    protected AddressFromMasterPublicKeyComponent $keyFactory;
-    protected LoggerInterface $logger;
-    protected ?string $configuredXPub;
-
     public function __construct(
-        TaggedIntegerRepositoryInterface $xpubRepository,
-        AddressFromMasterPublicKeyComponent $keyFactory,
-        LoggerInterface $logger,
-        ?string $configuredXPub
+        protected TaggedIntegerRepositoryInterface $taggedIntegerRepository,
+        protected AddressFromMasterPublicKeyComponent $addressFromMasterPublicKeyComponent,
+        protected LoggerInterface $logger,
+        protected ?string $configuredXPub
     ) {
-        $this->xpubRepository = $xpubRepository;
-        $this->configuredXPub = $configuredXPub;
-        $this->keyFactory = $keyFactory;
-        $this->logger = $logger;
     }
 
-    public function onWithdrawAddressUsed(WithdrawSuccessEvent $event): void
+    public function onWithdrawAddressUsed(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {
         if (null === $this->configuredXPub) {
             return;
         }
 
         try {
-            $activeIndex = $this->xpubRepository->get($this->configuredXPub);
+            $activeIndex = $this->taggedIntegerRepository->get($this->configuredXPub);
             $activeDerivationPath = sprintf('0/%d', $activeIndex);
-            $derivedAddress = $this->keyFactory->derive($this->configuredXPub, $activeDerivationPath);
-            $completedWithdraw = $event->getCompletedWithdraw();
+            $derivedAddress = $this->addressFromMasterPublicKeyComponent->derive(
+                $this->configuredXPub,
+                $activeDerivationPath
+            );
+            $completedWithdraw = $withdrawSuccessEvent->getCompletedWithdraw();
 
             // validate that given address matches the one derived from the xpub
             if ($derivedAddress !== $completedWithdraw->getRecipientAddress()) {
@@ -62,11 +57,11 @@ class XPubAddressUsedListener
             ]);
 
             // we have a match, increase the index in the database so a new address is returned next time
-            $this->xpubRepository->increase($this->configuredXPub);
-        } catch (\Throwable $exception) {
+            $this->taggedIntegerRepository->increase($this->configuredXPub);
+        } catch (Throwable $exception) {
             $this->logger->error('failed to determine / increase xpub index', [
                 'xpub' => $this->configuredXPub,
-                'reason' => $exception->getMessage() ?: \get_class($exception),
+                'reason' => $exception->getMessage() ?: $exception::class,
             ]);
 
             throw $exception;

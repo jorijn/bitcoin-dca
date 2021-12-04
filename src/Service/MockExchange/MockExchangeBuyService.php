@@ -22,16 +22,12 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
  */
 class MockExchangeBuyService implements BuyServiceInterface
 {
-    protected bool $isEnabled;
-    protected string $baseCurrency;
     private int $bitcoinPrice;
     private string $feeAmount;
     private string $feeCurrency;
 
-    public function __construct(bool $isEnabled, string $baseCurrency)
+    public function __construct(protected bool $isEnabled, protected string $baseCurrency)
     {
-        $this->isEnabled = $isEnabled;
-        $this->baseCurrency = $baseCurrency;
         $this->setBitcoinPrice(random_int(10000, 50000));
         $this->setFeeAmount(bcdiv((string) random_int(100, 200), Bitcoin::SATOSHIS, Bitcoin::DECIMALS));
         $this->setFeeCurrency('BTC');

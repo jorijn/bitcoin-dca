@@ -15,13 +15,8 @@ namespace Jorijn\Bitcoin\Dca\Model;
 
 class Quote
 {
-    protected string $quote;
-    protected string $author;
-
-    public function __construct(string $quote, string $author)
+    public function __construct(protected string $quote, protected string $author)
     {
-        $this->quote = $quote;
-        $this->author = $author;
     }
 
     public function getQuote(): string

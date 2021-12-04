@@ -18,11 +18,8 @@ use Jorijn\Bitcoin\Dca\Service\BalanceServiceInterface;
 
 class BinanceBalanceService implements BalanceServiceInterface
 {
-    protected BinanceClientInterface $client;
-
-    public function __construct(BinanceClientInterface $client)
+    public function __construct(protected BinanceClientInterface $binanceClient)
     {
-        $this->client = $client;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -32,28 +29,30 @@ class BinanceBalanceService implements BalanceServiceInterface
 
     public function getBalances(): array
     {
-        $response = $this->client->request('GET', 'api/v3/account', [
+        $response = $this->binanceClient->request('GET', 'api/v3/account', [
             'extra' => ['security_type' => 'USER_DATA'],
         ]);
 
-        return array_filter(array_reduce($response['balances'], static function (array $balances, array $asset) {
-            $decimals = \strlen(explode('.', $asset['free'])[1]);
+        return array_filter(
+            array_reduce($response['balances'], static function (array $balances, array $asset): array {
+                $decimals = \strlen(explode('.', $asset['free'])[1]);
 
-            // binance holds a gazillion altcoins, no interest in showing hundreds if their balance
-            // is zero.
-            if (bccomp($asset['free'], '0', $decimals) <= 0) {
-                $balances[$asset['asset']] = false;
+                // binance holds a gazillion altcoins, no interest in showing hundreds if their balance
+                // is zero.
+                if (bccomp($asset['free'], '0', $decimals) <= 0) {
+                    $balances[$asset['asset']] = false;
+
+                    return $balances;
+                }
+
+                $balances[$asset['asset']] = [
+                    $asset['asset'],
+                    bcadd($asset['free'], $asset['locked'], $decimals),
+                    $asset['free'],
+                ];
 
                 return $balances;
-            }
-
-            $balances[$asset['asset']] = [
-                $asset['asset'],
-                bcadd($asset['free'], $asset['locked'], $decimals),
-                $asset['free'],
-            ];
-
-            return $balances;
-        }, []));
+            }, [])
+        );
     }
 }

@@ -18,6 +18,7 @@ use Jorijn\Bitcoin\Dca\Component\ExternalAddressFromMasterPublicKeyComponent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Component\ExternalAddressFromMasterPublicKeyComponent
@@ -44,7 +45,10 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
         }
 
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->component = new ExternalAddressFromMasterPublicKeyComponent($this->logger, getenv(self::XPUB_PYTHON_CLI));
+        $this->component = new ExternalAddressFromMasterPublicKeyComponent(
+            $this->logger,
+            getenv(self::XPUB_PYTHON_CLI)
+        );
     }
 
     /**
@@ -84,7 +88,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithUnsupportedKey(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(Throwable::class);
         $this->component->derive('(╯°□°）╯︵ ┻━┻');
     }
 

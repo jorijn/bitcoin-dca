@@ -54,8 +54,8 @@ final class SendEmailOnWithdrawListenerTest extends TesterOfAbstractSendEmailLis
 
         $this->notifier->expects(static::never())->method('send');
 
-        $event = new WithdrawSuccessEvent(new CompletedWithdraw('address', 1, '1'));
-        $this->listener->onWithdraw($event);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent(new CompletedWithdraw('address', 1, '1'));
+        $this->listener->onWithdraw($withdrawSuccessEvent);
     }
 
     /**
@@ -66,16 +66,16 @@ final class SendEmailOnWithdrawListenerTest extends TesterOfAbstractSendEmailLis
         $address = 'a'.random_int(10000, 20000);
         $id = (string) random_int(10, 20);
         $amount = random_int(10000, 20000);
-        $withdraw = (new CompletedWithdraw($address, $amount, $id));
+        $completedWithdraw = (new CompletedWithdraw($address, $amount, $id));
         $tag = 't'.random_int(1000, 2000);
 
-        $event = new WithdrawSuccessEvent($withdraw, $tag);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($completedWithdraw, $tag);
 
         $this->notifier
             ->expects(static::once())
             ->method('send')
             ->with(
-                static::callback(function (Email $email) use ($amount) {
+                static::callback(function (Email $email) use ($amount): bool {
                     self::assertSame(
                         sprintf(
                             '[%s] %s',
@@ -94,6 +94,6 @@ final class SendEmailOnWithdrawListenerTest extends TesterOfAbstractSendEmailLis
             )
         ;
 
-        $this->listener->onWithdraw($event);
+        $this->listener->onWithdraw($withdrawSuccessEvent);
     }
 }

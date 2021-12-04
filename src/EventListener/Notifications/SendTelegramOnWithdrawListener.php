@@ -19,13 +19,13 @@ use Symfony\Component\Notifier\Message\ChatMessage;
 
 class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
 {
-    public function onWithdraw(WithdrawSuccessEvent $event): void
+    public function onWithdraw(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {
         if (!$this->isEnabled) {
             return;
         }
 
-        $withdraw = $event->getCompletedWithdraw();
+        $withdraw = $withdrawSuccessEvent->getCompletedWithdraw();
         $formattedSats = number_format($withdraw->getNetAmount());
 
         $htmlMessage = <<<TLGRM
@@ -37,11 +37,11 @@ class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
             ID: <strong>{$withdraw->getId()}</strong>
             TLGRM;
 
-        if ($event->getTag()) {
-            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($event->getTag()).'</strong>';
+        if ($withdrawSuccessEvent->getTag()) {
+            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($withdrawSuccessEvent->getTag()).'</strong>';
         }
 
-        $message = new ChatMessage(
+        $chatMessage = new ChatMessage(
             $htmlMessage,
             new TelegramOptions(
                 [
@@ -51,6 +51,6 @@ class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
             )
         );
 
-        $this->transport->send($message);
+        $this->telegramTransport->send($chatMessage);
     }
 }

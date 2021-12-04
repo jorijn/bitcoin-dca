@@ -19,24 +19,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BitvavoClient implements BitvavoClientInterface
 {
-    protected HttpClientInterface $httpClient;
-    protected LoggerInterface $logger;
-    protected ?string $apiKey;
-    protected ?string $apiSecret;
-    protected string $accessWindow;
-
     public function __construct(
-        HttpClientInterface $httpClient,
-        LoggerInterface $logger,
-        ?string $apiKey,
-        ?string $apiSecret,
-        string $accessWindow = '10000'
+        protected HttpClientInterface $httpClient,
+        protected LoggerInterface $logger,
+        protected ?string $apiKey,
+        protected ?string $apiSecret,
+        protected string $accessWindow = '10000'
     ) {
-        $this->httpClient = $httpClient;
-        $this->logger = $logger;
-        $this->apiKey = $apiKey;
-        $this->apiSecret = $apiSecret;
-        $this->accessWindow = $accessWindow;
     }
 
     public function apiCall(
@@ -52,7 +41,7 @@ class BitvavoClient implements BitvavoClientInterface
         }
 
         $query = http_build_query($parameters, '', '&');
-        $endpointParams = $path.(!empty($parameters) ? '?'.$query : null);
+        $endpointParams = $path.(empty($parameters) ? null : '?'.$query);
         $hashString = $now.$method.'/v2/'.$endpointParams;
 
         if (!empty($body)) {
@@ -68,10 +57,14 @@ class BitvavoClient implements BitvavoClientInterface
             'Content-Type' => 'application/json',
         ];
 
-        $serverResponse = $this->httpClient->request($method, $path, [
-            'headers' => $headers,
-            'query' => $parameters,
-        ] + (!empty($body) ? ['json' => $body] : []));
+        $serverResponse = $this->httpClient->request(
+            $method,
+            $path,
+            [
+                'headers' => $headers,
+                'query' => $parameters,
+            ] + (empty($body) ? [] : ['json' => $body])
+        );
 
         $responseData = $serverResponse->toArray(false);
 

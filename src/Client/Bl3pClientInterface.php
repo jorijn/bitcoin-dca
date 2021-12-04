@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Client;
 
+use Exception;
+
 interface Bl3pClientInterface
 {
     /**
@@ -21,7 +23,7 @@ interface Bl3pClientInterface
      * @param string $path       path to call
      * @param array  $parameters parameters to add to the call
      *
-     *@throws \Exception
+     * @throws Exception
      *
      * @return array result of call
      */

@@ -176,22 +176,22 @@ final class KrakenWithdrawServiceTest extends TestCase
      */
     public function testGetWithdrawFeeApiError(): void
     {
-        $exception = new KrakenClientException();
+        $krakenClientException = new KrakenClientException();
 
         $this->client
             ->expects(static::exactly(2))
             ->method('queryPrivate')
             ->withConsecutive(['Balance'], ['WithdrawInfo'])
-            ->willReturnCallback(function ($with) use ($exception) {
+            ->willReturnCallback(function ($with) use ($krakenClientException): array {
                 if ('Balance' === $with) {
                     return ['BTC' => 3];
                 }
 
-                throw $exception;
+                throw $krakenClientException;
             })
         ;
 
-        $this->expectExceptionObject($exception);
+        $this->expectExceptionObject($krakenClientException);
 
         $this->service->getWithdrawFeeInSatoshis();
     }

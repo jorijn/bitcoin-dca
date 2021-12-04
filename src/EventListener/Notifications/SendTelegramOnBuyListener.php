@@ -19,13 +19,13 @@ use Symfony\Component\Notifier\Message\ChatMessage;
 
 class SendTelegramOnBuyListener extends AbstractSendTelegramListener
 {
-    public function onBuy(BuySuccessEvent $event): void
+    public function onBuy(BuySuccessEvent $buySuccessEvent): void
     {
         if (!$this->isEnabled) {
             return;
         }
 
-        $formattedSats = number_format($event->getBuyOrder()->getAmountInSatoshis());
+        $formattedSats = number_format($buySuccessEvent->getBuyOrder()->getAmountInSatoshis());
         $exchange = ucfirst($this->getExchange());
 
         $htmlMessage = <<<TLGRM
@@ -33,17 +33,17 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
 
             Transaction overview:
 
-            Purchased: <strong>{$event->getBuyOrder()->getDisplayAmountBought()}</strong>
-            Spent: <strong>{$event->getBuyOrder()->getDisplayAmountSpent()}</strong>
-            Fee: <strong>{$event->getBuyOrder()->getDisplayFeesSpent()}</strong>
-            Price: <strong>{$event->getBuyOrder()->getDisplayAveragePrice()}</strong>
+            Purchased: <strong>{$buySuccessEvent->getBuyOrder()->getDisplayAmountBought()}</strong>
+            Spent: <strong>{$buySuccessEvent->getBuyOrder()->getDisplayAmountSpent()}</strong>
+            Fee: <strong>{$buySuccessEvent->getBuyOrder()->getDisplayFeesSpent()}</strong>
+            Price: <strong>{$buySuccessEvent->getBuyOrder()->getDisplayAveragePrice()}</strong>
             TLGRM;
 
-        if ($event->getTag()) {
-            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($event->getTag()).'</strong>';
+        if ($buySuccessEvent->getTag()) {
+            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($buySuccessEvent->getTag()).'</strong>';
         }
 
-        $message = new ChatMessage(
+        $chatMessage = new ChatMessage(
             $htmlMessage,
             new TelegramOptions(
                 [
@@ -53,6 +53,6 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
             )
         );
 
-        $this->transport->send($message);
+        $this->telegramTransport->send($chatMessage);
     }
 }

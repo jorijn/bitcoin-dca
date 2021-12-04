@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Client;
 
+use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Exception\BinanceClientException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -24,15 +25,11 @@ class BinanceClient implements BinanceClientInterface
     /** @var string */
     public const HASH_ALGO = 'sha256';
 
-    protected ?string $apiKey;
-    protected ?string $apiSecret;
-    protected HttpClientInterface $httpClient;
-
-    public function __construct(HttpClientInterface $httpClient, ?string $apiKey, ?string $apiSecret)
-    {
-        $this->apiKey = $apiKey;
-        $this->apiSecret = $apiSecret;
-        $this->httpClient = $httpClient;
+    public function __construct(
+        protected HttpClientInterface $httpClient,
+        protected ?string $apiKey,
+        protected ?string $apiSecret
+    ) {
     }
 
     /**
@@ -56,12 +53,12 @@ class BinanceClient implements BinanceClientInterface
             case 'TRADE':
             case 'USER_DATA':
                 [$method, $url, $options] = $this->addSignatureToRequest($method, $url, $options);
-                // no break
+            // no break
             case 'USER_STREAM':
             case 'MARKET_DATA':
                 // @noinspection SuspiciousAssignmentsInspection
                 [$method, $url, $options] = $this->addApiKeyToRequest($method, $url, $options);
-                // no break
+            // no break
             case 'NONE':
             default:
                 return $this->parse($this->httpClient->request($method, $url, $options));
@@ -76,7 +73,7 @@ class BinanceClient implements BinanceClientInterface
         // check and validate any present body
         if (isset($options['body'])) {
             if (!\is_array($options['body'])) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'passing any other request body than type `array` on '.__CLASS__.' is not supported'
                 );
             }

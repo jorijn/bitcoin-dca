@@ -80,7 +80,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->with(
                 'POST',
                 BinanceBuyService::ORDER_URL,
-                static::callback(function (array $options) use ($amount) {
+                static::callback(function (array $options) use ($amount): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
                     self::assertSame(['security_type' => 'TRADE'], $options['extra']);
@@ -219,7 +219,7 @@ final class BinanceBuyServiceTest extends TestCase
                 [
                     'GET',
                     BinanceBuyService::ORDER_URL,
-                    static::callback(function (array $options) use ($orderId) {
+                    static::callback(function (array $options) use ($orderId): bool {
                         self::assertArrayHasKey('symbol', $options['body']);
                         self::assertSame(['security_type' => 'TRADE'], $options['extra']);
                         self::assertArrayHasKey('orderId', $options['body']);
@@ -234,7 +234,7 @@ final class BinanceBuyServiceTest extends TestCase
                 [
                     'GET',
                     'api/v3/myTrades',
-                    static::callback(function (array $options) use ($time) {
+                    static::callback(function (array $options) use ($time): bool {
                         self::assertArrayHasKey('extra', $options);
                         self::assertArrayHasKey('symbol', $options['body']);
                         self::assertSame($this->tradingPair, $options['body']['symbol']);
@@ -287,7 +287,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->with(
                 'GET',
                 BinanceBuyService::ORDER_URL,
-                static::callback(function (array $options) use ($orderId) {
+                static::callback(function (array $options) use ($orderId): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
                     self::assertSame(['security_type' => 'TRADE'], $options['extra']);
@@ -324,7 +324,7 @@ final class BinanceBuyServiceTest extends TestCase
             ->with(
                 'DELETE',
                 BinanceBuyService::ORDER_URL,
-                static::callback(function (array $options) use ($orderId) {
+                static::callback(function (array $options) use ($orderId): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('body', $options);
                     self::assertSame(['security_type' => 'TRADE'], $options['extra']);

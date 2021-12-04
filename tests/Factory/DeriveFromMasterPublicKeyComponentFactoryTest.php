@@ -38,12 +38,12 @@ final class DeriveFromMasterPublicKeyComponentFactoryTest extends TestCase
         $service2 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
         $service2->expects(static::never())->method(self::SUPPORTED);
 
-        $factory = new DeriveFromMasterPublicKeyComponentFactory([
+        $deriveFromMasterPublicKeyComponentFactory = new DeriveFromMasterPublicKeyComponentFactory([
             $service1,
             $service2,
         ]);
 
-        static::assertSame($service1, $factory->createDerivationComponent());
+        static::assertSame($service1, $deriveFromMasterPublicKeyComponentFactory->createDerivationComponent());
     }
 
     /**
@@ -56,12 +56,12 @@ final class DeriveFromMasterPublicKeyComponentFactoryTest extends TestCase
         $service2 = $this->createMock(AddressFromMasterPublicKeyComponentInterface::class);
         $service2->expects(static::once())->method(self::SUPPORTED)->willReturn(false);
 
-        $factory = new DeriveFromMasterPublicKeyComponentFactory([
+        $deriveFromMasterPublicKeyComponentFactory = new DeriveFromMasterPublicKeyComponentFactory([
             $service2,
             $service1,
         ]);
 
-        static::assertSame($service1, $factory->createDerivationComponent());
+        static::assertSame($service1, $deriveFromMasterPublicKeyComponentFactory->createDerivationComponent());
     }
 
     /**
@@ -69,8 +69,8 @@ final class DeriveFromMasterPublicKeyComponentFactoryTest extends TestCase
      */
     public function testSupportedIsEmpty(): void
     {
-        $factory = new DeriveFromMasterPublicKeyComponentFactory([]);
+        $deriveFromMasterPublicKeyComponentFactory = new DeriveFromMasterPublicKeyComponentFactory([]);
         $this->expectException(NoDerivationComponentAvailableException::class);
-        $factory->createDerivationComponent();
+        $deriveFromMasterPublicKeyComponentFactory->createDerivationComponent();
     }
 }

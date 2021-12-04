@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-class NoMasterPublicKeyAvailableException extends \RuntimeException
+use RuntimeException;
+
+class NoMasterPublicKeyAvailableException extends RuntimeException
 {
 }

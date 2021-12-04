@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
@@ -70,7 +71,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::initiateBuy
      * @dataProvider togglerTradingAgreement
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSuccessfulBuy(?string $tradingAgreement): void
     {
@@ -102,7 +103,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef) {
+                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef): bool {
                         self::assertArrayHasKey('pair', $options);
                         self::assertSame('XBT'.$this->baseCurrency, $options['pair']);
                         self::assertArrayHasKey('type', $options);
@@ -191,7 +192,7 @@ final class KrakenBuyServiceTest extends TestCase
     /**
      * @covers ::cancelBuyOrder
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyIsCancelled(): void
     {
@@ -212,7 +213,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyCannotBeLocatedAfterPurchase(): void
     {
@@ -234,7 +235,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use (&$userRef) {
+                    static::callback(function ($options) use (&$userRef): bool {
                         self::assertArrayHasKey('userref', $options);
                         self::assertNotEmpty($options['userref']);
 
@@ -272,11 +273,11 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getTakerFeeFromSchedule
      * @covers ::initiateBuy
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyWithInclusiveStrategy(): void
     {
-        $includedFeeBuyService = new KrakenBuyService(
+        $krakenBuyService = new KrakenBuyService(
             $this->client,
             $this->baseCurrency,
             KrakenBuyService::FEE_STRATEGY_INCLUSIVE
@@ -309,7 +310,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($expectedAmount, $price) {
+                    static::callback(function ($options) use ($expectedAmount, $price): bool {
                         self::assertArrayHasKey('volume', $options);
                         self::assertSame(bcdiv((string) $expectedAmount, $price, 8), $options['volume']);
 
@@ -336,7 +337,7 @@ final class KrakenBuyServiceTest extends TestCase
             )
         ;
 
-        $completedOrder = $includedFeeBuyService->initiateBuy($amount);
+        $completedOrder = $krakenBuyService->initiateBuy($amount);
 
         static::assertSame(
             (int) bcmul(bcdiv((string) $expectedAmount, $price, 8), Bitcoin::SATOSHIS, 0),

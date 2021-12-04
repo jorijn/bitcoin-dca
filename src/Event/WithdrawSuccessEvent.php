@@ -18,13 +18,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class WithdrawSuccessEvent extends Event
 {
-    protected ?string $tag;
-    protected CompletedWithdraw $completedWithdraw;
-
-    public function __construct(CompletedWithdraw $completedWithdraw, string $tag = null)
+    public function __construct(protected CompletedWithdraw $completedWithdraw, protected ?string $tag = null)
     {
-        $this->tag = $tag;
-        $this->completedWithdraw = $completedWithdraw;
     }
 
     public function getTag(): ?string

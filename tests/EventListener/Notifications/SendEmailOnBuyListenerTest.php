@@ -58,8 +58,8 @@ final class SendEmailOnBuyListenerTest extends TesterOfAbstractSendEmailListener
 
         $this->notifier->expects(static::never())->method('send');
 
-        $event = new BuySuccessEvent(new CompletedBuyOrder());
-        $this->listener->onBuy($event);
+        $buySuccessEvent = new BuySuccessEvent(new CompletedBuyOrder());
+        $this->listener->onBuy($buySuccessEvent);
     }
 
     /**
@@ -68,32 +68,34 @@ final class SendEmailOnBuyListenerTest extends TesterOfAbstractSendEmailListener
     public function testAssertThatEmailIsSentOnBuyEvent(): void
     {
         $amountInSatoshis = random_int(10000, 20000);
-        $buyOrder = (new CompletedBuyOrder())->setAmountInSatoshis($amountInSatoshis);
+        $completedBuyOrder = (new CompletedBuyOrder())->setAmountInSatoshis($amountInSatoshis);
         $tag = 't'.random_int(1000, 2000);
 
-        $event = new BuySuccessEvent($buyOrder, $tag);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder, $tag);
 
         $this->notifier
             ->expects(static::once())
             ->method('send')
-            ->with(static::callback(function (Email $email) use ($amountInSatoshis) {
-                self::assertSame(
-                    sprintf(
-                        '[%s] %s',
-                        $this->subjectPrefix,
+            ->with(
+                static::callback(function (Email $email) use ($amountInSatoshis): bool {
+                    self::assertSame(
                         sprintf(
-                            SendEmailOnBuyListener::NOTIFICATION_SUBJECT_LINE,
-                            number_format($amountInSatoshis),
-                            ucfirst($this->exchange)
-                        )
-                    ),
-                    $email->getSubject()
-                );
+                            '[%s] %s',
+                            $this->subjectPrefix,
+                            sprintf(
+                                SendEmailOnBuyListener::NOTIFICATION_SUBJECT_LINE,
+                                number_format($amountInSatoshis),
+                                ucfirst($this->exchange)
+                            )
+                        ),
+                        $email->getSubject()
+                    );
 
-                return true;
-            }))
+                    return true;
+                })
+            )
         ;
 
-        $this->listener->onBuy($event);
+        $this->listener->onBuy($buySuccessEvent);
     }
 }

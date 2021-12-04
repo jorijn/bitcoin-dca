@@ -13,8 +13,10 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
+use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
+use const PHP_INT_SIZE;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,7 +32,7 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
-        if (\PHP_INT_SIZE !== 8) {
+        if (PHP_INT_SIZE !== 8) {
             static::markTestSkipped('unsupported on non 64 bits systems');
         }
     }
@@ -41,11 +43,11 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDerive(string $xpub, array $expectedAddressList): void
     {
-        $component = new AddressFromMasterPublicKeyComponent();
+        $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
         foreach ($expectedAddressList as $index => $expectedAddress) {
             static::assertSame(
                 $expectedAddress,
-                $component->derive($xpub, '0/'.$index)
+                $addressFromMasterPublicKeyComponent->derive($xpub, '0/'.$index)
             );
         }
     }
@@ -55,9 +57,9 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithEmptyXpubKey(): void
     {
-        $component = new AddressFromMasterPublicKeyComponent();
-        $this->expectException(\InvalidArgumentException::class);
-        $component->derive('');
+        $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
+        $this->expectException(InvalidArgumentException::class);
+        $addressFromMasterPublicKeyComponent->derive('');
     }
 
     /**
@@ -65,9 +67,9 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithUnsupportedKey(): void
     {
-        $component = new AddressFromMasterPublicKeyComponent();
+        $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
         $this->expectException(NoMasterPublicKeyAvailableException::class);
-        $component->derive('(╯°□°）╯︵ ┻━┻');
+        $addressFromMasterPublicKeyComponent->derive('(╯°□°）╯︵ ┻━┻');
     }
 
     /**
@@ -75,7 +77,7 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testSupported(): void
     {
-        $component = new AddressFromMasterPublicKeyComponent();
-        static::assertSame(\PHP_INT_SIZE === 8, $component->supported());
+        $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
+        static::assertSame(PHP_INT_SIZE === 8, $addressFromMasterPublicKeyComponent->supported());
     }
 }

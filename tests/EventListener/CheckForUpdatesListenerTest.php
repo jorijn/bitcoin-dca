@@ -43,14 +43,14 @@ final class CheckForUpdatesListenerTest extends TestCase
     /** @var InputInterface|MockObject */
     private $input;
     /** @var BufferedOutput */
-    private $output;
+    private $bufferedOutput;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->input = $this->createMock(InputInterface::class);
-        $this->output = new BufferedOutput();
+        $this->bufferedOutput = new BufferedOutput();
     }
 
     /**
@@ -59,16 +59,26 @@ final class CheckForUpdatesListenerTest extends TestCase
      */
     public function testVersionCheckIsDisabledThroughConfiguration(): void
     {
-        $listener = new CheckForUpdatesListener($this->createMock(HttpClientInterface::class), '', '', true);
-        $event = new ConsoleTerminateEvent($this->createMock(Command::class), $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $checkForUpdatesListener = new CheckForUpdatesListener(
+            $this->createMock(HttpClientInterface::class),
+            '',
+            '',
+            true
+        );
+        $consoleTerminateEvent = new ConsoleTerminateEvent(
+            $this->createMock(Command::class),
+            $this->input,
+            $this->bufferedOutput,
+            0
+        );
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertSame(serialize($messageEvent), $messageEventSignature);
     }
@@ -79,17 +89,27 @@ final class CheckForUpdatesListenerTest extends TestCase
      */
     public function testLocalVersionIsNotAValidVersion(): void
     {
-        $listener = new CheckForUpdatesListener($this->createMock(HttpClientInterface::class), 'v1.foo.bar', '', false);
+        $checkForUpdatesListener = new CheckForUpdatesListener(
+            $this->createMock(HttpClientInterface::class),
+            'v1.foo.bar',
+            '',
+            false
+        );
 
-        $event = new ConsoleTerminateEvent($this->createMock(Command::class), $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent(
+            $this->createMock(Command::class),
+            $this->input,
+            $this->bufferedOutput,
+            0
+        );
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertSame(serialize($messageEvent), $messageEventSignature);
     }
@@ -99,15 +119,20 @@ final class CheckForUpdatesListenerTest extends TestCase
      */
     public function testCommandIsDisplayingMachineReadableOutput(): void
     {
-        $listener = new CheckForUpdatesListener($this->createMock(HttpClientInterface::class), 'v1.2.3', '', false);
+        $checkForUpdatesListener = new CheckForUpdatesListener(
+            $this->createMock(HttpClientInterface::class),
+            'v1.2.3',
+            '',
+            false
+        );
 
         $command = $this->createMock(BuyCommand::class);
         $command->expects(static::atLeastOnce())->method('isDisplayingMachineReadableOutput')->willReturn(true);
 
-        $event = new ConsoleTerminateEvent($command, $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent($command, $this->input, $this->bufferedOutput, 0);
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
     }
 
     /**
@@ -118,7 +143,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testVersionInformationIsAppendedToChatMessageDespiteShowingMachineReadableOutput(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
+        $checkForUpdatesListener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
 
         $command = $this->createMock(BuyCommand::class);
         $command->expects(static::atLeastOnce())->method('isDisplayingMachineReadableOutput')->willReturn(true);
@@ -128,15 +153,15 @@ final class CheckForUpdatesListenerTest extends TestCase
         $apiResponse->method('toArray')->willReturn($apiResponseContent);
         $httpClient->expects(static::once())->method('request')->with('GET', '/api')->willReturn($apiResponse);
 
-        $event = new ConsoleTerminateEvent($command, $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent($command, $this->input, $this->bufferedOutput, 0);
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertNotSame(serialize($messageEvent), $messageEventSignature);
         static::assertStringContainsString(
@@ -152,7 +177,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testApplicationIsUpToDate(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, 'v1.0.0', '/api/path', false);
+        $checkForUpdatesListener = new CheckForUpdatesListener($httpClient, 'v1.0.0', '/api/path', false);
 
         $command = $this->createMock(Command::class);
 
@@ -161,15 +186,15 @@ final class CheckForUpdatesListenerTest extends TestCase
         $apiResponse->method('toArray')->willReturn($apiResponseContent);
         $httpClient->expects(static::once())->method('request')->with('GET', '/api/path')->willReturn($apiResponse);
 
-        $event = new ConsoleTerminateEvent($command, $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent($command, $this->input, $this->bufferedOutput, 0);
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertSame(serialize($messageEvent), $messageEventSignature);
     }
@@ -184,7 +209,7 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testApplicationIsOutdated(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
+        $checkForUpdatesListener = new CheckForUpdatesListener($httpClient, self::VERSION, '/api', false);
 
         $command = $this->createMock(Command::class);
 
@@ -193,18 +218,18 @@ final class CheckForUpdatesListenerTest extends TestCase
         $apiResponse->method('toArray')->willReturn($apiResponseContent);
         $httpClient->expects(static::once())->method('request')->with('GET', '/api')->willReturn($apiResponse);
 
-        $event = new ConsoleTerminateEvent($command, $this->input, $this->output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent($command, $this->input, $this->bufferedOutput, 0);
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
         static::assertSame(
             '[UPDATE] Bitcoin DCA v1.2.0 is available, your version is v1.1.0: release_url',
-            trim($this->output->fetch())
+            trim($this->bufferedOutput->fetch())
         );
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertNotSame(serialize($messageEvent), $messageEventSignature);
         static::assertStringContainsString(
@@ -220,7 +245,12 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testExceptionHandlingAfterHttpRequest(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, self::API_PATH_AT_GITHUB, false);
+        $checkForUpdatesListener = new CheckForUpdatesListener(
+            $httpClient,
+            self::VERSION,
+            self::API_PATH_AT_GITHUB,
+            false
+        );
 
         $command = $this->createMock(Command::class);
         $input = $this->createMock(InputInterface::class);
@@ -232,15 +262,15 @@ final class CheckForUpdatesListenerTest extends TestCase
             $apiResponse
         );
 
-        $event = new ConsoleTerminateEvent($command, $input, $output, 0);
-        $listener->onConsoleTerminated($event);
+        $consoleTerminateEvent = new ConsoleTerminateEvent($command, $input, $output, 0);
+        $checkForUpdatesListener->onConsoleTerminated($consoleTerminateEvent);
 
-        static::assertEmpty($this->output->fetch());
+        static::assertEmpty($this->bufferedOutput->fetch());
 
         $messageEvent = new MessageEvent(new ChatMessage(''));
         $messageEventSignature = serialize($messageEvent);
 
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
         static::assertSame(serialize($messageEvent), $messageEventSignature);
     }
 
@@ -250,11 +280,16 @@ final class CheckForUpdatesListenerTest extends TestCase
     public function testListenerDoesNothingOnDifferentMessageType(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $listener = new CheckForUpdatesListener($httpClient, self::VERSION, self::API_PATH_AT_GITHUB, false);
+        $checkForUpdatesListener = new CheckForUpdatesListener(
+            $httpClient,
+            self::VERSION,
+            self::API_PATH_AT_GITHUB,
+            false
+        );
         $messageEvent = new MessageEvent(new SmsMessage('1', ''));
 
         $messageEventSignature = serialize($messageEvent);
-        $listener->onMessageEvent($messageEvent);
+        $checkForUpdatesListener->onMessageEvent($messageEvent);
 
         static::assertSame(serialize($messageEvent), $messageEventSignature);
     }

@@ -15,21 +15,12 @@ namespace Jorijn\Bitcoin\Dca\Model;
 
 class NotificationEmailTemplateInformation
 {
-    protected string $exchange;
-    protected string $logoLocation;
-    protected string $iconLocation;
-    protected string $quotesLocation;
-
     public function __construct(
-        string $exchange,
-        string $logoLocation,
-        string $iconLocation,
-        string $quotesLocation
+        protected string $exchange,
+        protected string $logoLocation,
+        protected string $iconLocation,
+        protected string $quotesLocation
     ) {
-        $this->exchange = $exchange;
-        $this->logoLocation = $logoLocation;
-        $this->iconLocation = $iconLocation;
-        $this->quotesLocation = $quotesLocation;
     }
 
     public function getExchange(): string

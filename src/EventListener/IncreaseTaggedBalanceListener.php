@@ -19,25 +19,22 @@ use Psr\Log\LoggerInterface;
 
 class IncreaseTaggedBalanceListener
 {
-    protected TaggedIntegerRepositoryInterface $repository;
-    protected LoggerInterface $logger;
-
-    public function __construct(TaggedIntegerRepositoryInterface $repository, LoggerInterface $logger)
-    {
-        $this->repository = $repository;
-        $this->logger = $logger;
+    public function __construct(
+        protected TaggedIntegerRepositoryInterface $taggedIntegerRepository,
+        protected LoggerInterface $logger
+    ) {
     }
 
-    public function onBalanceIncrease(BuySuccessEvent $event): void
+    public function onBalanceIncrease(BuySuccessEvent $buySuccessEvent): void
     {
-        if (!$tag = $event->getTag()) {
+        if (!$tag = $buySuccessEvent->getTag()) {
             return;
         }
 
-        $buyOrder = $event->getBuyOrder();
+        $buyOrder = $buySuccessEvent->getBuyOrder();
         $netAmount = $buyOrder->getAmountInSatoshis() - $buyOrder->getFeesInSatoshis();
 
-        $this->repository->increase($tag, $netAmount);
+        $this->taggedIntegerRepository->increase($tag, $netAmount);
 
         $this->logger->info('increased balance for tag {tag} with {balance} satoshis', [
             'tag' => $tag,

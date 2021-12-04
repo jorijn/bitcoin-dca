@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Validator;
 
-class ValidationException extends \RuntimeException
+use RuntimeException;
+
+class ValidationException extends RuntimeException
 {
 }

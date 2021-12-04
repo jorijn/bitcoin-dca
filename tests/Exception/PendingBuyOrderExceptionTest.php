@@ -30,7 +30,7 @@ final class PendingBuyOrderExceptionTest extends TestCase
     public function testGetOrderId(): void
     {
         $orderId = 'oid'.random_int(1000, 2000);
-        $exception = new PendingBuyOrderException($orderId);
-        static::assertSame($orderId, $exception->getOrderId());
+        $pendingBuyOrderException = new PendingBuyOrderException($orderId);
+        static::assertSame($orderId, $pendingBuyOrderException->getOrderId());
     }
 }

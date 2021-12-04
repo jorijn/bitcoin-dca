@@ -53,7 +53,7 @@ final class IncreaseTaggedBalanceListenerTest extends TestCase
         $amount = random_int(1000, 2000);
         $fees = random_int(0, 999);
 
-        $completedOrder = (new CompletedBuyOrder())
+        $completedBuyOrder = (new CompletedBuyOrder())
             ->setAmountInSatoshis($amount)
             ->setFeesInSatoshis($fees)
         ;
@@ -69,7 +69,7 @@ final class IncreaseTaggedBalanceListenerTest extends TestCase
             ->method('info')
         ;
 
-        $this->listener->onBalanceIncrease(new BuySuccessEvent($completedOrder, $tag));
+        $this->listener->onBalanceIncrease(new BuySuccessEvent($completedBuyOrder, $tag));
     }
 
     /**
