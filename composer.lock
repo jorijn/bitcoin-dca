@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "650bd05df9ff031e0a237d4b22940609",
+    "content-hash": "4f76ac7c8c515114f0f5a194b9be1c34",
     "packages": [
         {
             "name": "async-aws/core",
@@ -2301,25 +2301,24 @@
         },
         {
             "name": "symfony/mailchimp-mailer",
-            "version": "v5.4.0",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mailchimp-mailer.git",
-                "reference": "6f20f07cbea1980d117d6af9727996dd28d3417d"
+                "reference": "6302eaf38b5e4cb891581daaf4099ee62e50689b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mailchimp-mailer/zipball/6f20f07cbea1980d117d6af9727996dd28d3417d",
-                "reference": "6f20f07cbea1980d117d6af9727996dd28d3417d",
+                "url": "https://api.github.com/repos/symfony/mailchimp-mailer/zipball/6302eaf38b5e4cb891581daaf4099ee62e50689b",
+                "reference": "6302eaf38b5e4cb891581daaf4099ee62e50689b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
-                "psr/event-dispatcher": "^1",
-                "symfony/mailer": "^5.1|^6.0"
+                "php": ">=8.0.2",
+                "symfony/mailer": "^5.4|^6.0"
             },
             "require-dev": {
-                "symfony/http-client": "^4.4|^5.0|^6.0"
+                "symfony/http-client": "^5.4|^6.0"
             },
             "type": "symfony-mailer-bridge",
             "autoload": {
@@ -2347,7 +2346,7 @@
             "description": "Symfony Mailchimp Mailer Bridge",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/mailchimp-mailer/tree/v5.4.0"
+                "source": "https://github.com/symfony/mailchimp-mailer/tree/v6.0.0"
             },
             "funding": [
                 {
@@ -2363,7 +2362,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-09T11:03:34+00:00"
+            "time": "2021-11-12T11:44:21+00:00"
         },
         {
             "name": "symfony/mailer",

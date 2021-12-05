@@ -33,7 +33,7 @@
         "symfony/proxy-manager-bridge": "^5.4",
         "symfony/amazon-mailer": "^5.4",
         "symfony/google-mailer": "^5.4",
-        "symfony/mailchimp-mailer": "^5.4",
+        "symfony/mailchimp-mailer": "^6.0",
         "symfony/mailgun-mailer": "^5.4",
         "symfony/mailjet-mailer": "^6.0",
         "symfony/postmark-mailer": "^6.0",
