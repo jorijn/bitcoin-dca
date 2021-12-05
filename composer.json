@@ -36,7 +36,7 @@
         "symfony/mailchimp-mailer": "^5.4",
         "symfony/mailgun-mailer": "^5.4",
         "symfony/mailjet-mailer": "^6.0",
-        "symfony/postmark-mailer": "^5.4",
+        "symfony/postmark-mailer": "^6.0",
         "symfony/sendgrid-mailer": "^5.4",
         "symfony/sendinblue-mailer": "^5.4"
     },
