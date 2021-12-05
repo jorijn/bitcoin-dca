@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1eabcd849ec62a9df5b5c450a032577",
+    "content-hash": "650bd05df9ff031e0a237d4b22940609",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3478,25 +3478,24 @@
         },
         {
             "name": "symfony/postmark-mailer",
-            "version": "v5.4.0",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/postmark-mailer.git",
-                "reference": "b35cc42fbe5f39e6dee652cd8f813c1a036a498f"
+                "reference": "f2d35282cc9178d57d42601e416f093d7253181b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/postmark-mailer/zipball/b35cc42fbe5f39e6dee652cd8f813c1a036a498f",
-                "reference": "b35cc42fbe5f39e6dee652cd8f813c1a036a498f",
+                "url": "https://api.github.com/repos/symfony/postmark-mailer/zipball/f2d35282cc9178d57d42601e416f093d7253181b",
+                "reference": "f2d35282cc9178d57d42601e416f093d7253181b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
-                "psr/event-dispatcher": "^1",
-                "symfony/mailer": "^5.2.6|^6.0"
+                "php": ">=8.0.2",
+                "symfony/mailer": "^5.4|^6.0"
             },
             "require-dev": {
-                "symfony/http-client": "^4.4|^5.0|^6.0"
+                "symfony/http-client": "^5.4|^6.0"
             },
             "type": "symfony-mailer-bridge",
             "autoload": {
@@ -3524,7 +3523,7 @@
             "description": "Symfony Postmark Mailer Bridge",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/postmark-mailer/tree/v5.4.0"
+                "source": "https://github.com/symfony/postmark-mailer/tree/v6.0.0"
             },
             "funding": [
                 {
@@ -3540,7 +3539,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-09T11:03:34+00:00"
+            "time": "2021-11-12T11:44:21+00:00"
         },
         {
             "name": "symfony/property-access",
