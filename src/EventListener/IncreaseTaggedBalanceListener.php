@@ -31,8 +31,8 @@ class IncreaseTaggedBalanceListener
             return;
         }
 
-        $buyOrder = $buySuccessEvent->getBuyOrder();
-        $netAmount = $buyOrder->getAmountInSatoshis() - $buyOrder->getFeesInSatoshis();
+        $completedBuyOrder = $buySuccessEvent->getBuyOrder();
+        $netAmount = $completedBuyOrder->getAmountInSatoshis() - $completedBuyOrder->getFeesInSatoshis();
 
         $this->taggedIntegerRepository->increase($tag, $netAmount);
 

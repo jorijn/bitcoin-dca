@@ -91,7 +91,7 @@ final class BuyServiceTest extends TestCase
             ->expects(static::once())
             ->method('initiateBuy')
             ->with($amount)
-            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $buyFillsAfter) {
+            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $buyFillsAfter): \Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder {
                 if (0 === $buyFillsAfter) {
                     return $completedBuyOrder;
                 }
@@ -104,7 +104,7 @@ final class BuyServiceTest extends TestCase
             ->expects($buyFillsAfter > 0 ? static::atLeastOnce() : static::never())
             ->method('checkIfOrderIsFilled')
             ->with($orderId)
-            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $start, $buyFillsAfter) {
+            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $start, $buyFillsAfter): \Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder {
                 if (time() >= ($start + $buyFillsAfter)) {
                     return $completedBuyOrder;
                 }

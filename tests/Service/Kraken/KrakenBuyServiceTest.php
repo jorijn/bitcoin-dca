@@ -292,22 +292,21 @@ final class KrakenBuyServiceTest extends TestCase
         $fee = (string) ($expectedAmount * $takerFeePercentage / 100);
 
         $this->client
-            ->expects(static::exactly(2))
+            ->expects(static::exactly(1))
             ->method('queryPublic')
             ->withConsecutive(
                 ['Ticker', ['pair' => 'XBT'.$this->baseCurrency]],
-                ['AssetPairs', ['pair' => 'XBT'.$this->baseCurrency, 'info' => 'fees']]
             )
             ->willReturnOnConsecutiveCalls(
                 ['XBT' => ['a' => [$price]]],
-                ['XBT'.$this->baseCurrency => ['fees' => [[0, $takerFeePercentage]]]]
             )
         ;
 
         $this->client
-            ->expects(static::exactly(3))
+            ->expects(static::exactly(4))
             ->method('queryPrivate')
             ->withConsecutive(
+                ['TradeVolume', ['pair' => 'XBT'.$this->baseCurrency, 'fee_info' => 'true']],
                 [
                     'AddOrder',
                     static::callback(function ($options) use ($expectedAmount, $price): bool {
@@ -321,6 +320,13 @@ final class KrakenBuyServiceTest extends TestCase
                 ['TradesHistory'],
             )
             ->willReturnOnConsecutiveCalls(
+                [
+                    'fees' => [
+                        'XBT'.$this->baseCurrency => [
+                            'fee' => $takerFeePercentage,
+                        ],
+                    ],
+                ],
                 ['txid' => [$txId]], // add order call
                 [[]], // open orders call
                 [
@@ -337,15 +343,15 @@ final class KrakenBuyServiceTest extends TestCase
             )
         ;
 
-        $completedOrder = $krakenBuyService->initiateBuy($amount);
+        $completedBuyOrder = $krakenBuyService->initiateBuy($amount);
 
         static::assertSame(
             (int) bcmul(bcdiv((string) $expectedAmount, $price, 8), Bitcoin::SATOSHIS, 0),
-            $completedOrder->getAmountInSatoshis()
+            $completedBuyOrder->getAmountInSatoshis()
         );
 
-        static::assertSame(bcdiv((string) $expectedAmount, $price, 8).' BTC', $completedOrder->getDisplayAmountBought());
-        static::assertSame($expectedAmount.' '.$this->baseCurrency, $completedOrder->getDisplayAmountSpent());
-        static::assertSame($fee.' '.$this->baseCurrency, $completedOrder->getDisplayFeesSpent());
+        static::assertSame(bcdiv((string) $expectedAmount, $price, 8).' BTC', $completedBuyOrder->getDisplayAmountBought());
+        static::assertSame($expectedAmount.' '.$this->baseCurrency, $completedBuyOrder->getDisplayAmountSpent());
+        static::assertSame($fee.' '.$this->baseCurrency, $completedBuyOrder->getDisplayFeesSpent());
     }
 }

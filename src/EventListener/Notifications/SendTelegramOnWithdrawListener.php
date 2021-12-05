@@ -25,16 +25,16 @@ class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
             return;
         }
 
-        $withdraw = $withdrawSuccessEvent->getCompletedWithdraw();
-        $formattedSats = number_format($withdraw->getNetAmount());
+        $completedWithdraw = $withdrawSuccessEvent->getCompletedWithdraw();
+        $formattedSats = number_format($completedWithdraw->getNetAmount());
 
         $htmlMessage = <<<TLGRM
             <strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
 
             Transaction overview:
 
-            Address: <strong>{$withdraw->getRecipientAddress()}</strong>
-            ID: <strong>{$withdraw->getId()}</strong>
+            Address: <strong>{$completedWithdraw->getRecipientAddress()}</strong>
+            ID: <strong>{$completedWithdraw->getId()}</strong>
             TLGRM;
 
         if ($withdrawSuccessEvent->getTag()) {

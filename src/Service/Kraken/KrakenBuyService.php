@@ -121,12 +121,13 @@ class KrakenBuyService implements BuyServiceInterface
     }
 
     /**
-     * Returns the fee percentage, taker side. Multiplied by 10000 to ensure rounded integer. 0.26 -> 2600.
+     * Returns the fee percentage based on the trading volume over the last 30 days, taker side.
+     * Multiplied by 10000 to ensure rounded integer. 0.26 -> 2600.
      */
     protected function getTakerFeeFromSchedule(): int
     {
-        $feeSchedule = $this->krakenClient->queryPublic('AssetPairs', ['pair' => $this->tradingPair, 'info' => 'fees']);
-        $feePercentage = $feeSchedule[array_key_first($feeSchedule)]['fees'][0][1] ?? 0;
+        $feeSchedule = $this->krakenClient->queryPrivate('TradeVolume', ['pair' => $this->tradingPair, 'fee_info' => 'true']);
+        $feePercentage = current($feeSchedule['fees'])['fee'] ?? 0;
         $feePercentage *= 10000;
 
         return (int) $feePercentage;
