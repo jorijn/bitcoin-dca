@@ -20,10 +20,10 @@ return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules(
         [
-            '@PHP71Migration:risky' => true,
-            '@PHPUnit75Migration:risky' => true,
             '@Symfony' => true,
             '@Symfony:risky' => true,
+            '@PHP81Migration' => true,
+            '@PHP80Migration:risky' => true,
             '@PhpCsFixer' => true,
             '@PhpCsFixer:risky' => true,
             'general_phpdoc_annotation_remove' => ['annotations' => ['expectedDeprecation']],

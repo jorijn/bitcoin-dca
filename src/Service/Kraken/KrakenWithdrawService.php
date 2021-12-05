@@ -24,20 +24,16 @@ class KrakenWithdrawService implements WithdrawServiceInterface
 {
     public const ASSET_NAME = 'XXBT';
 
-    protected KrakenClientInterface $client;
-    protected LoggerInterface $logger;
-    protected ?string $withdrawKey;
-
-    public function __construct(KrakenClientInterface $client, LoggerInterface $logger, ?string $withdrawKey)
-    {
-        $this->client = $client;
-        $this->logger = $logger;
-        $this->withdrawKey = $withdrawKey;
+    public function __construct(
+        protected KrakenClientInterface $krakenClient,
+        protected LoggerInterface $logger,
+        protected ?string $withdrawKey
+    ) {
     }
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
-        $response = $this->client->queryPrivate('Withdraw', [
+        $response = $this->krakenClient->queryPrivate('Withdraw', [
             'asset' => self::ASSET_NAME,
             'key' => $this->withdrawKey,
             'amount' => bcdiv((string) $balanceToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
@@ -49,14 +45,14 @@ class KrakenWithdrawService implements WithdrawServiceInterface
     public function getAvailableBalance(): int
     {
         try {
-            $response = $this->client->queryPrivate('Balance');
+            $response = $this->krakenClient->queryPrivate('Balance');
 
             foreach ($response as $symbol => $available) {
                 if (self::ASSET_NAME === $symbol) {
                     return (int) bcmul((string) $available, Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
                 }
             }
-        } catch (KrakenClientException $exception) {
+        } catch (KrakenClientException) {
             return 0;
         }
 
@@ -65,7 +61,7 @@ class KrakenWithdrawService implements WithdrawServiceInterface
 
     public function getWithdrawFeeInSatoshis(): int
     {
-        $response = $this->client->queryPrivate(
+        $response = $this->krakenClient->queryPrivate(
             'WithdrawInfo',
             [
                 'asset' => self::ASSET_NAME,

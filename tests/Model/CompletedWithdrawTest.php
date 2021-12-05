@@ -35,10 +35,10 @@ final class CompletedWithdrawTest extends TestCase
         $recipientAddress = 'ra'.random_int(5, 10);
         $netAmount = random_int(5, 10);
 
-        $dto = new CompletedWithdraw($recipientAddress, $netAmount, $id);
+        $completedWithdraw = new CompletedWithdraw($recipientAddress, $netAmount, $id);
 
-        static::assertSame($id, $dto->getId());
-        static::assertSame($recipientAddress, $dto->getRecipientAddress());
-        static::assertSame($netAmount, $dto->getNetAmount());
+        static::assertSame($id, $completedWithdraw->getId());
+        static::assertSame($recipientAddress, $completedWithdraw->getRecipientAddress());
+        static::assertSame($netAmount, $completedWithdraw->getNetAmount());
     }
 }

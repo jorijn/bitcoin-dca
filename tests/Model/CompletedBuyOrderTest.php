@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Model;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use PHPUnit\Framework\TestCase;
 
@@ -28,9 +30,9 @@ final class CompletedBuyOrderTest extends TestCase
      */
     public function testGettersAndSetters(): void
     {
-        $dto = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
 
-        $dto
+        $completedBuyOrder
             ->setAmountInSatoshis($amountInSatoshis = random_int(1000, 2000))
             ->setFeesInSatoshis($feesInSatoshis = random_int(1000, 2000))
             ->setDisplayFeesSpent($feesSpent = '0.'.random_int(1000, 2000).' BTC')
@@ -40,19 +42,19 @@ final class CompletedBuyOrderTest extends TestCase
             ->setDisplayAmountBought($amountBought = random_int(1000, 2000).' BTC')
         ;
 
-        static::assertSame($amountInSatoshis, $dto->getAmountInSatoshis());
-        static::assertSame($feesInSatoshis, $dto->getFeesInSatoshis());
-        static::assertSame($feesSpent, $dto->getDisplayFeesSpent());
-        static::assertSame($averagePrice, $dto->getDisplayAveragePrice());
-        static::assertSame($amountSpent, $dto->getDisplayAmountSpent());
-        static::assertSame($currency, $dto->getDisplayAmountSpentCurrency());
-        static::assertSame($amountBought, $dto->getDisplayAmountBought());
+        static::assertSame($amountInSatoshis, $completedBuyOrder->getAmountInSatoshis());
+        static::assertSame($feesInSatoshis, $completedBuyOrder->getFeesInSatoshis());
+        static::assertSame($feesSpent, $completedBuyOrder->getDisplayFeesSpent());
+        static::assertSame($averagePrice, $completedBuyOrder->getDisplayAveragePrice());
+        static::assertSame($amountSpent, $completedBuyOrder->getDisplayAmountSpent());
+        static::assertSame($currency, $completedBuyOrder->getDisplayAmountSpentCurrency());
+        static::assertSame($amountBought, $completedBuyOrder->getDisplayAmountBought());
 
         static::assertEqualsWithDelta(
-            new \DateTimeImmutable(),
-            \DateTimeImmutable::createFromFormat(
-                \DateTimeInterface::ATOM,
-                $dto->getPurchaseMadeAt()
+            new DateTimeImmutable(),
+            DateTimeImmutable::createFromFormat(
+                DateTimeInterface::ATOM,
+                $completedBuyOrder->getPurchaseMadeAt()
             ),
             10
         );

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
@@ -70,7 +71,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::initiateBuy
      * @dataProvider togglerTradingAgreement
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSuccessfulBuy(?string $tradingAgreement): void
     {
@@ -102,7 +103,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef) {
+                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef): bool {
                         self::assertArrayHasKey('pair', $options);
                         self::assertSame('XBT'.$this->baseCurrency, $options['pair']);
                         self::assertArrayHasKey('type', $options);
@@ -191,7 +192,7 @@ final class KrakenBuyServiceTest extends TestCase
     /**
      * @covers ::cancelBuyOrder
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyIsCancelled(): void
     {
@@ -212,7 +213,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyCannotBeLocatedAfterPurchase(): void
     {
@@ -234,7 +235,7 @@ final class KrakenBuyServiceTest extends TestCase
             ->withConsecutive(
                 [
                     'AddOrder',
-                    static::callback(function ($options) use (&$userRef) {
+                    static::callback(function ($options) use (&$userRef): bool {
                         self::assertArrayHasKey('userref', $options);
                         self::assertNotEmpty($options['userref']);
 
@@ -272,11 +273,11 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getTakerFeeFromSchedule
      * @covers ::initiateBuy
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuyWithInclusiveStrategy(): void
     {
-        $includedFeeBuyService = new KrakenBuyService(
+        $krakenBuyService = new KrakenBuyService(
             $this->client,
             $this->baseCurrency,
             KrakenBuyService::FEE_STRATEGY_INCLUSIVE
@@ -308,7 +309,7 @@ final class KrakenBuyServiceTest extends TestCase
                 ['TradeVolume', ['pair' => 'XBT'.$this->baseCurrency, 'fee_info' => 'true']],
                 [
                     'AddOrder',
-                    static::callback(function ($options) use ($expectedAmount, $price) {
+                    static::callback(function ($options) use ($expectedAmount, $price): bool {
                         self::assertArrayHasKey('volume', $options);
                         self::assertSame(bcdiv((string) $expectedAmount, $price, 8), $options['volume']);
 
@@ -342,15 +343,15 @@ final class KrakenBuyServiceTest extends TestCase
             )
         ;
 
-        $completedOrder = $includedFeeBuyService->initiateBuy($amount);
+        $completedBuyOrder = $krakenBuyService->initiateBuy($amount);
 
         static::assertSame(
             (int) bcmul(bcdiv((string) $expectedAmount, $price, 8), Bitcoin::SATOSHIS, 0),
-            $completedOrder->getAmountInSatoshis()
+            $completedBuyOrder->getAmountInSatoshis()
         );
 
-        static::assertSame(bcdiv((string) $expectedAmount, $price, 8).' BTC', $completedOrder->getDisplayAmountBought());
-        static::assertSame($expectedAmount.' '.$this->baseCurrency, $completedOrder->getDisplayAmountSpent());
-        static::assertSame($fee.' '.$this->baseCurrency, $completedOrder->getDisplayFeesSpent());
+        static::assertSame(bcdiv((string) $expectedAmount, $price, 8).' BTC', $completedBuyOrder->getDisplayAmountBought());
+        static::assertSame($expectedAmount.' '.$this->baseCurrency, $completedBuyOrder->getDisplayAmountSpent());
+        static::assertSame($fee.' '.$this->baseCurrency, $completedBuyOrder->getDisplayFeesSpent());
     }
 }

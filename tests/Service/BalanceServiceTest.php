@@ -46,8 +46,8 @@ final class BalanceServiceTest extends TestCase
         $unsupportedExchange->expects(static::never())->method(self::GET_BALANCES);
         $supportedExchange->expects(static::once())->method(self::GET_BALANCES)->willReturn($balances);
 
-        $service = new BalanceService([$unsupportedExchange, $supportedExchange], $exchange);
-        static::assertSame($balances, $service->getBalances());
+        $balanceService = new BalanceService([$unsupportedExchange, $supportedExchange], $exchange);
+        static::assertSame($balances, $balanceService->getBalances());
     }
 
     /**
@@ -64,7 +64,7 @@ final class BalanceServiceTest extends TestCase
 
         $this->expectException(NoExchangeAvailableException::class);
 
-        $service = new BalanceService([$unsupportedExchange], $exchange);
-        $service->getBalances();
+        $balanceService = new BalanceService([$unsupportedExchange], $exchange);
+        $balanceService->getBalances();
     }
 }

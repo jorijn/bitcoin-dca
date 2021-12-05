@@ -21,14 +21,11 @@ use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
  */
 class MockExchangeWithdrawService implements WithdrawServiceInterface
 {
-    protected bool $isEnabled;
     protected int $availableBalance;
     protected int $withdrawFeeInSatoshis;
 
-    public function __construct(bool $isEnable)
+    public function __construct(protected bool $isEnabled)
     {
-        $this->isEnabled = $isEnable;
-
         $this->setAvailableBalance(random_int(100000, 500000));
         $this->setWithdrawFeeInSatoshis(random_int(30000, 50000));
     }

@@ -23,12 +23,9 @@ use Throwable;
 
 class BalanceCommand extends Command
 {
-    protected BalanceService $balanceService;
-
-    public function __construct(BalanceService $balanceService)
+    public function __construct(protected BalanceService $balanceService)
     {
         parent::__construct(null);
-        $this->balanceService = $balanceService;
     }
 
     public function configure(): void
@@ -40,7 +37,7 @@ class BalanceCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output);
 
         try {
             $rows = $this->balanceService->getBalances();
@@ -50,9 +47,9 @@ class BalanceCommand extends Command
             $table->setRows($rows);
             $table->render();
 
-            $io->success('Success!');
+            $symfonyStyle->success('Success!');
         } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
+            $symfonyStyle->error($exception->getMessage());
 
             return 1;
         }

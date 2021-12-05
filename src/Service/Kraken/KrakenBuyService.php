@@ -26,23 +26,15 @@ class KrakenBuyService implements BuyServiceInterface
     public const FEE_STRATEGY_EXCLUSIVE = 'exclude';
 
     protected array $lastUserRefs = [];
-    protected KrakenClientInterface $client;
-    protected string $baseCurrency;
     protected string $tradingPair;
-    protected string $feeStrategy;
-    protected ?string $tradingAgreement;
 
     public function __construct(
-        KrakenClientInterface $client,
-        string $baseCurrency,
-        string $feeStrategy = self::FEE_STRATEGY_EXCLUSIVE,
-        string $tradingAgreement = null
+        protected KrakenClientInterface $krakenClient,
+        protected string $baseCurrency,
+        protected string $feeStrategy = self::FEE_STRATEGY_EXCLUSIVE,
+        protected ?string $tradingAgreement = null
     ) {
-        $this->client = $client;
-        $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('XBT%s', $this->baseCurrency);
-        $this->feeStrategy = $feeStrategy;
-        $this->tradingAgreement = $tradingAgreement;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -69,7 +61,7 @@ class KrakenBuyService implements BuyServiceInterface
             $orderDetails['trading_agreement'] = $this->tradingAgreement;
         }
 
-        $addedOrder = $this->client->queryPrivate('AddOrder', $orderDetails);
+        $addedOrder = $this->krakenClient->queryPrivate('AddOrder', $orderDetails);
 
         $orderId = $addedOrder['txid'][array_key_first($addedOrder['txid'])];
 
@@ -81,7 +73,7 @@ class KrakenBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $trades = $this->client->queryPrivate('OpenOrders', ['userref' => $this->lastUserRefs[$orderId] ?? null]);
+        $trades = $this->krakenClient->queryPrivate('OpenOrders', ['userref' => $this->lastUserRefs[$orderId] ?? null]);
         if (\count($trades['open'] ?? []) > 0) {
             throw new PendingBuyOrderException($orderId);
         }
@@ -91,14 +83,14 @@ class KrakenBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->queryPrivate('CancelOrder', [
+        $this->krakenClient->queryPrivate('CancelOrder', [
             'txid' => $orderId,
         ]);
     }
 
     protected function getCurrentPrice(): string
     {
-        $tickerInfo = $this->client->queryPublic('Ticker', [
+        $tickerInfo = $this->krakenClient->queryPublic('Ticker', [
             'pair' => $this->tradingPair,
         ]);
 
@@ -134,7 +126,7 @@ class KrakenBuyService implements BuyServiceInterface
      */
     protected function getTakerFeeFromSchedule(): int
     {
-        $feeSchedule = $this->client->queryPrivate('TradeVolume', ['pair' => $this->tradingPair, 'fee_info' => 'true']);
+        $feeSchedule = $this->krakenClient->queryPrivate('TradeVolume', ['pair' => $this->tradingPair, 'fee_info' => 'true']);
         $feePercentage = current($feeSchedule['fees'])['fee'] ?? 0;
         $feePercentage *= 10000;
 
@@ -143,7 +135,7 @@ class KrakenBuyService implements BuyServiceInterface
 
     protected function getCompletedBuyOrder(string $orderId): CompletedBuyOrder
     {
-        $trades = $this->client->queryPrivate('TradesHistory', ['start' => time() - 900]);
+        $trades = $this->krakenClient->queryPrivate('TradesHistory', ['start' => time() - 900]);
         $orderInfo = null;
 
         foreach ($trades['trades'] ?? [] as $trade) {

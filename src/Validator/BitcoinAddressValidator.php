@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Validator;
 
 use BitWasp\Bitcoin\Address\AddressCreator;
+use Throwable;
 
 class BitcoinAddressValidator implements ValidationInterface
 {
-    protected AddressCreator $addressCreator;
-
-    public function __construct(AddressCreator $addressCreator)
+    public function __construct(protected AddressCreator $addressCreator)
     {
-        $this->addressCreator = $addressCreator;
     }
 
     public function validate($input): void
@@ -32,8 +30,12 @@ class BitcoinAddressValidator implements ValidationInterface
 
         try {
             $this->addressCreator->fromString($input);
-        } catch (\Throwable $exception) {
-            throw new BitcoinAddressValidatorException('Configured address failed validation', $exception->getCode(), $exception);
+        } catch (Throwable $exception) {
+            throw new BitcoinAddressValidatorException(
+                'Configured address failed validation',
+                $exception->getCode(),
+                $exception
+            );
         }
     }
 }

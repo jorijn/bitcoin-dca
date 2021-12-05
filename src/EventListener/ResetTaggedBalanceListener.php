@@ -19,24 +19,21 @@ use Psr\Log\LoggerInterface;
 
 class ResetTaggedBalanceListener
 {
-    protected TaggedIntegerRepositoryInterface $repository;
-    protected LoggerInterface $logger;
-
-    public function __construct(TaggedIntegerRepositoryInterface $repository, LoggerInterface $logger)
-    {
-        $this->repository = $repository;
-        $this->logger = $logger;
+    public function __construct(
+        protected TaggedIntegerRepositoryInterface $taggedIntegerRepository,
+        protected LoggerInterface $logger
+    ) {
     }
 
-    public function onWithdrawSucces(WithdrawSuccessEvent $event): void
+    public function onWithdrawSucces(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {
-        $tag = $event->getTag();
+        $tag = $withdrawSuccessEvent->getTag();
 
         if (!$tag) {
             return;
         }
 
-        $this->repository->set($tag, 0);
+        $this->taggedIntegerRepository->set($tag, 0);
 
         $this->logger->info('reset tagged balance for tag {tag}', ['tag' => $tag]);
     }

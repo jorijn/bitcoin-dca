@@ -22,15 +22,10 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 class BinanceBuyService implements BuyServiceInterface
 {
     public const ORDER_URL = 'api/v3/order';
-
-    protected BinanceClientInterface $client;
-    protected string $baseCurrency;
     protected string $tradingPair;
 
-    public function __construct(BinanceClientInterface $client, string $baseCurrency)
+    public function __construct(protected BinanceClientInterface $binanceClient, protected string $baseCurrency)
     {
-        $this->client = $client;
-        $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('BTC%s', $this->baseCurrency);
     }
 
@@ -41,7 +36,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
-        $response = $this->client->request('POST', self::ORDER_URL, [
+        $response = $this->binanceClient->request('POST', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -61,7 +56,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $response = $this->client->request('GET', self::ORDER_URL, [
+        $response = $this->binanceClient->request('GET', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -73,7 +68,7 @@ class BinanceBuyService implements BuyServiceInterface
             throw new PendingBuyOrderException($response['orderId']);
         }
 
-        $response['fills'] = $this->client->request('GET', 'api/v3/myTrades', [
+        $response['fills'] = $this->binanceClient->request('GET', 'api/v3/myTrades', [
             'extra' => ['security_type' => 'USER_DATA'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -86,7 +81,7 @@ class BinanceBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->request('DELETE', self::ORDER_URL, [
+        $this->binanceClient->request('DELETE', self::ORDER_URL, [
             'extra' => ['security_type' => 'TRADE'],
             'body' => [
                 'symbol' => $this->tradingPair,
@@ -101,9 +96,11 @@ class BinanceBuyService implements BuyServiceInterface
 
         return (new CompletedBuyOrder())
             ->setAmountInSatoshis((int) bcmul($orderInfo['executedQty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
-            ->setFeesInSatoshis('BTC' === $feeCurrency
-                ? (int) bcmul($feeAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
-                : 0)
+            ->setFeesInSatoshis(
+                'BTC' === $feeCurrency
+                    ? (int) bcmul($feeAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
+                    : 0
+            )
             ->setDisplayAmountBought($orderInfo['executedQty'].' BTC')
             ->setDisplayAmountSpent($orderInfo['cummulativeQuoteQty'].' '.$this->baseCurrency)
             ->setDisplayAveragePrice($this->getAveragePrice($orderInfo).' '.$this->baseCurrency)

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener;
@@ -58,13 +59,13 @@ final class XPubAddressUsedListenerTest extends TestCase
 
         $this->addressUsed = 'address'.random_int(1000, 2000);
 
-        $completedWithdrawDTO = new CompletedWithdraw(
+        $completedWithdraw = new CompletedWithdraw(
             $this->addressUsed,
             random_int(1000, 2000),
             'id'.random_int(1000, 2000)
         );
 
-        $this->event = new WithdrawSuccessEvent($completedWithdrawDTO);
+        $this->event = new WithdrawSuccessEvent($completedWithdraw);
     }
 
     /**
@@ -153,7 +154,7 @@ final class XPubAddressUsedListenerTest extends TestCase
     public function testFailureIsLogged(): void
     {
         $activeIndex = random_int(1000, 2000);
-        $exception = new \Exception('error'.random_int(1000, 2000));
+        $exception = new Exception('error'.random_int(1000, 2000));
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())

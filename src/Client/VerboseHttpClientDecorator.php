@@ -18,19 +18,17 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
+use Throwable;
 
 class VerboseHttpClientDecorator implements HttpClientInterface
 {
     use LoggerAwareTrait;
 
-    protected HttpClientInterface $httpClient;
-    protected bool $enabled;
-
-    public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger, bool $enabled = false)
-    {
-        $this->httpClient = $httpClient;
-        $this->enabled = $enabled;
-
+    public function __construct(
+        protected HttpClientInterface $httpClient,
+        LoggerInterface $logger,
+        protected bool $enabled = false
+    ) {
         $this->setLogger($logger);
     }
 
@@ -56,11 +54,11 @@ class VerboseHttpClientDecorator implements HttpClientInterface
 
         try {
             $response = $this->httpClient->request($method, $url, $options);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->debug(
                 '[API call] exception was raised',
                 [
-                    'reason' => $exception->getMessage() ?: \get_class($exception),
+                    'reason' => $exception->getMessage() ?: $exception::class,
                     'exception' => $exception,
                 ]
             );

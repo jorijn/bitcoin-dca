@@ -31,14 +31,14 @@ final class NotificationEmailConfigurationTest extends TestCase
      */
     public function testGetters(): void
     {
-        $dto = new NotificationEmailConfiguration(
+        $notificationEmailConfiguration = new NotificationEmailConfiguration(
             $to = 'to'.random_int(1000, 2000),
             $from = 'from'.random_int(1000, 2000),
             $subjectPrefix = 'sp'.random_int(1000, 2000)
         );
 
-        static::assertSame($to, $dto->getTo());
-        static::assertSame($from, $dto->getFrom());
-        static::assertSame($subjectPrefix, $dto->getSubjectPrefix());
+        static::assertSame($to, $notificationEmailConfiguration->getTo());
+        static::assertSame($from, $notificationEmailConfiguration->getFrom());
+        static::assertSame($subjectPrefix, $notificationEmailConfiguration->getSubjectPrefix());
     }
 }

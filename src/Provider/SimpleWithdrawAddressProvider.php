@@ -17,13 +17,8 @@ use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
 
 class SimpleWithdrawAddressProvider implements WithdrawAddressProviderInterface
 {
-    protected ?string $configuredAddress;
-    protected ValidationInterface $validation;
-
-    public function __construct(ValidationInterface $validation, ?string $configuredAddress)
+    public function __construct(protected ValidationInterface $validation, protected ?string $configuredAddress)
     {
-        $this->configuredAddress = $configuredAddress;
-        $this->validation = $validation;
     }
 
     public function provide(): string

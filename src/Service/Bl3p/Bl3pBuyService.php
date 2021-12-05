@@ -36,15 +36,10 @@ class Bl3pBuyService implements BuyServiceInterface
     public const AMOUNT_FUNDS_INT = 'amount_funds_int';
     public const FEE_CURRENCY = 'fee_currency';
     public const BL3P = 'bl3p';
-
-    protected Bl3pClientInterface $client;
-    protected string $baseCurrency;
     protected string $tradingPair;
 
-    public function __construct(Bl3pClientInterface $client, string $baseCurrency)
+    public function __construct(protected Bl3pClientInterface $bl3pClient, protected string $baseCurrency)
     {
-        $this->client = $client;
-        $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('BTC%s', $this->baseCurrency);
     }
 
@@ -55,7 +50,7 @@ class Bl3pBuyService implements BuyServiceInterface
 
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
-        $result = $this->client->apiCall($this->tradingPair.'/money/order/add', [
+        $result = $this->bl3pClient->apiCall($this->tradingPair.'/money/order/add', [
             self::TYPE => 'bid',
             self::AMOUNT_FUNDS_INT => $amount * 100000,
             self::FEE_CURRENCY => 'BTC',
@@ -66,7 +61,7 @@ class Bl3pBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $orderInfo = $this->client->apiCall($this->tradingPair.'/money/order/result', [
+        $orderInfo = $this->bl3pClient->apiCall($this->tradingPair.'/money/order/result', [
             self::ORDER_ID => $orderId,
         ]);
 
@@ -76,9 +71,11 @@ class Bl3pBuyService implements BuyServiceInterface
 
         return (new CompletedBuyOrder())
             ->setAmountInSatoshis((int) $orderInfo[self::DATA][self::TOTAL_AMOUNT][self::VALUE_INT])
-            ->setFeesInSatoshis('BTC' === $orderInfo[self::DATA][self::TOTAL_FEE][self::CURRENCY]
-                ? (int) $orderInfo[self::DATA][self::TOTAL_FEE][self::VALUE_INT]
-                : 0)
+            ->setFeesInSatoshis(
+                'BTC' === $orderInfo[self::DATA][self::TOTAL_FEE][self::CURRENCY]
+                    ? (int) $orderInfo[self::DATA][self::TOTAL_FEE][self::VALUE_INT]
+                    : 0
+            )
             ->setDisplayAmountBought($orderInfo[self::DATA][self::TOTAL_AMOUNT][self::DISPLAY])
             ->setDisplayAmountSpent($orderInfo[self::DATA][self::TOTAL_SPENT][self::DISPLAY_SHORT])
             ->setDisplayAmountSpentCurrency($this->baseCurrency)
@@ -89,7 +86,7 @@ class Bl3pBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->apiCall(
+        $this->bl3pClient->apiCall(
             $this->tradingPair.'/money/order/cancel',
             [self::ORDER_ID => $orderId]
         );

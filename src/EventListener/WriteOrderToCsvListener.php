@@ -19,22 +19,23 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class WriteOrderToCsvListener
 {
     use LoggerAwareTrait;
     use SerializerAwareTrait;
 
-    protected ?string $csvLocation;
-
-    public function __construct(SerializerInterface $serializer, LoggerInterface $logger, ?string $csvLocation)
-    {
+    public function __construct(
+        SerializerInterface $serializer,
+        LoggerInterface $logger,
+        protected ?string $csvLocation
+    ) {
         $this->setSerializer($serializer);
         $this->setLogger($logger);
-        $this->csvLocation = $csvLocation;
     }
 
-    public function onSuccessfulBuy(BuySuccessEvent $event): void
+    public function onSuccessfulBuy(BuySuccessEvent $buySuccessEvent): void
     {
         if (null === $this->csvLocation) {
             return;
@@ -43,7 +44,7 @@ class WriteOrderToCsvListener
         try {
             $addHeaders = !file_exists($this->csvLocation) || 0 === filesize($this->csvLocation);
             $csvData = $this->serializer->serialize(
-                $event->getBuyOrder(),
+                $buySuccessEvent->getBuyOrder(),
                 'csv',
                 [CsvEncoder::NO_HEADERS_KEY => !$addHeaders]
             );
@@ -59,7 +60,7 @@ class WriteOrderToCsvListener
                     'add_headers' => $addHeaders,
                 ]
             );
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error(
                 'unable to write order to file',
                 [

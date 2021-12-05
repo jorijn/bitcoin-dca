@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-class BinanceClientException extends \RuntimeException
+use RuntimeException;
+
+class BinanceClientException extends RuntimeException
 {
 }

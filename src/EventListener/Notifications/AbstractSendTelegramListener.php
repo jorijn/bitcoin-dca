@@ -18,32 +18,22 @@ use Symfony\Component\Notifier\Bridge\Telegram\TelegramTransport;
 
 abstract class AbstractSendTelegramListener
 {
-    protected TelegramTransport $transport;
-
-    protected EventDispatcherInterface $dispatcher;
-    protected string $exchange;
-    protected bool $isEnabled;
-
     public function __construct(
-        TelegramTransport $transport,
-        EventDispatcherInterface $dispatcher,
-        string $exchange,
-        bool $isEnabled
+        protected TelegramTransport $telegramTransport,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected string $exchange,
+        protected bool $isEnabled
     ) {
-        $this->transport = $transport;
-        $this->exchange = $exchange;
-        $this->isEnabled = $isEnabled;
-        $this->dispatcher = $dispatcher;
     }
 
     public function getTransport(): TelegramTransport
     {
-        return $this->transport;
+        return $this->telegramTransport;
     }
 
     public function getDispatcher(): EventDispatcherInterface
     {
-        return $this->dispatcher;
+        return $this->eventDispatcher;
     }
 
     public function getExchange(): string

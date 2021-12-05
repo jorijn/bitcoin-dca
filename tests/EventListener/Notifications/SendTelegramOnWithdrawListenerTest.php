@@ -67,11 +67,11 @@ final class SendTelegramOnWithdrawListenerTest extends TestCase
         );
 
         $completedWithdraw = (new CompletedWithdraw('', 0, ''));
-        $buyEvent = new WithdrawSuccessEvent($completedWithdraw);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($completedWithdraw);
 
         $this->httpClient->expects(static::never())->method('request');
 
-        $this->listener->onWithdraw($buyEvent);
+        $this->listener->onWithdraw($withdrawSuccessEvent);
     }
 
     /**
@@ -84,7 +84,7 @@ final class SendTelegramOnWithdrawListenerTest extends TestCase
         $amountInSatoshis = random_int(100000, 200000);
         $completedWithdraw = new CompletedWithdraw($recipientAddress, $amountInSatoshis, $withdrawID);
         $tag = 't'.random_int(1000, 2000);
-        $withdrawEvent = new WithdrawSuccessEvent($completedWithdraw, $tag);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($completedWithdraw, $tag);
 
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
@@ -100,7 +100,7 @@ final class SendTelegramOnWithdrawListenerTest extends TestCase
                     $tag,
                     $amountInSatoshis,
                     $withdrawID
-                ) {
+                ): bool {
                     self::assertArrayHasKey('json', $body);
                     self::assertArrayHasKey('text', $body['json']);
                     self::assertArrayHasKey('disable_web_page_preview', $body['json']);
@@ -118,6 +118,6 @@ final class SendTelegramOnWithdrawListenerTest extends TestCase
             ->willReturn($response)
         ;
 
-        $this->listener->onWithdraw($withdrawEvent);
+        $this->listener->onWithdraw($withdrawSuccessEvent);
     }
 }

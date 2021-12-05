@@ -21,16 +21,13 @@ use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
 
 class BinanceWithdrawService implements WithdrawServiceInterface
 {
-    protected BinanceClientInterface $client;
-
-    public function __construct(BinanceClientInterface $client)
+    public function __construct(protected BinanceClientInterface $binanceClient)
     {
-        $this->client = $client;
     }
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
-        $response = $this->client->request('POST', 'sapi/v1/capital/withdraw/apply', [
+        $response = $this->binanceClient->request('POST', 'sapi/v1/capital/withdraw/apply', [
             'extra' => ['security_type' => 'USER_DATA'],
             'body' => [
                 'coin' => 'BTC',
@@ -44,7 +41,7 @@ class BinanceWithdrawService implements WithdrawServiceInterface
 
     public function getAvailableBalance(): int
     {
-        $response = $this->client->request('GET', 'api/v3/account', [
+        $response = $this->binanceClient->request('GET', 'api/v3/account', [
             'extra' => ['security_type' => 'USER_DATA'],
         ]);
 
@@ -61,7 +58,7 @@ class BinanceWithdrawService implements WithdrawServiceInterface
 
     public function getWithdrawFeeInSatoshis(): int
     {
-        $response = $this->client->request('GET', 'sapi/v1/asset/assetDetail', [
+        $response = $this->binanceClient->request('GET', 'sapi/v1/asset/assetDetail', [
             'extra' => ['security_type' => 'USER_DATA'],
         ]);
 

@@ -30,21 +30,12 @@ class Bl3pClient implements Bl3pClientInterface
     public const LOG_CONTEXT_URL = 'url';
     public const API_KEY_MESSAGE = 'message';
 
-    protected HttpClientInterface $httpClient;
-    protected LoggerInterface $logger;
-    protected string $publicKey;
-    protected string $privateKey;
-
     public function __construct(
-        HttpClientInterface $httpClient,
-        LoggerInterface $logger,
-        string $publicKey,
-        string $privateKey
+        protected HttpClientInterface $httpClient,
+        protected LoggerInterface $logger,
+        protected string $publicKey,
+        protected string $privateKey
     ) {
-        $this->logger = $logger;
-        $this->httpClient = $httpClient;
-        $this->publicKey = $publicKey;
-        $this->privateKey = $privateKey;
     }
 
     /**
@@ -109,10 +100,12 @@ class Bl3pClient implements Bl3pClientInterface
                     'response' => var_export($result[self::API_KEY_DATA], true),
                 ]);
 
-                throw new Bl3pClientException(sprintf(
-                    'Received unsuccessful state, and additionally a malformed response: %s',
-                    var_export($result[self::API_KEY_DATA], true)
-                ));
+                throw new Bl3pClientException(
+                    sprintf(
+                        'Received unsuccessful state, and additionally a malformed response: %s',
+                        var_export($result[self::API_KEY_DATA], true)
+                    )
+                );
             }
 
             $this->logger->error(self::LOG_API_CALL_FAILED, [
@@ -122,11 +115,13 @@ class Bl3pClient implements Bl3pClientInterface
                 self::API_KEY_MESSAGE => $result[self::API_KEY_DATA][self::API_KEY_MESSAGE],
             ]);
 
-            throw new Bl3pClientException(sprintf(
-                'API request unsuccessful: [%s] %s',
-                $result[self::API_KEY_DATA]['code'],
-                $result[self::API_KEY_DATA][self::API_KEY_MESSAGE]
-            ));
+            throw new Bl3pClientException(
+                sprintf(
+                    'API request unsuccessful: [%s] %s',
+                    $result[self::API_KEY_DATA]['code'],
+                    $result[self::API_KEY_DATA][self::API_KEY_MESSAGE]
+                )
+            );
         }
 
         $this->logger->info(

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
@@ -49,25 +50,25 @@ final class ResetTaggedBalanceListenerTest extends TestCase
      */
     public function testListenerDoesNotActWithoutTag(): void
     {
-        $event = new WithdrawSuccessEvent($this->createMock(CompletedWithdraw::class));
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($this->createMock(CompletedWithdraw::class));
 
         $this->repository
             ->expects(static::never())
             ->method('set')
         ;
 
-        $this->listener->onWithdrawSucces($event);
+        $this->listener->onWithdrawSucces($withdrawSuccessEvent);
     }
 
     /**
      * @covers ::onWithdrawSucces
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testListenerResetsBalanceForTag(): void
     {
         $tag = 'tag'.random_int(1000, 2000);
-        $event = new WithdrawSuccessEvent($this->createMock(CompletedWithdraw::class), $tag);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($this->createMock(CompletedWithdraw::class), $tag);
 
         $this->repository
             ->expects(static::once())
@@ -80,6 +81,6 @@ final class ResetTaggedBalanceListenerTest extends TestCase
             ->method('info')
         ;
 
-        $this->listener->onWithdrawSucces($event);
+        $this->listener->onWithdrawSucces($withdrawSuccessEvent);
     }
 }

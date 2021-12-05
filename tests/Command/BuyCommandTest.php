@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Command\BuyCommand;
 use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
@@ -121,7 +122,7 @@ final class BuyCommandTest extends TestCase
             [
                 self::COMMAND => $this->command->getName(),
                 self::AMOUNT => $amount,
-            ] + (!empty($tag) ? ['--tag' => $tag] : [])
+            ] + (empty($tag) ? [] : ['--tag' => $tag])
         );
 
         static::assertSame(0, $commandTester->getStatusCode());
@@ -152,7 +153,7 @@ final class BuyCommandTest extends TestCase
                 self::COMMAND => $this->command->getName(),
                 self::AMOUNT => $amount,
                 '--yes' => null,
-            ] + (!empty($tag) ? ['--tag' => $tag] : [])
+            ] + (empty($tag) ? [] : ['--tag' => $tag])
         );
 
         static::assertSame(0, $commandTester->getStatusCode());
@@ -211,20 +212,23 @@ final class BuyCommandTest extends TestCase
     public function testBuyingFailsExceptionIsHandled(): void
     {
         $amount = random_int(1000, 2000);
-        $exception = new BuyTimeoutException('error'.random_int(1000, 2000));
+        $buyTimeoutException = new BuyTimeoutException('error'.random_int(1000, 2000));
 
         $this->buyService
             ->expects(static::once())
             ->method('buy')
             ->with($amount)
-            ->willThrowException($exception)
+            ->willThrowException($buyTimeoutException)
         ;
 
         $commandTester = $this->createCommandTester();
         $commandTester->execute([self::COMMAND => $this->command->getName(), self::AMOUNT => $amount, '--yes' => null]);
 
         static::assertSame(1, $commandTester->getStatusCode());
-        static::assertStringContainsString('[ERROR] '.$exception->getMessage(), $commandTester->getDisplay(true));
+        static::assertStringContainsString(
+            '[ERROR] '.$buyTimeoutException->getMessage(),
+            $commandTester->getDisplay(true)
+        );
     }
 
     protected function createCommandTester(): CommandTester
@@ -236,13 +240,13 @@ final class BuyCommandTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function prepareBuyTest(?string $tag): array
     {
         $amount = random_int(1000, 2000);
 
-        $orderInformation = (new CompletedBuyOrder())
+        $completedBuyOrder = (new CompletedBuyOrder())
             ->setDisplayAmountBought(random_int(1000, 2000).' BTC')
             ->setDisplayAmountSpent(random_int(1000, 2000).' EUR')
             ->setDisplayAmountSpentCurrency('EUR')
@@ -253,7 +257,7 @@ final class BuyCommandTest extends TestCase
         $invocationMocker = $this->buyService
             ->expects(static::once())
             ->method('buy')
-            ->willReturn($orderInformation)
+            ->willReturn($completedBuyOrder)
         ;
 
         if (!empty($tag)) {
@@ -262,6 +266,6 @@ final class BuyCommandTest extends TestCase
             $invocationMocker->with($amount);
         }
 
-        return [$amount, $orderInformation];
+        return [$amount, $completedBuyOrder];
     }
 }

@@ -19,29 +19,29 @@ use Symfony\Component\Notifier\Message\ChatMessage;
 
 class SendTelegramOnWithdrawListener extends AbstractSendTelegramListener
 {
-    public function onWithdraw(WithdrawSuccessEvent $event): void
+    public function onWithdraw(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {
         if (!$this->isEnabled) {
             return;
         }
 
-        $withdraw = $event->getCompletedWithdraw();
-        $formattedSats = number_format($withdraw->getNetAmount());
+        $completedWithdraw = $withdrawSuccessEvent->getCompletedWithdraw();
+        $formattedSats = number_format($completedWithdraw->getNetAmount());
 
         $htmlMessage = <<<TLGRM
-<strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
+            <strong>💰 Bitcoin-DCA just withdrew {$formattedSats} sat.</strong>
 
-Transaction overview:
+            Transaction overview:
 
-Address: <strong>{$withdraw->getRecipientAddress()}</strong>
-ID: <strong>{$withdraw->getId()}</strong>
-TLGRM;
+            Address: <strong>{$completedWithdraw->getRecipientAddress()}</strong>
+            ID: <strong>{$completedWithdraw->getId()}</strong>
+            TLGRM;
 
-        if ($event->getTag()) {
-            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($event->getTag()).'</strong>';
+        if ($withdrawSuccessEvent->getTag()) {
+            $htmlMessage .= PHP_EOL.'Tag: <strong>'.htmlspecialchars($withdrawSuccessEvent->getTag()).'</strong>';
         }
 
-        $message = new ChatMessage(
+        $chatMessage = new ChatMessage(
             $htmlMessage,
             new TelegramOptions(
                 [
@@ -51,6 +51,6 @@ TLGRM;
             )
         );
 
-        $this->transport->send($message);
+        $this->telegramTransport->send($chatMessage);
     }
 }

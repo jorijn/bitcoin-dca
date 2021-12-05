@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pWithdrawService;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -53,7 +54,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
     /**
      * @covers ::getAvailableBalance
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetBalance(): void
     {
@@ -72,7 +73,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
     /**
      * @covers ::withdraw
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWithdraw(): void
     {
@@ -87,7 +88,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
             ->method(self::API_CALL)
             ->with(
                 'GENMKT/money/withdraw',
-                static::callback(function (array $parameters) use ($netAmount, $address) {
+                static::callback(function (array $parameters) use ($netAmount, $address): bool {
                     self::assertArrayHasKey('currency', $parameters);
                     self::assertSame('BTC', $parameters['currency']);
                     self::assertArrayHasKey(self::ADDRESS, $parameters);
@@ -101,10 +102,10 @@ final class Bl3pWithdrawServiceTest extends TestCase
             ->willReturn($apiResponse)
         ;
 
-        $dto = $this->service->withdraw($amount, $address);
-        static::assertSame($withdrawID, $dto->getId());
-        static::assertSame($netAmount, $dto->getNetAmount());
-        static::assertSame($address, $dto->getRecipientAddress());
+        $completedWithdraw = $this->service->withdraw($amount, $address);
+        static::assertSame($withdrawID, $completedWithdraw->getId());
+        static::assertSame($netAmount, $completedWithdraw->getNetAmount());
+        static::assertSame($address, $completedWithdraw->getRecipientAddress());
     }
 
     /**

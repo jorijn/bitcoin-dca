@@ -17,14 +17,8 @@ use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
 
 class BalanceService
 {
-    /** @var BalanceServiceInterface[] */
-    protected iterable $registeredServices;
-    protected string $configuredExchange;
-
-    public function __construct(iterable $registeredServices, string $configuredExchange)
+    public function __construct(protected iterable $registeredServices, protected string $configuredExchange)
     {
-        $this->registeredServices = $registeredServices;
-        $this->configuredExchange = $configuredExchange;
     }
 
     public function getBalances(): array

@@ -81,7 +81,7 @@ final class BuyServiceTest extends TestCase
      */
     public function testBuyWithVariousOptions(int $buyFillsAfter, bool $expectCancellation): void
     {
-        $buyOrderDTO = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
         $amount = random_int(1000, 2000);
         $orderId = 'oid'.random_int(1000, 2000);
         $start = time();
@@ -91,9 +91,9 @@ final class BuyServiceTest extends TestCase
             ->expects(static::once())
             ->method('initiateBuy')
             ->with($amount)
-            ->willReturnCallback(static function () use ($orderId, $buyOrderDTO, $buyFillsAfter) {
+            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $buyFillsAfter): \Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder {
                 if (0 === $buyFillsAfter) {
-                    return $buyOrderDTO;
+                    return $completedBuyOrder;
                 }
 
                 throw new PendingBuyOrderException($orderId);
@@ -104,9 +104,9 @@ final class BuyServiceTest extends TestCase
             ->expects($buyFillsAfter > 0 ? static::atLeastOnce() : static::never())
             ->method('checkIfOrderIsFilled')
             ->with($orderId)
-            ->willReturnCallback(static function () use ($orderId, $buyOrderDTO, $start, $buyFillsAfter) {
+            ->willReturnCallback(static function () use ($orderId, $completedBuyOrder, $start, $buyFillsAfter): \Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder {
                 if (time() >= ($start + $buyFillsAfter)) {
-                    return $buyOrderDTO;
+                    return $completedBuyOrder;
                 }
 
                 throw new PendingBuyOrderException($orderId);
@@ -130,16 +130,18 @@ final class BuyServiceTest extends TestCase
             $this->dispatcher
                 ->expects(static::once())
                 ->method('dispatch')
-                ->with(static::callback(static function (BuySuccessEvent $event) use ($tag, $buyOrderDTO) {
-                    self::assertSame($buyOrderDTO, $event->getBuyOrder());
-                    self::assertSame($tag, $event->getTag());
+                ->with(
+                    static::callback(static function (BuySuccessEvent $event) use ($tag, $completedBuyOrder): bool {
+                        self::assertSame($completedBuyOrder, $event->getBuyOrder());
+                        self::assertSame($tag, $event->getTag());
 
-                    return true;
-                }))
+                        return true;
+                    })
+                )
             ;
         }
 
-        static::assertSame($buyOrderDTO, $this->service->buy($amount, $tag));
+        static::assertSame($completedBuyOrder, $this->service->buy($amount, $tag));
     }
 
     /**
@@ -155,7 +157,7 @@ final class BuyServiceTest extends TestCase
             ->willReturn(false)
         ;
 
-        $localService = new BuyService(
+        $buyService = new BuyService(
             $this->dispatcher,
             $this->logger,
             $this->configuredExchange,
@@ -166,6 +168,6 @@ final class BuyServiceTest extends TestCase
         $this->logger->expects(static::atLeastOnce())->method('error');
         $this->expectException(NoExchangeAvailableException::class);
 
-        $localService->buy(10);
+        $buyService->buy(10);
     }
 }

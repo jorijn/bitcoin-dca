@@ -19,7 +19,7 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
 {
     public const NOTIFICATION_SUBJECT_LINE = 'You bought %s sats on %s';
 
-    public function onBuy(BuySuccessEvent $event): void
+    public function onBuy(BuySuccessEvent $buySuccessEvent): void
     {
         if (!$this->isEnabled) {
             return;
@@ -27,8 +27,8 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
 
         $templateVariables = array_merge(
             [
-                'buyOrder' => $event->getBuyOrder(),
-                'tag' => $event->getTag(),
+                'buyOrder' => $buySuccessEvent->getBuyOrder(),
+                'tag' => $buySuccessEvent->getTag(),
             ],
             $this->getTemplateVariables()
         );
@@ -39,11 +39,11 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
             ->subject(
                 sprintf(
                     '[%s] %s',
-                    $this->emailConfiguration->getSubjectPrefix(),
+                    $this->notificationEmailConfiguration->getSubjectPrefix(),
                     sprintf(
                         self::NOTIFICATION_SUBJECT_LINE,
-                        number_format($event->getBuyOrder()->getAmountInSatoshis()),
-                        ucfirst($this->templateInformation->getExchange())
+                        number_format($buySuccessEvent->getBuyOrder()->getAmountInSatoshis()),
+                        ucfirst($this->notificationEmailTemplateInformation->getExchange())
                     )
                 )
             )
@@ -51,6 +51,6 @@ class SendEmailOnBuyListener extends AbstractSendEmailListener
             ->text($this->htmlConverter->convert($html))
         ;
 
-        $this->notifier->send($email);
+        $this->mailer->send($email);
     }
 }

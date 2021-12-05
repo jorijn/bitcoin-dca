@@ -67,11 +67,11 @@ final class SendTelegramOnBuyListenerTest extends TestCase
         );
 
         $completedBuyOrder = (new CompletedBuyOrder());
-        $buyEvent = new BuySuccessEvent($completedBuyOrder);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);
 
         $this->httpClient->expects(static::never())->method('request');
 
-        $this->listener->onBuy($buyEvent);
+        $this->listener->onBuy($buySuccessEvent);
     }
 
     /**
@@ -89,7 +89,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
         ;
 
         $tag = 't'.random_int(1000, 2000);
-        $buyEvent = new BuySuccessEvent($completedBuyOrder, $tag);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder, $tag);
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
         $response->method('toArray')->willReturn(['result' => ['message_id' => 1]]);
@@ -107,7 +107,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
                     $displayAmountSpent,
                     $displayFeesSpent,
                     $displayAveragePrice
-                ) {
+                ): bool {
                     self::assertArrayHasKey('json', $body);
                     self::assertArrayHasKey('text', $body['json']);
                     self::assertArrayHasKey('disable_web_page_preview', $body['json']);
@@ -128,6 +128,6 @@ final class SendTelegramOnBuyListenerTest extends TestCase
             ->willReturn($response)
         ;
 
-        $this->listener->onBuy($buyEvent);
+        $this->listener->onBuy($buySuccessEvent);
     }
 }

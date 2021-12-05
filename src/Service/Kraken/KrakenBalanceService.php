@@ -18,11 +18,8 @@ use Jorijn\Bitcoin\Dca\Service\BalanceServiceInterface;
 
 class KrakenBalanceService implements BalanceServiceInterface
 {
-    protected KrakenClientInterface $client;
-
-    public function __construct(KrakenClientInterface $client)
+    public function __construct(protected KrakenClientInterface $krakenClient)
     {
-        $this->client = $client;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -32,7 +29,7 @@ class KrakenBalanceService implements BalanceServiceInterface
 
     public function getBalances(): array
     {
-        $response = $this->client->queryPrivate('Balance');
+        $response = $this->krakenClient->queryPrivate('Balance');
         $rows = [];
 
         foreach ($response as $symbol => $available) {

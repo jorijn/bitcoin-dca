@@ -22,21 +22,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class BuyCommand extends Command implements MachineReadableOutputCommandInterface
 {
-    protected BuyService $buyService;
-    protected SerializerInterface $serializer;
-    protected string $baseCurrency;
     private bool $isDisplayingMachineReadableOutput = false;
 
-    public function __construct(BuyService $buyService, SerializerInterface $serializer, string $baseCurrency)
-    {
+    public function __construct(
+        protected BuyService $buyService,
+        protected SerializerInterface $serializer,
+        protected string $baseCurrency
+    ) {
         parent::__construct(null);
-
-        $this->buyService = $buyService;
-        $this->baseCurrency = $baseCurrency;
-        $this->serializer = $serializer;
     }
 
     public function configure(): void
@@ -67,16 +64,16 @@ class BuyCommand extends Command implements MachineReadableOutputCommandInterfac
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output);
 
         $amount = (string) $input->getArgument('amount');
         if (!preg_match('/^\d+$/', $amount)) {
-            $io->error('Amount should be numeric, e.g. 10');
+            $symfonyStyle->error('Amount should be numeric, e.g. 10');
 
             return 1;
         }
 
-        if (!$input->getOption('yes') && !$io->confirm(
+        if (!$input->getOption('yes') && !$symfonyStyle->confirm(
             'Are you sure you want to place an order for '.$this->baseCurrency.' '.$amount.'?',
             false
         )) {
@@ -84,13 +81,13 @@ class BuyCommand extends Command implements MachineReadableOutputCommandInterfac
         }
 
         try {
-            $orderInformation = $this->buyService->buy((int) $amount, $input->getOption('tag'));
+            $completedBuyOrder = $this->buyService->buy((int) $amount, $input->getOption('tag'));
 
-            $this->displayFormattedPurchaseOrder($orderInformation, $io, $input->getOption('output'));
+            $this->displayFormattedPurchaseOrder($completedBuyOrder, $symfonyStyle, $input->getOption('output'));
 
             return 0;
-        } catch (\Throwable $exception) {
-            $io->error($exception->getMessage());
+        } catch (Throwable $exception) {
+            $symfonyStyle->error($exception->getMessage());
         }
 
         return 1;
@@ -102,8 +99,8 @@ class BuyCommand extends Command implements MachineReadableOutputCommandInterfac
     }
 
     private function displayFormattedPurchaseOrder(
-        CompletedBuyOrder $orderInformation,
-        SymfonyStyle $io,
+        CompletedBuyOrder $completedBuyOrder,
+        SymfonyStyle $symfonyStyle,
         ?string $requestedFormat
     ): void {
         switch ($requestedFormat) {
@@ -112,19 +109,19 @@ class BuyCommand extends Command implements MachineReadableOutputCommandInterfac
             case 'xml':
             case 'yaml':
                 $this->isDisplayingMachineReadableOutput = true;
-                $io->write($this->serializer->serialize($orderInformation, $requestedFormat));
+                $symfonyStyle->write($this->serializer->serialize($completedBuyOrder, $requestedFormat));
 
                 break;
 
             default:
-                $io->success(
+                $symfonyStyle->success(
                     sprintf(
                         'Bought: %s, %s: %s, price: %s, spent fees: %s',
-                        $orderInformation->getDisplayAmountBought(),
+                        $completedBuyOrder->getDisplayAmountBought(),
                         $this->baseCurrency,
-                        $orderInformation->getDisplayAmountSpent(),
-                        $orderInformation->getDisplayAveragePrice(),
-                        $orderInformation->getDisplayFeesSpent()
+                        $completedBuyOrder->getDisplayAmountSpent(),
+                        $completedBuyOrder->getDisplayAveragePrice(),
+                        $completedBuyOrder->getDisplayFeesSpent()
                     )
                 );
 

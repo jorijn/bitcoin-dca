@@ -14,17 +14,14 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Component;
 
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
     protected array $addressCache = [];
-    protected string $externalToolLocation;
-    protected LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger, string $externalToolLocation)
+    public function __construct(protected LoggerInterface $logger, protected string $externalToolLocation)
     {
-        $this->externalToolLocation = $externalToolLocation;
-        $this->logger = $logger;
     }
 
     public function derive(string $masterPublicKey, $path = '0/0'): string
@@ -57,9 +54,9 @@ class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPu
         try {
             // decode the result and add it to the cache in the same go.
             $result = $this->addressCache[$masterPublicKey] = json_decode($strResult, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error(
-                'failed to decode from external derivation tool: '.($exception->getMessage() ?: \get_class($exception)),
+                'failed to decode from external derivation tool: '.($exception->getMessage() ?: $exception::class),
                 [
                     'exception' => $exception,
                     'result' => $strResult,

@@ -81,7 +81,7 @@ final class BitvavoClientTest extends TestCase
         $returnData = ['return' => random_int(1000, 2000)];
 
         $query = http_build_query($parameters, '', '&');
-        $endpointParams = $path.(!empty($parameters) ? '?'.$query : null);
+        $endpointParams = $path.(empty($parameters) ? null : '?'.$query);
         $hashString = $now.$method.'/v2/'.$endpointParams;
 
         if (!empty($body)) {
@@ -102,7 +102,7 @@ final class BitvavoClientTest extends TestCase
                 $method,
                 $path,
                 static::callback(
-                    function (array $options) use ($parameters, $now, $hashString, $body) {
+                    function (array $options) use ($parameters, $now, $hashString, $body): bool {
                         self::assertArrayHasKey(self::HEADERS, $options);
                         self::assertArrayHasKey('Bitvavo-Access-Key', $options[self::HEADERS]);
                         self::assertSame($this->apiKey, $options[self::HEADERS]['Bitvavo-Access-Key']);

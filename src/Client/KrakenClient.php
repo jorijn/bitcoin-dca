@@ -21,24 +21,13 @@ class KrakenClient implements KrakenClientInterface
 {
     public const USER_AGENT = 'Mozilla/4.0 (compatible; Kraken PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')';
 
-    protected HttpClientInterface $httpClient;
-    protected LoggerInterface $logger;
-    protected ?string $publicKey;
-    protected ?string $privateKey;
-    protected string $version;
-
     public function __construct(
-        HttpClientInterface $httpClient,
-        LoggerInterface $logger,
-        ?string $publicKey,
-        ?string $privateKey,
-        string $version = '0'
+        protected HttpClientInterface $httpClient,
+        protected LoggerInterface $logger,
+        protected ?string $publicKey,
+        protected ?string $privateKey,
+        protected string $version = '0'
     ) {
-        $this->logger = $logger;
-        $this->httpClient = $httpClient;
-        $this->publicKey = $publicKey;
-        $this->privateKey = $privateKey;
-        $this->version = $version;
     }
 
     public function queryPublic(string $method, array $arguments = []): array

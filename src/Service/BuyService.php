@@ -23,25 +23,13 @@ use Psr\Log\LoggerInterface;
 
 class BuyService
 {
-    protected LoggerInterface $logger;
-    protected EventDispatcherInterface $dispatcher;
-    protected int $timeout;
-    protected string $configuredExchange;
-    /** @var BuyServiceInterface[]|iterable */
-    protected $registeredServices;
-
     public function __construct(
-        EventDispatcherInterface $dispatcher,
-        LoggerInterface $logger,
-        string $configuredExchange,
-        iterable $registeredServices = [],
-        int $timeout = 30
+        protected EventDispatcherInterface $eventDispatcher,
+        protected LoggerInterface $logger,
+        protected string $configuredExchange,
+        protected iterable $registeredServices = [],
+        protected int $timeout = 30
     ) {
-        $this->logger = $logger;
-        $this->dispatcher = $dispatcher;
-        $this->timeout = $timeout;
-        $this->registeredServices = $registeredServices;
-        $this->configuredExchange = $configuredExchange;
     }
 
     public function buy(int $amount, string $tag = null): CompletedBuyOrder
@@ -59,7 +47,7 @@ class BuyService
                 $this->logger->info('found service that supports buying for {exchange}', $logContext);
 
                 $buyOrder = $this->buyAtService($registeredService, $amount);
-                $this->dispatcher->dispatch(new BuySuccessEvent($buyOrder, $tag));
+                $this->eventDispatcher->dispatch(new BuySuccessEvent($buyOrder, $tag));
 
                 return $buyOrder;
             }
@@ -71,26 +59,29 @@ class BuyService
         throw new NoExchangeAvailableException($errorMessage);
     }
 
-    protected function buyAtService(BuyServiceInterface $service, int $amount, int $try = 0, int $start = null, string $orderId = null): CompletedBuyOrder
-    {
+    protected function buyAtService(
+        BuyServiceInterface $buyService,
+        int $amount,
+        int $try = 0,
+        int $start = null,
+        string $orderId = null
+    ): CompletedBuyOrder {
         if (null === $start) {
             $start = time();
         }
 
         try {
-            if (0 === $try) {
-                $buyOrder = $service->initiateBuy($amount);
-            } else {
-                $buyOrder = $service->checkIfOrderIsFilled((string) $orderId);
-            }
+            $buyOrder = 0 === $try ? $buyService->initiateBuy($amount) : $buyService->checkIfOrderIsFilled(
+                (string) $orderId
+            );
         } catch (PendingBuyOrderException $exception) {
             if (time() < ($start + $this->timeout)) {
                 sleep(1);
 
-                return $this->buyAtService($service, $amount, ++$try, $start, $exception->getOrderId());
+                return $this->buyAtService($buyService, $amount, ++$try, $start, $exception->getOrderId());
             }
 
-            $service->cancelBuyOrder($exception->getOrderId());
+            $buyService->cancelBuyOrder($exception->getOrderId());
 
             $error = 'buy did not fill within given timeout';
             $this->logger->error($error);

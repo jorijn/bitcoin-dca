@@ -22,19 +22,14 @@ class Bl3pWithdrawService implements WithdrawServiceInterface
 {
     public const BL3P = 'bl3p';
 
-    protected Bl3pClientInterface $client;
-    protected LoggerInterface $logger;
-
-    public function __construct(Bl3pClientInterface $client, LoggerInterface $logger)
+    public function __construct(protected Bl3pClientInterface $bl3pClient, protected LoggerInterface $logger)
     {
-        $this->client = $client;
-        $this->logger = $logger;
     }
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
         $netAmountToWithdraw = $balanceToWithdraw - $this->getWithdrawFeeInSatoshis();
-        $response = $this->client->apiCall('GENMKT/money/withdraw', [
+        $response = $this->bl3pClient->apiCall('GENMKT/money/withdraw', [
             'currency' => 'BTC',
             'address' => $addressToWithdrawTo,
             'amount_int' => $netAmountToWithdraw,
@@ -45,7 +40,7 @@ class Bl3pWithdrawService implements WithdrawServiceInterface
 
     public function getAvailableBalance(): int
     {
-        $response = $this->client->apiCall('GENMKT/money/info');
+        $response = $this->bl3pClient->apiCall('GENMKT/money/info');
 
         return (int) ($response['data']['wallets']['BTC']['available']['value_int'] ?? 0);
     }

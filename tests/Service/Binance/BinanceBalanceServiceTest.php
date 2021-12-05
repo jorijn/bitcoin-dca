@@ -56,7 +56,7 @@ final class BinanceBalanceServiceTest extends TestCase
             ->with(
                 'GET',
                 'api/v3/account',
-                static::callback(function (array $extra) {
+                static::callback(function (array $extra): bool {
                     self::assertArrayHasKey('extra', $extra);
                     self::assertArrayHasKey('security_type', $extra['extra']);
                     self::assertSame('USER_DATA', $extra['extra']['security_type']);

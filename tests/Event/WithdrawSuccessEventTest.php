@@ -37,9 +37,9 @@ final class WithdrawSuccessEventTest extends TestCase
         $tag = 'tag'.random_int(1000, 2000);
 
         $completedWithdraw = new CompletedWithdraw($address, $amount, $id);
-        $event = new WithdrawSuccessEvent($completedWithdraw, $tag);
+        $withdrawSuccessEvent = new WithdrawSuccessEvent($completedWithdraw, $tag);
 
-        static::assertSame($completedWithdraw, $event->getCompletedWithdraw());
-        static::assertSame($tag, $event->getTag());
+        static::assertSame($completedWithdraw, $withdrawSuccessEvent->getCompletedWithdraw());
+        static::assertSame($tag, $withdrawSuccessEvent->getTag());
     }
 }

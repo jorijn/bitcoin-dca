@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
+use Exception;
 use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService;
@@ -54,7 +55,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
     /**
      * @covers ::getAvailableBalance
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetBalance(): void
     {
@@ -75,7 +76,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
     /**
      * @covers ::withdraw
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWithdraw(): void
     {
@@ -94,13 +95,16 @@ final class BitvavoWithdrawServiceTest extends TestCase
                     'withdrawal',
                     'POST',
                     [],
-                    static::callback(static function (array $parameters) use ($netAmount, $address) {
+                    static::callback(static function (array $parameters) use ($netAmount, $address): bool {
                         self::assertArrayHasKey(BitvavoWithdrawService::SYMBOL, $parameters);
                         self::assertSame('BTC', $parameters[BitvavoWithdrawService::SYMBOL]);
                         self::assertArrayHasKey(self::ADDRESS, $parameters);
                         self::assertSame($address, $parameters[self::ADDRESS]);
                         self::assertArrayHasKey('amount', $parameters);
-                        self::assertSame((string) bcdiv((string) $netAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS), $parameters['amount']);
+                        self::assertSame(
+                            (string) bcdiv((string) $netAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
+                            $parameters['amount']
+                        );
                         self::assertArrayHasKey('addWithdrawalFee', $parameters);
                         self::assertTrue($parameters['addWithdrawalFee']);
 
@@ -114,10 +118,10 @@ final class BitvavoWithdrawServiceTest extends TestCase
             )
         ;
 
-        $dto = $this->service->withdraw($amount, $address);
+        $completedWithdraw = $this->service->withdraw($amount, $address);
 
-        static::assertSame($netAmount, $dto->getNetAmount());
-        static::assertSame($address, $dto->getRecipientAddress());
+        static::assertSame($netAmount, $completedWithdraw->getNetAmount());
+        static::assertSame($address, $completedWithdraw->getRecipientAddress());
     }
 
     /**
@@ -143,8 +147,8 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->willReturn(['withdrawalFee' => bcdiv((string) $bitvavoFee, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)])
         ;
 
-        $providedFee = $this->service->getWithdrawFeeInSatoshis();
+        $withdrawFeeInSatoshis = $this->service->getWithdrawFeeInSatoshis();
 
-        static::assertSame($bitvavoFee, $providedFee);
+        static::assertSame($bitvavoFee, $withdrawFeeInSatoshis);
     }
 }

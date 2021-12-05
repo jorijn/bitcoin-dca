@@ -18,13 +18,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BuySuccessEvent extends Event
 {
-    protected CompletedBuyOrder $buyOrder;
-    protected ?string $tag;
-
-    public function __construct(CompletedBuyOrder $buyOrder, string $tag = null)
+    public function __construct(protected CompletedBuyOrder $completedBuyOrder, protected ?string $tag = null)
     {
-        $this->tag = $tag;
-        $this->buyOrder = $buyOrder;
     }
 
     public function getTag(): ?string
@@ -34,6 +29,6 @@ class BuySuccessEvent extends Event
 
     public function getBuyOrder(): CompletedBuyOrder
     {
-        return $this->buyOrder;
+        return $this->completedBuyOrder;
     }
 }

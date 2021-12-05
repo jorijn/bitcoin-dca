@@ -57,7 +57,7 @@ final class BinanceWithdrawServiceTest extends TestCase
             ->with(
                 'POST',
                 'sapi/v1/capital/withdraw/apply',
-                static::callback(function (array $options) use ($amount, $address) {
+                static::callback(function (array $options) use ($amount, $address): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('security_type', $options['extra']);
                     self::assertSame('USER_DATA', $options['extra']['security_type']);
@@ -78,11 +78,11 @@ final class BinanceWithdrawServiceTest extends TestCase
             ->willReturn(['id' => $responseID])
         ;
 
-        $result = $this->service->withdraw($amount, $address);
+        $completedWithdraw = $this->service->withdraw($amount, $address);
 
-        static::assertSame($result->getId(), $responseID);
-        static::assertSame($result->getNetAmount(), $amount);
-        static::assertSame($result->getRecipientAddress(), $address);
+        static::assertSame($completedWithdraw->getId(), $responseID);
+        static::assertSame($completedWithdraw->getNetAmount(), $amount);
+        static::assertSame($completedWithdraw->getRecipientAddress(), $address);
     }
 
     /**
@@ -98,7 +98,7 @@ final class BinanceWithdrawServiceTest extends TestCase
             ->with(
                 'GET',
                 'api/v3/account',
-                static::callback(function (array $options) {
+                static::callback(function (array $options): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('security_type', $options['extra']);
                     self::assertSame('USER_DATA', $options['extra']['security_type']);
@@ -143,7 +143,7 @@ final class BinanceWithdrawServiceTest extends TestCase
             ->with(
                 'GET',
                 self::URL_ASSET_DETAIL,
-                static::callback(function (array $options) {
+                static::callback(function (array $options): bool {
                     self::assertArrayHasKey('extra', $options);
                     self::assertArrayHasKey('security_type', $options['extra']);
                     self::assertSame('USER_DATA', $options['extra']['security_type']);

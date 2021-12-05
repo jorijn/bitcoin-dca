@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-class UnableToGetRandomQuoteException extends \RuntimeException
+use RuntimeException;
+
+class UnableToGetRandomQuoteException extends RuntimeException
 {
 }

@@ -18,20 +18,14 @@ use Jorijn\Bitcoin\Dca\Exception\NoDerivationComponentAvailableException;
 
 class DeriveFromMasterPublicKeyComponentFactory
 {
-    /**
-     * @var AddressFromMasterPublicKeyComponentInterface[]|iterable
-     */
-    protected iterable $availableComponents;
-
-    public function __construct(iterable $availableComponents)
+    public function __construct(protected iterable $availableComponents)
     {
-        $this->availableComponents = $availableComponents;
     }
 
     public function createDerivationComponent(): AddressFromMasterPublicKeyComponentInterface
     {
         foreach ($this->availableComponents as $availableComponent) {
-            if (true === $availableComponent->supported()) {
+            if ($availableComponent->supported()) {
                 return $availableComponent;
             }
         }

@@ -1,0 +1,17 @@
+################################################################################################
+# This file is for development purposes and shouldn't be used to run Bitcoin DCA
+# in a production-alike setting for actual purchasing or withdrawing.
+#
+# If you are looking how to run Bitcoin DCA, please see:
+# https://bitcoin-dca.readthedocs.io/en/latest/getting-started.html
+################################################################################################
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      target: development_build
+    volumes:
+      - .:/app:cached
+      - ./vendor:/app/vendor:delegated

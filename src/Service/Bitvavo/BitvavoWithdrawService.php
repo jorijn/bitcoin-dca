@@ -22,20 +22,16 @@ use Psr\Log\LoggerInterface;
 class BitvavoWithdrawService implements WithdrawServiceInterface
 {
     public const SYMBOL = 'symbol';
-    protected BitvavoClientInterface $client;
-    protected LoggerInterface $logger;
 
-    public function __construct(BitvavoClientInterface $client, LoggerInterface $logger)
+    public function __construct(protected BitvavoClientInterface $bitvavoClient, protected LoggerInterface $logger)
     {
-        $this->client = $client;
-        $this->logger = $logger;
     }
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
         $netAmountToWithdraw = $balanceToWithdraw - $this->getWithdrawFeeInSatoshis();
 
-        $this->client->apiCall('withdrawal', 'POST', [], [
+        $this->bitvavoClient->apiCall('withdrawal', 'POST', [], [
             self::SYMBOL => 'BTC',
             'address' => $addressToWithdrawTo,
             'amount' => bcdiv((string) $netAmountToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
@@ -48,9 +44,11 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
 
     public function getAvailableBalance(): int
     {
-        $response = $this->client->apiCall('balance', 'GET', [self::SYMBOL => 'BTC']);
-
-        if (!isset($response[0]) || 'BTC' !== $response[0][self::SYMBOL]) {
+        $response = $this->bitvavoClient->apiCall('balance', 'GET', [self::SYMBOL => 'BTC']);
+        if (!isset($response[0])) {
+            return 0;
+        }
+        if ('BTC' !== $response[0][self::SYMBOL]) {
             return 0;
         }
 
@@ -62,7 +60,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
 
     public function getWithdrawFeeInSatoshis(): int
     {
-        $response = $this->client->apiCall('assets', 'GET', [self::SYMBOL => 'BTC']);
+        $response = $this->bitvavoClient->apiCall('assets', 'GET', [self::SYMBOL => 'BTC']);
 
         return (int) bcmul($response['withdrawalFee'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
     }

@@ -18,11 +18,8 @@ use Jorijn\Bitcoin\Dca\Service\BalanceServiceInterface;
 
 class BitvavoBalanceService implements BalanceServiceInterface
 {
-    protected BitvavoClientInterface $client;
-
-    public function __construct(BitvavoClientInterface $client)
+    public function __construct(protected BitvavoClientInterface $bitvavoClient)
     {
-        $this->client = $client;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -32,7 +29,7 @@ class BitvavoBalanceService implements BalanceServiceInterface
 
     public function getBalances(): array
     {
-        $response = $this->client->apiCall('balance');
+        $response = $this->bitvavoClient->apiCall('balance');
         $rows = [];
 
         foreach ($response as ['symbol' => $symbol, 'available' => $available, 'inOrder' => $inOrder]) {

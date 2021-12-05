@@ -17,11 +17,8 @@ use JsonException;
 
 class JsonFileTaggedIntegerRepository implements TaggedIntegerRepositoryInterface
 {
-    protected string $fileLocation;
-
-    public function __construct(string $fileLocation)
+    public function __construct(protected string $fileLocation)
     {
-        $this->fileLocation = $fileLocation;
     }
 
     public function increase(string $tag, int $value = 1): void
@@ -75,7 +72,7 @@ class JsonFileTaggedIntegerRepository implements TaggedIntegerRepositoryInterfac
         if (file_exists($this->fileLocation)) {
             try {
                 return json_decode(file_get_contents($this->fileLocation), true, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 return [];
             }
         }

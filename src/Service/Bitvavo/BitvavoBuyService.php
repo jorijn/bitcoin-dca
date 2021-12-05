@@ -25,15 +25,10 @@ class BitvavoBuyService implements BuyServiceInterface
     public const FILLED_AMOUNT = 'filledAmount';
     public const ORDER = 'order';
     public const ORDER_ID = 'orderId';
-
-    protected BitvavoClientInterface $client;
-    protected string $baseCurrency;
     protected string $tradingPair;
 
-    public function __construct(BitvavoClientInterface $client, string $baseCurrency)
+    public function __construct(protected BitvavoClientInterface $bitvavoClient, protected string $baseCurrency)
     {
-        $this->client = $client;
-        $this->baseCurrency = $baseCurrency;
         $this->tradingPair = sprintf('BTC-%s', $this->baseCurrency);
     }
 
@@ -44,7 +39,7 @@ class BitvavoBuyService implements BuyServiceInterface
 
     public function initiateBuy(int $amount): CompletedBuyOrder
     {
-        $orderInfo = $this->client->apiCall(self::ORDER, 'POST', [], [
+        $orderInfo = $this->bitvavoClient->apiCall(self::ORDER, 'POST', [], [
             self::MARKET => $this->tradingPair,
             'side' => 'buy',
             'orderType' => self::MARKET,
@@ -60,7 +55,7 @@ class BitvavoBuyService implements BuyServiceInterface
 
     public function checkIfOrderIsFilled(string $orderId): CompletedBuyOrder
     {
-        $orderInfo = $this->client->apiCall(self::ORDER, 'GET', [
+        $orderInfo = $this->bitvavoClient->apiCall(self::ORDER, 'GET', [
             self::MARKET => $this->tradingPair,
             self::ORDER_ID => $orderId,
         ]);
@@ -74,7 +69,7 @@ class BitvavoBuyService implements BuyServiceInterface
 
     public function cancelBuyOrder(string $orderId): void
     {
-        $this->client->apiCall(self::ORDER, 'DELETE', [
+        $this->bitvavoClient->apiCall(self::ORDER, 'DELETE', [
             self::MARKET => $this->tradingPair,
             self::ORDER_ID => $orderId,
         ]);
@@ -84,9 +79,11 @@ class BitvavoBuyService implements BuyServiceInterface
     {
         return (new CompletedBuyOrder())
             ->setAmountInSatoshis((int) bcmul($orderInfo[self::FILLED_AMOUNT], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
-            ->setFeesInSatoshis('BTC' === $orderInfo['feeCurrency']
-                ? (int) bcmul($orderInfo['feePaid'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
-                : 0)
+            ->setFeesInSatoshis(
+                'BTC' === $orderInfo['feeCurrency']
+                    ? (int) bcmul($orderInfo['feePaid'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
+                    : 0
+            )
             ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
             ->setDisplayAmountSpent($orderInfo['filledAmountQuote'].' '.$this->baseCurrency)
             ->setDisplayAmountSpentCurrency($this->baseCurrency)

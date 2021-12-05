@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Client;
 
+use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Client\BinanceClient;
 use Jorijn\Bitcoin\Dca\Exception\BinanceClientException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -54,13 +55,17 @@ final class BinanceClientTest extends TestCase
         $this->httpClient
             ->expects(static::once())
             ->method('request')
-            ->with('GET', 'foo', static::callback(function (array $options) {
-                self::assertArrayHasKey('headers', $options);
-                self::assertArrayHasKey('User-Agent', $options['headers']);
-                self::assertSame(BinanceClient::USER_AGENT, $options['headers']['User-Agent']);
+            ->with(
+                'GET',
+                'foo',
+                static::callback(function (array $options): bool {
+                    self::assertArrayHasKey('headers', $options);
+                    self::assertArrayHasKey('User-Agent', $options['headers']);
+                    self::assertSame(BinanceClient::USER_AGENT, $options['headers']['User-Agent']);
 
-                return true;
-            }))
+                    return true;
+                })
+            )
             ->willReturn($this->getResponseMock())
         ;
 
@@ -103,24 +108,28 @@ final class BinanceClientTest extends TestCase
         $this->httpClient
             ->expects(static::once())
             ->method('request')
-            ->with('GET', $path, static::callback(function (array $options) use ($body) {
-                self::assertArrayHasKey('query', $options);
-                self::assertArrayHasKey('headers', $options);
-                self::assertArrayHasKey('timestamp', $options['query']);
-                self::assertArrayHasKey('signature', $options['query']);
-                self::assertArrayHasKey('X-MBX-APIKEY', $options['headers']);
-                self::assertSame($this->apiKey, $options['headers']['X-MBX-APIKEY']);
+            ->with(
+                'GET',
+                $path,
+                static::callback(function (array $options) use ($body): bool {
+                    self::assertArrayHasKey('query', $options);
+                    self::assertArrayHasKey('headers', $options);
+                    self::assertArrayHasKey('timestamp', $options['query']);
+                    self::assertArrayHasKey('signature', $options['query']);
+                    self::assertArrayHasKey('X-MBX-APIKEY', $options['headers']);
+                    self::assertSame($this->apiKey, $options['headers']['X-MBX-APIKEY']);
 
-                $expectedHash = hash_hmac(
-                    BinanceClient::HASH_ALGO,
-                    http_build_query($body + ['timestamp' => $options['query']['timestamp']], '', '&'),
-                    $this->apiSecret
-                );
+                    $expectedHash = hash_hmac(
+                        BinanceClient::HASH_ALGO,
+                        http_build_query($body + ['timestamp' => $options['query']['timestamp']], '', '&'),
+                        $this->apiSecret
+                    );
 
-                self::assertSame($expectedHash, $options['query']['signature']);
+                    self::assertSame($expectedHash, $options['query']['signature']);
 
-                return true;
-            }))
+                    return true;
+                })
+            )
             ->willReturn($this->getResponseMock())
         ;
 
@@ -141,13 +150,17 @@ final class BinanceClientTest extends TestCase
         $this->httpClient
             ->expects(static::once())
             ->method('request')
-            ->with('POST', $path, static::callback(function (array $options) {
-                self::assertArrayHasKey('body', $options);
-                self::assertArrayHasKey('timestamp', $options['body']);
-                self::assertArrayHasKey('signature', $options['body']);
+            ->with(
+                'POST',
+                $path,
+                static::callback(function (array $options): bool {
+                    self::assertArrayHasKey('body', $options);
+                    self::assertArrayHasKey('timestamp', $options['body']);
+                    self::assertArrayHasKey('signature', $options['body']);
 
-                return true;
-            }))
+                    return true;
+                })
+            )
             ->willReturn($this->getResponseMock())
         ;
 
@@ -161,7 +174,7 @@ final class BinanceClientTest extends TestCase
      */
     public function testSignatureAddThrowsExceptionOnCorruptBody(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->client->request('GET', 'foo', ['extra' => ['security_type' => 'TRADE'], 'body' => 'foo']);
     }

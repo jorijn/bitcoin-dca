@@ -31,12 +31,12 @@ final class BuySuccessEventTest extends TestCase
      */
     public function testGetters(): void
     {
-        $dto = new CompletedBuyOrder();
+        $completedBuyOrder = new CompletedBuyOrder();
         $tag = 'tag'.random_int(1000, 2000);
 
-        $event = new BuySuccessEvent($dto, $tag);
+        $buySuccessEvent = new BuySuccessEvent($completedBuyOrder, $tag);
 
-        static::assertSame($dto, $event->getBuyOrder());
-        static::assertSame($tag, $event->getTag());
+        static::assertSame($completedBuyOrder, $buySuccessEvent->getBuyOrder());
+        static::assertSame($tag, $buySuccessEvent->getTag());
     }
 }

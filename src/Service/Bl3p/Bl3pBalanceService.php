@@ -18,11 +18,8 @@ use Jorijn\Bitcoin\Dca\Service\BalanceServiceInterface;
 
 class Bl3pBalanceService implements BalanceServiceInterface
 {
-    protected Bl3pClientInterface $client;
-
-    public function __construct(Bl3pClientInterface $client)
+    public function __construct(protected Bl3pClientInterface $bl3pClient)
     {
-        $this->client = $client;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -32,7 +29,7 @@ class Bl3pBalanceService implements BalanceServiceInterface
 
     public function getBalances(): array
     {
-        $response = $this->client->apiCall('GENMKT/money/info');
+        $response = $this->bl3pClient->apiCall('GENMKT/money/info');
         $rows = [];
 
         foreach ($response['data']['wallets'] ?? [] as $currency => $wallet) {

@@ -122,7 +122,7 @@ final class WithdrawCommandTest extends TestCase
         $commandTester->execute(
             ['command' => $this->command->getName(), '--all' => null]
             + ($unattended ? ['--yes' => null] : [])
-            + (!empty($tag) ? ['--tag' => $tag] : [])
+            + (empty($tag) ? [] : ['--tag' => $tag])
         );
     }
 

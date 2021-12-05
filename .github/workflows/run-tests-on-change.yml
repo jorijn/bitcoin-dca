@@ -22,16 +22,14 @@ jobs:
         with:
           context: .
           push: false
-          target: test
+          target: testing_stage
           load: true
           tags: jorijn/bitcoin-dca:ci
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
-#          cache-from: type=gha
-#          cache-to: type=gha
 
       - name: Extract the test logging artifacts from the container that was built
         run: |
-          docker run --rm -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
+          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
           sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
 
       - name: Upload logging artifacts

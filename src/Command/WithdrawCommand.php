@@ -23,13 +23,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class WithdrawCommand extends Command
 {
-    protected WithdrawService $withdrawService;
-
-    public function __construct(WithdrawService $withdrawService)
+    public function __construct(protected WithdrawService $withdrawService)
     {
         parent::__construct(null);
-
-        $this->withdrawService = $withdrawService;
     }
 
     public function configure(): void
@@ -61,19 +57,21 @@ class WithdrawCommand extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
-        $io = new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output);
 
         if (!$input->getOption('all')) {
-            $io->error('Only allows withdraw for all funds right now, will be updated in the future. Supply --all to proceed.');
+            $symfonyStyle->error(
+                'Only allows withdraw for all funds right now, will be updated in the future. Supply --all to proceed.'
+            );
 
             return 1;
         }
 
         $balanceToWithdraw = $this->withdrawService->getBalance($input->getOption('tag'));
-        $addressToWithdrawTo = $this->withdrawService->getRecipientAddress();
+        $recipientAddress = $this->withdrawService->getRecipientAddress();
 
         if (0 === $balanceToWithdraw) {
-            $io->error('No balance available, better start saving something!');
+            $symfonyStyle->error('No balance available, better start saving something!');
 
             return 0;
         }
@@ -82,22 +80,22 @@ class WithdrawCommand extends Command
             $question = sprintf(
                 'Ready to withdraw %s BTC to Bitcoin Address %s? A fee of %s BTC will be taken as withdrawal fee.',
                 bcdiv((string) $balanceToWithdraw, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
-                $addressToWithdrawTo,
+                $recipientAddress,
                 bcdiv((string) $this->withdrawService->getWithdrawFeeInSatoshis(), Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
             );
 
-            if (!$io->confirm($question, false)) {
+            if (!$symfonyStyle->confirm($question, false)) {
                 return 0;
             }
         }
 
         $completedWithdraw = $this->withdrawService->withdraw(
             $balanceToWithdraw,
-            $addressToWithdrawTo,
+            $recipientAddress,
             $input->getOption('tag')
         );
 
-        $io->success('Withdraw is being processed as ID '.$completedWithdraw->getId());
+        $symfonyStyle->success('Withdraw is being processed as ID '.$completedWithdraw->getId());
 
         return 0;
     }

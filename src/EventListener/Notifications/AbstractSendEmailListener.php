@@ -24,25 +24,15 @@ use Symfony\Component\Mime\Email;
 
 abstract class AbstractSendEmailListener
 {
-    protected MailerInterface $notifier;
-    protected HtmlConverterInterface $htmlConverter;
-    protected NotificationEmailConfiguration $emailConfiguration;
-    protected NotificationEmailTemplateInformation $templateInformation;
     protected string $templateLocation;
-    protected bool $isEnabled;
 
     public function __construct(
-        MailerInterface $notifier,
-        HtmlConverterInterface $htmlConverter,
-        NotificationEmailConfiguration $emailConfiguration,
-        NotificationEmailTemplateInformation $templateInformation,
-        bool $isEnabled = false
+        protected MailerInterface $mailer,
+        protected HtmlConverterInterface $htmlConverter,
+        protected NotificationEmailConfiguration $notificationEmailConfiguration,
+        protected NotificationEmailTemplateInformation $notificationEmailTemplateInformation,
+        protected bool $isEnabled = false
     ) {
-        $this->notifier = $notifier;
-        $this->htmlConverter = $htmlConverter;
-        $this->isEnabled = $isEnabled;
-        $this->emailConfiguration = $emailConfiguration;
-        $this->templateInformation = $templateInformation;
     }
 
     public function setTemplateLocation(string $templateLocation): void
@@ -58,12 +48,22 @@ abstract class AbstractSendEmailListener
     public function getRandomQuote(): ?Quote
     {
         try {
-            $quotes = json_decode(file_get_contents($this->templateInformation->getQuotesLocation()), true, 512, JSON_THROW_ON_ERROR);
+            $quotes = json_decode(
+                file_get_contents($this->notificationEmailTemplateInformation->getQuotesLocation()),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
         } catch (\JsonException $e) {
             throw new UnableToGetRandomQuoteException($e->getMessage(), $e->getCode(), $e);
         }
-
-        if (!\is_array($quotes) || empty($quotes) || 2 !== \count($quotes[0])) {
+        if (!\is_array($quotes)) {
+            return null;
+        }
+        if (empty($quotes)) {
+            return null;
+        }
+        if (2 !== \count($quotes[0])) {
             return null;
         }
 
@@ -72,7 +72,7 @@ abstract class AbstractSendEmailListener
         return new Quote($quote, $quoteAuthor);
     }
 
-    #[ArrayShape(['quote' => "string", 'quoteAuthor' => "string", 'exchange' => "string"])]
+    #[ArrayShape(['quote' => 'string', 'quoteAuthor' => 'string', 'exchange' => 'string'])]
     public function getTemplateVariables(): array
     {
         $quote = $this->getRandomQuote();
@@ -80,7 +80,7 @@ abstract class AbstractSendEmailListener
         return [
             'quote' => $quote instanceof Quote ? $quote->getQuote() : '',
             'quoteAuthor' => $quote instanceof Quote ? $quote->getAuthor() : '',
-            'exchange' => $this->templateInformation->getExchange(),
+            'exchange' => $this->notificationEmailTemplateInformation->getExchange(),
         ];
     }
 
@@ -97,10 +97,10 @@ abstract class AbstractSendEmailListener
     public function createEmail(): Email
     {
         return (new Email())
-            ->from($this->emailConfiguration->getFrom())
-            ->to($this->emailConfiguration->getTo())
-            ->embedFromPath($this->templateInformation->getLogoLocation(), 'logo')
-            ->embedFromPath($this->templateInformation->getIconLocation(), 'github-icon')
+            ->from($this->notificationEmailConfiguration->getFrom())
+            ->to($this->notificationEmailConfiguration->getTo())
+            ->embedFromPath($this->notificationEmailTemplateInformation->getLogoLocation(), 'logo')
+            ->embedFromPath($this->notificationEmailTemplateInformation->getIconLocation(), 'github-icon')
         ;
     }
 }

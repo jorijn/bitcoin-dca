@@ -24,6 +24,7 @@ use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\Base58ExtendedKeySerializer;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\ExtendedKeySerializer;
 use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
+use const PHP_INT_SIZE;
 
 class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
@@ -33,53 +34,54 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
             throw new \InvalidArgumentException('Master Public Key cannot be empty');
         }
 
-        $adapter = Bitcoin::getEcAdapter();
+        $ecAdapter = Bitcoin::getEcAdapter();
         $network = NetworkFactory::bitcoin();
-        $slip132 = new Slip132(new KeyToScriptHelper($adapter));
-        $bitcoin_prefixes = new BitcoinRegistry();
+        $slip132 = new Slip132(new KeyToScriptHelper($ecAdapter));
+        $bitcoinRegistry = new BitcoinRegistry();
 
         switch ($masterPublicKey[0] ?? null) {
             case 'x':
-                $pubPrefix = $slip132->p2pkh($bitcoin_prefixes);
+                $pubPrefix = $slip132->p2pkh($bitcoinRegistry);
                 $pub = $masterPublicKey;
 
                 break;
 
             case 'y':
-                $pubPrefix = $slip132->p2shP2wpkh($bitcoin_prefixes);
+                $pubPrefix = $slip132->p2shP2wpkh($bitcoinRegistry);
                 $pub = $masterPublicKey;
 
                 break;
 
             case 'z':
-                $pubPrefix = $slip132->p2wpkh($bitcoin_prefixes);
+                $pubPrefix = $slip132->p2wpkh($bitcoinRegistry);
                 $pub = $masterPublicKey;
 
                 break;
 
             default:
                 throw new NoMasterPublicKeyAvailableException('no master public key available');
-
-                break;
         }
 
-        $serializer = new Base58ExtendedKeySerializer(
-            new ExtendedKeySerializer($adapter, new GlobalPrefixConfig([
-                new NetworkConfig($network, [
-                    $pubPrefix,
-                ]),
-            ]))
+        $base58ExtendedKeySerializer = new Base58ExtendedKeySerializer(
+            new ExtendedKeySerializer(
+                $ecAdapter,
+                new GlobalPrefixConfig([
+                    new NetworkConfig($network, [
+                        $pubPrefix,
+                    ]),
+                ])
+            )
         );
 
-        $key = $serializer->parse($network, $pub);
-        $child_key = $key->derivePath($path);
+        $key = $base58ExtendedKeySerializer->parse($network, $pub);
+        $hierarchicalKey = $key->derivePath($path);
 
-        return $child_key->getAddress(new AddressCreator())->getAddress();
+        return $hierarchicalKey->getAddress(new AddressCreator())->getAddress();
     }
 
     public function supported(): bool
     {
         // this component only works on PHP 64-bits
-        return \PHP_INT_SIZE === 8;
+        return PHP_INT_SIZE === 8;
     }
 }

@@ -32,16 +32,16 @@ final class NotificationEmailTemplateInformationTest extends TestCase
      */
     public function testGetters(): void
     {
-        $dto = new NotificationEmailTemplateInformation(
+        $notificationEmailTemplateInformation = new NotificationEmailTemplateInformation(
             $exchange = 'e'.random_int(1000, 2000),
             $logoLocation = 'l'.random_int(1000, 2000),
             $iconLocation = 'i'.random_int(1000, 2000),
             $quotesLocation = 'q'.random_int(1000, 2000)
         );
 
-        static::assertSame($exchange, $dto->getExchange());
-        static::assertSame($logoLocation, $dto->getLogoLocation());
-        static::assertSame($iconLocation, $dto->getIconLocation());
-        static::assertSame($quotesLocation, $dto->getQuotesLocation());
+        static::assertSame($exchange, $notificationEmailTemplateInformation->getExchange());
+        static::assertSame($logoLocation, $notificationEmailTemplateInformation->getLogoLocation());
+        static::assertSame($iconLocation, $notificationEmailTemplateInformation->getIconLocation());
+        static::assertSame($quotesLocation, $notificationEmailTemplateInformation->getQuotesLocation());
     }
 }
