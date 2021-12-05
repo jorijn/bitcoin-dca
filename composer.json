@@ -15,7 +15,7 @@
         "symfony/dotenv": "^5.4",
         "symfony/dependency-injection": "^5.4",
         "symfony/yaml": "^5.4",
-        "symfony/config": "^5.4",
+        "symfony/config": "^6.0",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-iconv": "*",
