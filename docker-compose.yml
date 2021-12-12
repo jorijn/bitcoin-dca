@@ -15,3 +15,5 @@ services:
     volumes:
       - .:/app:cached
       - ./vendor:/app/vendor:delegated
+    env_file:
+      - .env
