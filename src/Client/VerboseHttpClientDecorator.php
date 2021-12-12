@@ -18,13 +18,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 use Throwable;
 
 class VerboseHttpClientDecorator implements HttpClientInterface
 {
-    use LoggerAwareTrait;
     use DecoratorTrait;
+    use LoggerAwareTrait;
 
     public function __construct(
         protected HttpClientInterface $httpClient,
