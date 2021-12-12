@@ -15,6 +15,7 @@ namespace Jorijn\Bitcoin\Dca\Client;
 
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
@@ -23,6 +24,7 @@ use Throwable;
 class VerboseHttpClientDecorator implements HttpClientInterface
 {
     use LoggerAwareTrait;
+    use DecoratorTrait;
 
     public function __construct(
         protected HttpClientInterface $httpClient,
@@ -30,11 +32,6 @@ class VerboseHttpClientDecorator implements HttpClientInterface
         protected bool $enabled = false
     ) {
         $this->setLogger($logger);
-    }
-
-    public function stream($responses, float $timeout = null): ResponseStreamInterface
-    {
-        return $this->httpClient->stream($responses, $timeout);
     }
 
     public function request(string $method, string $url, array $options = []): ResponseInterface
