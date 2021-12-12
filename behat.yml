@@ -1,0 +1,12 @@
+default:
+  formatters:
+    pretty: true
+  suites:
+    domain_features:
+      services: Jorijn\Bitcoin\Dca\Factory\ContainerFactory::createContainer
+      paths:
+        - '%paths.base%/features'
+      contexts:
+        - Features\Jorijn\Bitcoin\Dca\TaggingContext:
+            - '@application'
+            - '@repository.tag_integer.balance'

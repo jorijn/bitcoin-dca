@@ -1,22 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+declare(strict_types=1);
 
-use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+
+use Jorijn\Bitcoin\Dca\Factory\ContainerFactory;
 use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
-use Symfony\Component\Serializer\DependencyInjection\SerializerPass;
-
-if (file_exists(__DIR__.'/../.env')) {
-    $dotenv = new Dotenv();
-    $dotenv->loadEnv(__DIR__.'/../.env');
-}
 
 set_error_handler(
     static function ($errno, $errstr, $errfile, $errline) {
@@ -28,43 +18,10 @@ set_error_handler(
     }
 );
 
-$containerCache = __DIR__.'/../var/cache/container.php';
-$containerConfigCache = new ConfigCache($containerCache, $_SERVER['DEBUG'] ?? false);
-
-if (!$containerConfigCache->isFresh()) {
-    $containerBuilder = new ContainerBuilder();
-
-    // load the DI config
-    $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../config/'));
-    $loader->load('services.yaml');
-
-    $containerBuilder->addCompilerPass(new AddConsoleCommandPass());
-    $containerBuilder->addCompilerPass(new RegisterListenersPass());
-    $containerBuilder->addCompilerPass(new SerializerPass());
-    $containerBuilder->setParameter('application.path', dirname(__DIR__));
-
-    $versionFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'version.json';
-    if (file_exists($versionFile)) {
-        $version = json_decode(file_get_contents($versionFile), true, 512, JSON_THROW_ON_ERROR);
-        if (isset($version['version'])) {
-            $containerBuilder->setParameter('application_version', $version['version']);
-        }
-    }
-
-    $containerBuilder->compile();
-
-    // write the compiled container to file
-    $dumper = new PhpDumper($containerBuilder);
-    $containerConfigCache->write(
-        $dumper->dump(['class' => 'BitcoinDcaContainer']),
-        $containerBuilder->getResources()
-    );
+if (file_exists(dirname(__DIR__).DIRECTORY_SEPARATOR.'.env')) {
+    $dotenv = new Dotenv();
+    $dotenv->loadEnv(dirname(__DIR__).DIRECTORY_SEPARATOR.'.env');
 }
 
-require_once $containerCache;
-$container = new BitcoinDcaContainer();
-
-$application = $container->get('application');
-$application->setCommandLoader($container->get('console.command_loader'));
-$application->setDispatcher($container->get('event_dispatcher'));
-$application->run();
+$container = ContainerFactory::createContainer();
+$container->get('application')->run();
