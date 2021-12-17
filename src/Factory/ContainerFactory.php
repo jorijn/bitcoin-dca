@@ -20,6 +20,7 @@ use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\Serializer\DependencyInjection\SerializerPass;
 
@@ -28,6 +29,10 @@ class ContainerFactory
     public static function createContainer(): ContainerInterface
     {
         $projectDirectory = \dirname(__DIR__, 2);
+
+        $dotenv = new Dotenv();
+        $dotenv->loadEnv($projectDirectory.\DIRECTORY_SEPARATOR.'.env', 'ENV');
+
         $containerCache = $projectDirectory.\DIRECTORY_SEPARATOR.'var'.\DIRECTORY_SEPARATOR.'cache'.\DIRECTORY_SEPARATOR.'container.php';
         $containerConfigCache = new ConfigCache($containerCache, isset($_SERVER['DEBUG']) && (bool) $_SERVER['DEBUG']);
 

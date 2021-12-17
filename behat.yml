@@ -7,6 +7,9 @@ default:
       paths:
         - '%paths.base%/features'
       contexts:
+        - Features\Jorijn\Bitcoin\Dca\ApplicationContext: ~
+        - Features\Jorijn\Bitcoin\Dca\BuyingContext:
+            - '@service.buy.mockexchange'
         - Features\Jorijn\Bitcoin\Dca\TaggingContext:
             - '@application'
             - '@repository.tag_integer.balance'

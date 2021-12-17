@@ -16,6 +16,8 @@ namespace Features\Jorijn\Bitcoin\Dca;
 use Behat\Behat\Context\Context;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class TaggingContext implements Context
 {
@@ -30,15 +32,7 @@ class TaggingContext implements Context
      */
     public function thereIsNoInformationForTagYet(string $tag): void
     {
-        \assert(0 === $this->repository->get($tag));
-    }
-
-    /**
-     * @When /^the current Bitcoin price is (\d+) dollar$/
-     */
-    public function theCurrentBitcoinPriceIsDollar(int $price): void
-    {
-        throw new \Behat\Behat\Tester\Exception\PendingException();
+        $this->theBalanceForTagIsSatoshis($tag, 0);
     }
 
     /**
@@ -46,7 +40,22 @@ class TaggingContext implements Context
      */
     public function iBuyDollarWorthOfBitcoinForTag(int $dollars, string $tag): void
     {
-        throw new \Behat\Behat\Tester\Exception\PendingException();
+        $command = $this->application->find('buy');
+        $inputArguments = new ArrayInput(
+            [
+                'amount' => $dollars,
+                '--yes' => true,
+                '--tag' => $tag,
+            ]
+        );
+
+        $output = new BufferedOutput();
+        $exitStatus = $command->run($inputArguments, $output);
+
+        \assert(
+            0 === $exitStatus,
+            sprintf('exit code is not 0, actual: %d (output: %s)', $exitStatus, $output->fetch())
+        );
     }
 
     /**
@@ -54,7 +63,8 @@ class TaggingContext implements Context
      */
     public function iExpectTheBalanceOfTagToBeSatoshis(string $tag, int $satoshis): void
     {
-        throw new \Behat\Behat\Tester\Exception\PendingException();
+        $balance = $this->repository->get($tag);
+        \assert($satoshis === $balance, sprintf('balance is not %d, actual: %d', $satoshis, $balance));
     }
 
     /**
@@ -62,6 +72,6 @@ class TaggingContext implements Context
      */
     public function theBalanceForTagIsSatoshis(string $tag, int $satoshis): void
     {
-        throw new \Behat\Behat\Tester\Exception\PendingException();
+        $this->repository->set($tag, $satoshis);
     }
 }

@@ -57,15 +57,7 @@ RUN apk --no-cache update \
     && pecl install pcov xdebug \
     && docker-php-ext-enable pcov xdebug
 
-##################################################################################################################
-# Test Stage
-##################################################################################################################
-FROM development_build AS testing_stage
-
-# run the test script(s) from composer, this validates the application before allowing the build to succeed
-# this does make the tests run multiple times, but with different architectures
 RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
-RUN vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
 
 ##################################################################################################################
 # Production Stage

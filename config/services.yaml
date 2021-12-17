@@ -508,6 +508,7 @@ services:
   ## MockExchange (fake one that allows automated testing without spending $$$)
   ##
   service.buy.mockexchange:
+    public: true
     arguments:
       - '%env(bool:TESTING)%'
       - '%env(BASE_CURRENCY)%'

@@ -6,7 +6,6 @@ declare(strict_types=1);
 require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 use Jorijn\Bitcoin\Dca\Factory\ContainerFactory;
-use Symfony\Component\Dotenv\Dotenv;
 
 set_error_handler(
     static function ($errno, $errstr, $errfile, $errline) {
@@ -17,11 +16,6 @@ set_error_handler(
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 );
-
-if (file_exists(dirname(__DIR__).DIRECTORY_SEPARATOR.'.env')) {
-    $dotenv = new Dotenv();
-    $dotenv->loadEnv(dirname(__DIR__).DIRECTORY_SEPARATOR.'.env');
-}
 
 $container = ContainerFactory::createContainer();
 $container->get('application')->run();
