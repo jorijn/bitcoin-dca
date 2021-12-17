@@ -30,15 +30,12 @@ jobs:
         run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
 
       - name: Run the PHPUnit tests
-        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
+        run: |
+          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /app/tests_coverage.xml --log-junit /app/tests_log.xml
+          sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
 
       - name: Run the Behat integration tests
         run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/behat -f pretty
-
-      - name: Extract the test logging artifacts generated from the PHPUnit tests
-        run: |
-          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
-          sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
 
       - name: Upload logging artifacts
         uses: actions/upload-artifact@v2
