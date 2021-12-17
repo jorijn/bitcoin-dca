@@ -18,6 +18,7 @@ use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\NullOutput;
 
 class TaggingContext implements Context
 {
@@ -59,6 +60,29 @@ class TaggingContext implements Context
     }
 
     /**
+     * @When /^I withdraw the entire balance for tag "([^"]*)"$/
+     */
+    public function iWithdrawTheEntireBalanceForTag(string $tag): void
+    {
+        $command = $this->application->find('withdraw');
+        $inputArguments = new ArrayInput(
+            [
+                '--all' => true,
+                '--yes' => true,
+                '--tag' => $tag,
+            ]
+        );
+
+        $output = new BufferedOutput();
+        $exitStatus = $command->run($inputArguments, $output);
+
+        \assert(
+            0 === $exitStatus,
+            sprintf('exit code is not 0, actual: %d (output: %s)', $exitStatus, $output->fetch())
+        );
+    }
+
+    /**
      * @Then /^I expect the balance of tag "([^"]*)" to be (\d+) satoshis/
      */
     public function iExpectTheBalanceOfTagToBeSatoshis(string $tag, int $satoshis): void
@@ -69,9 +93,35 @@ class TaggingContext implements Context
 
     /**
      * @Given /^the balance for tag "([^"]*)" is (\d+) satoshis$/
+     * @Given /^the balance for tag "([^"]*)" is still (\d+) satoshis$/
      */
     public function theBalanceForTagIsSatoshis(string $tag, int $satoshis): void
     {
         $this->repository->set($tag, $satoshis);
+    }
+
+    /**
+     * @When /^I withdraw the entire balance for tag "([^"]*)" and it fails$/
+     */
+    public function iWithdrawTheEntireBalanceForTagAndItFails(string $tag): void
+    {
+        $command = $this->application->find('withdraw');
+        $inputArguments = new ArrayInput(
+            [
+                '--all' => true,
+                '--yes' => true,
+                '--tag' => $tag,
+            ]
+        );
+
+        $exceptionThrown = false;
+
+        try {
+            $command->run($inputArguments, new NullOutput());
+        } catch (\Throwable) {
+            $exceptionThrown = true;
+        }
+
+        \assert(true === $exceptionThrown, 'withdraw did not fail');
     }
 }

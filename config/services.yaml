@@ -517,6 +517,7 @@ services:
       - { name: exchange-buy-service, priority: 1000 }
 
   service.withdraw.mockexchange:
+    public: true
     class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeWithdrawService
     arguments:
       - '%env(bool:TESTING)%'

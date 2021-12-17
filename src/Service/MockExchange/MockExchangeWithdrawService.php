@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Service\MockExchange;
 
+use Jorijn\Bitcoin\Dca\Exception\MockClientException;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
 
@@ -32,6 +33,13 @@ class MockExchangeWithdrawService implements WithdrawServiceInterface
 
     public function withdraw(int $balanceToWithdraw, string $addressToWithdrawTo): CompletedWithdraw
     {
+        if (($this->availableBalance - $this->withdrawFeeInSatoshis) < $balanceToWithdraw) {
+            throw new MockClientException('balance is insufficient');
+        }
+
+        $this->availableBalance -= $balanceToWithdraw;
+        $this->availableBalance -= $this->withdrawFeeInSatoshis;
+
         return new CompletedWithdraw($addressToWithdrawTo, $balanceToWithdraw, sprintf('MOCK_%s', time()));
     }
 
