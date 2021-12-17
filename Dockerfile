@@ -57,8 +57,6 @@ RUN apk --no-cache update \
     && pecl install pcov xdebug \
     && docker-php-ext-enable pcov xdebug
 
-RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
-
 WORKDIR /app/
 
 ##################################################################################################################

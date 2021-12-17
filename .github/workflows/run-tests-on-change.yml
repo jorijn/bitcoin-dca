@@ -26,6 +26,9 @@ jobs:
           tags: jorijn/bitcoin-dca:ci
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
 
+      - name: Install the development dependencies
+        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
+
       - name: Run the PHPUnit tests
         run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
 
