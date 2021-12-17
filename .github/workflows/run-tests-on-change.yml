@@ -27,12 +27,10 @@ jobs:
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
 
       - name: Run the PHPUnit tests
-      - run: |
-          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
+        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /tmp/tests_coverage.xml --log-junit /tmp/tests_log.xml
 
       - name: Run the Behat integration tests
-      - run: |
-          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/behat -f pretty
+        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/behat -f pretty
 
       - name: Extract the test logging artifacts generated from the PHPUnit tests
         run: |
