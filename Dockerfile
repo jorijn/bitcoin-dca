@@ -59,12 +59,16 @@ RUN apk --no-cache update \
 
 RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
 
+WORKDIR /app/
+
 ##################################################################################################################
 # Production Stage
 ##################################################################################################################
 FROM base_image as production_build
 
 COPY docker/php-production.ini "$PHP_INI_DIR/php.ini"
+
+WORKDIR /app/
 
 # run the app to precompile the DI container
 RUN /app/bin/bitcoin-dca
