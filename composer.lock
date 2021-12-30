@@ -2640,16 +2640,16 @@
         },
         {
             "name": "symfony/notifier",
-            "version": "v6.0.1",
+            "version": "v6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/notifier.git",
-                "reference": "5d9faf3f25c8251087289608aaf88b81712ea52c"
+                "reference": "5a6afab6f6b9f29f1dccb46dd7a41280cc9c1ecc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/notifier/zipball/5d9faf3f25c8251087289608aaf88b81712ea52c",
-                "reference": "5d9faf3f25c8251087289608aaf88b81712ea52c",
+                "url": "https://api.github.com/repos/symfony/notifier/zipball/5a6afab6f6b9f29f1dccb46dd7a41280cc9c1ecc",
+                "reference": "5a6afab6f6b9f29f1dccb46dd7a41280cc9c1ecc",
                 "shasum": ""
             },
             "require": {
@@ -2695,7 +2695,7 @@
                 "notifier"
             ],
             "support": {
-                "source": "https://github.com/symfony/notifier/tree/v6.0.1"
+                "source": "https://github.com/symfony/notifier/tree/v6.0.2"
             },
             "funding": [
                 {
@@ -2711,7 +2711,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-12-08T15:13:44+00:00"
+            "time": "2021-12-25T20:10:03+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
