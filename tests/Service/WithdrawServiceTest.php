@@ -41,13 +41,17 @@ final class WithdrawServiceTest extends TestCase
 
     /** @var MockObject|WithdrawAddressProviderInterface */
     private $addressProvider;
+
     /** @var MockObject|WithdrawServiceInterface */
     private $supportedService;
+
     /** @var EventDispatcherInterface|MockObject */
     private $dispatcher;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private string $configuredExchange;
+
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $balanceRepository;
 

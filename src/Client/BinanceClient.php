@@ -22,6 +22,7 @@ class BinanceClient implements BinanceClientInterface
 {
     /** @var string */
     public const USER_AGENT = 'Mozilla/4.0 (compatible; Binance PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')';
+
     /** @var string */
     public const HASH_ALGO = 'sha256';
 

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\EventListener;
 
-use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
+use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
@@ -23,7 +23,7 @@ class XPubAddressUsedListener
 {
     public function __construct(
         protected TaggedIntegerRepositoryInterface $taggedIntegerRepository,
-        protected AddressFromMasterPublicKeyComponent $addressFromMasterPublicKeyComponent,
+        protected AddressFromMasterPublicKeyComponentInterface $addressFromMasterPublicKeyComponent,
         protected LoggerInterface $logger,
         protected ?string $configuredXPub
     ) {

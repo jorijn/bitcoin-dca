@@ -29,6 +29,7 @@ abstract class TesterOfAbstractSendEmailListener extends TestCase
 {
     /** @var MailerInterface|MockObject */
     protected $notifier;
+
     /** @var HtmlConverterInterface|MockObject */
     protected $htmlConverter;
     protected string $to;
@@ -40,6 +41,7 @@ abstract class TesterOfAbstractSendEmailListener extends TestCase
     protected string $iconLocation;
     protected NotificationEmailTemplateInformation $templateConfiguration;
     protected string $quotesLocation;
+
     /** @var AbstractSendEmailListener|MockObject */
     protected $listener;
     protected string $templateLocation;

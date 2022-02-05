@@ -32,6 +32,7 @@ final class VerifyXPubCommandTest extends TestCase
 {
     /** @var AddressFromMasterPublicKeyComponent|MockObject */
     private $keyFactory;
+
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $xpubRepository;
     private string $configuredKey;

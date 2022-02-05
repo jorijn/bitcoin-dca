@@ -38,6 +38,7 @@ final class Bl3pBuyServiceTest extends TestCase
     private const BTC = 'BTC';
     private const MONEY_ORDER_RESULT = '/money/order/result';
     private const MONEY_ORDER_ADD = '/money/order/add';
+
     /** @var Bl3pClientInterface|MockObject */
     private $client;
     private string $baseCurrency;

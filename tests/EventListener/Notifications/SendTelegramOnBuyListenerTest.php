@@ -32,6 +32,7 @@ final class SendTelegramOnBuyListenerTest extends TestCase
 {
     /** @var HttpClientInterface|mixed|MockObject */
     private $httpClient;
+
     /** @var EventDispatcherInterface|mixed|MockObject */
     private $eventDispatcher;
     private TelegramTransport $transport;

@@ -33,6 +33,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class WriteOrderToCsvListenerTest extends TestCase
 {
     private string $temporaryFile;
+
     /** @var MockObject|SerializerInterface */
     private $serializer;
     private WriteOrderToCsvListener $listener;

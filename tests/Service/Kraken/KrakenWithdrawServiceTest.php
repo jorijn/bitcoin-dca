@@ -31,6 +31,7 @@ final class KrakenWithdrawServiceTest extends TestCase
 {
     /** @var KrakenClientInterface|MockObject */
     private $client;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private string $withdrawKey;

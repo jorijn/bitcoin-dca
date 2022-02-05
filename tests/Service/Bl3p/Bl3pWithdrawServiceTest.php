@@ -34,6 +34,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
 
     /** @var Bl3pClientInterface|MockObject */
     private $client;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private Bl3pWithdrawService $service;

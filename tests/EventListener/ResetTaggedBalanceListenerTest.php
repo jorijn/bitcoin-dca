@@ -32,6 +32,7 @@ final class ResetTaggedBalanceListenerTest extends TestCase
 {
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $repository;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private ResetTaggedBalanceListener $listener;

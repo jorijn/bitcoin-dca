@@ -31,6 +31,7 @@ final class BinanceClientTest extends TestCase
 {
     private string $apiKey;
     private string $apiSecret;
+
     /** @var HttpClientInterface|MockObject */
     private $httpClient;
     private BinanceClient $client;

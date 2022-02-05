@@ -31,6 +31,7 @@ final class IncreaseTaggedBalanceListenerTest extends TestCase
 {
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $repository;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private IncreaseTaggedBalanceListener $listener;
