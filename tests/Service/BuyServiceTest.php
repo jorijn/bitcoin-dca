@@ -35,9 +35,11 @@ final class BuyServiceTest extends TestCase
 {
     /** @var EventDispatcherInterface|MockObject */
     private $dispatcher;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private string $configuredExchange;
+
     /** @var BuyServiceInterface|MockObject */
     private $supportedService;
     private int $timeout;

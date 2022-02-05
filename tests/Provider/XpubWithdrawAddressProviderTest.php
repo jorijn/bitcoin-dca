@@ -30,8 +30,10 @@ final class XpubWithdrawAddressProviderTest extends TestCase
 {
     /** @var MockObject|TaggedIntegerRepositoryInterface */
     private $xpubRepository;
+
     /** @var AddressFromMasterPublicKeyComponent|MockObject */
     private $keyFactory;
+
     /** @var MockObject|ValidationInterface */
     private $validation;
     private XpubWithdrawAddressProvider $provider;

@@ -38,6 +38,7 @@ final class BuyCommandTest extends TestCase
 
     /** @var BuyService|MockObject */
     private $buyService;
+
     /** @var MockObject|SerializerInterface */
     private $serializer;
 

@@ -32,6 +32,7 @@ final class KrakenClientTest extends TestCase
     private const BASE_URI = 'https://unit.test/';
 
     protected MockHttpClient $httpClient;
+
     /** @var LoggerInterface|MockObject */
     protected $logger;
     protected KrakenClient $client;

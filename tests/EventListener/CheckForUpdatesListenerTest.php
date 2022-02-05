@@ -42,6 +42,7 @@ final class CheckForUpdatesListenerTest extends TestCase
 
     /** @var InputInterface|MockObject */
     private $input;
+
     /** @var BufferedOutput */
     private $bufferedOutput;
 

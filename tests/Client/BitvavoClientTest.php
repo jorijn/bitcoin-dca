@@ -36,6 +36,7 @@ final class BitvavoClientTest extends TestCase
     private string $accessWindow;
     private string $apiKey;
     private string $apiSecret;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private BitvavoClient $client;

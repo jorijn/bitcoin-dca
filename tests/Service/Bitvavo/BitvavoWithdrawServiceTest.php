@@ -35,6 +35,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
 
     /** @var BitvavoClientInterface|MockObject */
     private $client;
+
     /** @var LoggerInterface|MockObject */
     private $logger;
     private BitvavoWithdrawService $service;
