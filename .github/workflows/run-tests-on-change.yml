@@ -16,20 +16,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build the Docker image and execute the testsuite
+      - name: Build the Docker development image
         uses: docker/build-push-action@v2
         with:
           context: .
           push: false
-          target: testing_stage
+          target: development_build
           load: true
           tags: jorijn/bitcoin-dca:ci
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
 
-      - name: Extract the test logging artifacts from the container that was built
+      - name: Install the development dependencies
+        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-ansi --ignore-platform-reqs
+
+      - name: Run the PHPUnit tests
         run: |
-          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
+          docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/phpunit --testdox --coverage-clover /app/tests_coverage.xml --log-junit /app/tests_log.xml
           sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
+
+      - name: Run the Behat integration tests
+        run: docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci vendor/bin/behat -f pretty
 
       - name: Upload logging artifacts
         uses: actions/upload-artifact@v2

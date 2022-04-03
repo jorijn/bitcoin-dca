@@ -256,12 +256,16 @@ services:
     arguments:
       - '%application_title%'
       - '%application_version%'
+    calls:
+      - setCommandLoader: [ '@console.command_loader' ]
+      - setDispatcher: [ '@event_dispatcher' ]
 
   ######################################################################
   # Repositories
   ######################################################################
   repository.tag_integer.balance:
     class: Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository
+    public: true
     arguments:
       - '%application.path%/var/storage/balance.db'
 
@@ -313,7 +317,7 @@ services:
     class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnBuyListener
     parent: event_listener.notify_via_email
     calls:
-      - setTemplateLocation: ['%application.path%/resources/templates/buy_notification.email.html.php']
+      - setTemplateLocation: [ '%application.path%/resources/templates/buy_notification.email.html.php' ]
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\BuySuccessEvent, method: onBuy }
 
@@ -321,7 +325,7 @@ services:
     class: Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnWithdrawListener
     parent: event_listener.notify_via_email
     calls:
-      - setTemplateLocation: ['%application.path%/resources/templates/withdraw_notification.email.html.php']
+      - setTemplateLocation: [ '%application.path%/resources/templates/withdraw_notification.email.html.php' ]
     tags:
       - { name: kernel.event_listener, event: Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent, method: onWithdraw }
 
@@ -504,6 +508,7 @@ services:
   ## MockExchange (fake one that allows automated testing without spending $$$)
   ##
   service.buy.mockexchange:
+    public: true
     arguments:
       - '%env(bool:TESTING)%'
       - '%env(BASE_CURRENCY)%'
@@ -512,6 +517,7 @@ services:
       - { name: exchange-buy-service, priority: 1000 }
 
   service.withdraw.mockexchange:
+    public: true
     class: Jorijn\Bitcoin\Dca\Service\MockExchange\MockExchangeWithdrawService
     arguments:
       - '%env(bool:TESTING)%'
