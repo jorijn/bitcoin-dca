@@ -29,7 +29,7 @@ class SendTelegramOnBuyListener extends AbstractSendTelegramListener
         $exchange = ucfirst($this->getExchange());
 
         $htmlMessage = <<<TLGRM
-            <strong>💰 Bitcoin-DCA just bought {$formattedSats} sat at {$exchange}.</strong>
+            <strong>💰 Bitcoin-DCA just bought {$formattedSats} sats at {$exchange}.</strong>
 
             Transaction overview:
 
