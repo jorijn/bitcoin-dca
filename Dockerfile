@@ -22,7 +22,7 @@ RUN composer install \
 ##################################################################################################################
 # Base Stage
 ##################################################################################################################
-FROM php:8.0-cli-alpine3.12 as base_image
+FROM php:8.2-cli-alpine3.17 as base_image
 
 RUN apk --no-cache update \
     && apk --no-cache add gmp-dev python3 py3-pip \
@@ -53,7 +53,7 @@ COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
 # php code coverage & development
 RUN apk --no-cache update \
-    && apk --no-cache add autoconf g++ make \
+    && apk --no-cache add autoconf g++ make linux-headers \
     && pecl install pcov xdebug \
     && docker-php-ext-enable pcov xdebug
 

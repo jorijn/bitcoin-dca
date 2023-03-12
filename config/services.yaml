@@ -582,7 +582,6 @@ services:
   ######################################################################
   mailer:
     class: Symfony\Component\Mailer\Mailer
-    lazy: true
     arguments:
       - '@mailer.transport'
       - ~
@@ -612,7 +611,6 @@ services:
   ######################################################################
   notifier.telegram.transport:
     class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransport
-    lazy: true
     factory:
       - '@notifier.telegram.transport_factory'
       - 'create'
@@ -620,7 +618,6 @@ services:
       - '@notifier.telegram.dsn'
 
   notifier.telegram.transport_factory:
-    lazy: true
     class: Symfony\Component\Notifier\Bridge\Telegram\TelegramTransportFactory
     arguments:
       - '@event_dispatcher'
@@ -635,7 +632,6 @@ services:
 
   notifier.telegram.dsn:
     class: Symfony\Component\Notifier\Transport\Dsn
-    lazy: true
     arguments:
       - '%env(NOTIFICATION_TELEGRAM_DSN)%'
 
