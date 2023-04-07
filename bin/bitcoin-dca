@@ -42,6 +42,7 @@ if (!$containerConfigCache->isFresh()) {
     $containerBuilder->addCompilerPass(new RegisterListenersPass());
     $containerBuilder->addCompilerPass(new SerializerPass());
     $containerBuilder->setParameter('application.path', dirname(__DIR__));
+    $containerBuilder->setParameter('kernel.debug', $_SERVER['DEBUG'] ?? false);
 
     $versionFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'version.json';
     if (file_exists($versionFile)) {
