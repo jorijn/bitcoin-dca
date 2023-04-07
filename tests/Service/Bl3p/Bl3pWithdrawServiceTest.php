@@ -13,15 +13,14 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pWithdrawService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pWithdrawService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -32,11 +31,9 @@ final class Bl3pWithdrawServiceTest extends TestCase
     public const API_CALL = 'apiCall';
     public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
 
-    /** @var Bl3pClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private Bl3pWithdrawService $service;
 
     protected function setUp(): void
@@ -55,7 +52,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
     /**
      * @covers ::getAvailableBalance
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testGetBalance(): void
     {
@@ -74,7 +71,7 @@ final class Bl3pWithdrawServiceTest extends TestCase
     /**
      * @covers ::withdraw
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testWithdraw(): void
     {

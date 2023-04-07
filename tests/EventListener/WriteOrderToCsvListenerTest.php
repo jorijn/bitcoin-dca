@@ -13,11 +13,9 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -25,6 +23,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\WriteOrderToCsvListener
+ *
  * @covers ::__construct
  * @covers ::onSuccessfulBuy
  *
@@ -34,8 +33,7 @@ final class WriteOrderToCsvListenerTest extends TestCase
 {
     private string $temporaryFile;
 
-    /** @var MockObject|SerializerInterface */
-    private $serializer;
+    private \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\Serializer\SerializerInterface $serializer;
     private WriteOrderToCsvListener $listener;
 
     protected function setUp(): void
@@ -120,7 +118,7 @@ final class WriteOrderToCsvListenerTest extends TestCase
             ->expects(static::once())
             ->method('serialize')
             ->with($completedBuyOrder, 'csv', [CsvEncoder::NO_HEADERS_KEY => false])
-            ->willThrowException(new Exception('broken'))
+            ->willThrowException(new \Exception('broken'))
         ;
 
         $buySuccessEvent = new BuySuccessEvent($completedBuyOrder);

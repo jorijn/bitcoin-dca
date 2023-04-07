@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
 
 class KrakenWithdrawService implements WithdrawServiceInterface
 {
-    public const ASSET_NAME = 'XXBT';
+    final public const ASSET_NAME = 'XXBT';
 
     public function __construct(
         protected KrakenClientInterface $krakenClient,

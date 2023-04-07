@@ -16,19 +16,18 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Binance;
 use Jorijn\Bitcoin\Dca\Client\BinanceClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Service\Binance\BinanceBuyService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Binance\BinanceBuyService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class BinanceBuyServiceTest extends TestCase
 {
-    /** @var BinanceClientInterface|MockObject */
-    protected $client;
+    protected \Jorijn\Bitcoin\Dca\Client\BinanceClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     protected string $baseCurrency;
     protected string $tradingPair;
     protected BinanceBuyService $service;

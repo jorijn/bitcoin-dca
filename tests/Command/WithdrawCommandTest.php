@@ -15,13 +15,13 @@ namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
 use Jorijn\Bitcoin\Dca\Command\WithdrawCommand;
 use Jorijn\Bitcoin\Dca\Service\WithdrawService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\WithdrawCommand
+ *
  * @covers ::__construct
  * @covers ::configure
  *
@@ -29,8 +29,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 final class WithdrawCommandTest extends TestCase
 {
-    /** @var MockObject|WithdrawService */
-    private $withdrawService;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Service\WithdrawService $withdrawService;
     private WithdrawCommand $command;
 
     protected function setUp(): void
@@ -44,23 +43,23 @@ final class WithdrawCommandTest extends TestCase
     public function providerOfWithdrawScenarios(): array
     {
         return [
-            'with tag, unattended' => ['tag'.random_int(1000, 2000), true, false, true, random_int(500000, 1000000)],
+            'with tag, unattended' => ['tag'.random_int(1000, 2000), true, false, true, random_int(500000, 1_000_000)],
             'with tag, attended, confirms' => [
                 'tag'.random_int(1000, 2000),
                 true,
                 true,
                 true,
-                random_int(500000, 1000000),
+                random_int(500000, 1_000_000),
             ],
             'with tag, attended, declines' => [
                 'tag'.random_int(1000, 2000),
                 false,
                 false,
                 false,
-                random_int(500000, 1000000),
+                random_int(500000, 1_000_000),
             ],
-            'without tag, unattended' => [null, true, false, true, random_int(500000, 1000000)],
-            'without tag, attended' => [null, true, true, true, random_int(500000, 1000000)],
+            'without tag, unattended' => [null, true, false, true, random_int(500000, 1_000_000)],
+            'without tag, attended' => [null, true, true, true, random_int(500000, 1_000_000)],
             'with tag, unattended, no balance available' => ['tag'.random_int(1000, 2000), true, false, false, 0],
             'with tag, attended, no balance available' => ['tag'.random_int(1000, 2000), false, true, false, 0],
             'without tag, unattended, no balance available' => [null, true, false, false, 0],
@@ -85,6 +84,7 @@ final class WithdrawCommandTest extends TestCase
 
     /**
      * @covers ::execute
+     *
      * @dataProvider providerOfWithdrawScenarios
      */
     public function testWithdraw(

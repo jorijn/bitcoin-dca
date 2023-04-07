@@ -63,7 +63,7 @@ abstract class AbstractSendEmailListener
         if (empty($quotes)) {
             return null;
         }
-        if (2 !== \count($quotes[0])) {
+        if (2 !== (is_countable($quotes[0]) ? \count($quotes[0]) : 0)) {
             return null;
         }
 

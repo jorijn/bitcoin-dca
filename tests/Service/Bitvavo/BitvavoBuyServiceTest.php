@@ -17,11 +17,11 @@ use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBuyService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -40,8 +40,7 @@ final class BitvavoBuyServiceTest extends TestCase
     private const ORDER = 'order';
     private const AMOUNT_QUOTE = 'amountQuote';
 
-    /** @var BitvavoClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private string $baseCurrency;
     private BitvavoBuyService $service;
 
@@ -237,7 +236,7 @@ final class BitvavoBuyServiceTest extends TestCase
         $filledSatoshis = random_int(10000, 20000);
 
         $data = [
-            'filledAmount' => (bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)),
+            'filledAmount' => bcdiv((string) $filledSatoshis, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
             'filledAmountQuote' => $filledQuote = (string) random_int(10, 20),
             'status' => 'filled',
             self::AMOUNT_QUOTE => $filledQuote,

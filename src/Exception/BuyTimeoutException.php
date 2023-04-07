@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-use RuntimeException;
-
-class BuyTimeoutException extends RuntimeException
+class BuyTimeoutException extends \RuntimeException
 {
 }

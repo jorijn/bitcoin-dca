@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Model;
 
-use DateTimeImmutable;
-use DateTimeInterface;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use PHPUnit\Framework\TestCase;
 
@@ -51,9 +49,9 @@ final class CompletedBuyOrderTest extends TestCase
         static::assertSame($amountBought, $completedBuyOrder->getDisplayAmountBought());
 
         static::assertEqualsWithDelta(
-            new DateTimeImmutable(),
-            DateTimeImmutable::createFromFormat(
-                DateTimeInterface::ATOM,
+            new \DateTimeImmutable(),
+            \DateTimeImmutable::createFromFormat(
+                \DateTimeInterface::ATOM,
                 $completedBuyOrder->getPurchaseMadeAt()
             ),
             10

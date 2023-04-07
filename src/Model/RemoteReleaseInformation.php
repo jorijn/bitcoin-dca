@@ -15,14 +15,8 @@ namespace Jorijn\Bitcoin\Dca\Model;
 
 class RemoteReleaseInformation
 {
-    protected array $releaseInformation;
-
-    public function __construct(
-        array $releaseInformation,
-        protected string $localVersion,
-        protected string $remoteVersion
-    ) {
-        $this->releaseInformation = $releaseInformation;
+    public function __construct(protected array $releaseInformation, protected string $localVersion, protected string $remoteVersion)
+    {
     }
 
     public function getReleaseInformation(): array

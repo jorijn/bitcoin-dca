@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener\Notifications;
 
-use const DIRECTORY_SEPARATOR;
 use Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendEmailListener;
 use Jorijn\Bitcoin\Dca\Model\NotificationEmailConfiguration;
 use Jorijn\Bitcoin\Dca\Model\NotificationEmailTemplateInformation;
@@ -61,12 +60,12 @@ abstract class TesterOfAbstractSendEmailListener extends TestCase
         $this->exchange = 'e'.random_int(1000, 2000);
 
         $this->logoLocation = realpath(
-            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR
-        ).DIRECTORY_SEPARATOR.'logo-small.png';
+            __DIR__.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'resources'.\DIRECTORY_SEPARATOR.'images'.\DIRECTORY_SEPARATOR
+        ).\DIRECTORY_SEPARATOR.'logo-small.png';
 
         $this->iconLocation = realpath(
-            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR
-        ).DIRECTORY_SEPARATOR.'github-logo-colored.png';
+            __DIR__.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'resources'.\DIRECTORY_SEPARATOR.'images'.\DIRECTORY_SEPARATOR
+        ).\DIRECTORY_SEPARATOR.'github-logo-colored.png';
 
         $this->quotesLocation = tempnam(sys_get_temp_dir(), 'quotes');
         $this->templateLocation = tempnam(sys_get_temp_dir(), 'quotes');

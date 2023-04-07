@@ -13,16 +13,15 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Client;
 
-use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Client\BinanceClient;
 use Jorijn\Bitcoin\Dca\Exception\BinanceClientException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Client\BinanceClient
+ *
  * @covers ::__construct
  *
  * @internal
@@ -32,8 +31,7 @@ final class BinanceClientTest extends TestCase
     private string $apiKey;
     private string $apiSecret;
 
-    /** @var HttpClientInterface|MockObject */
-    private $httpClient;
+    private \Symfony\Contracts\HttpClient\HttpClientInterface|\PHPUnit\Framework\MockObject\MockObject $httpClient;
     private BinanceClient $client;
 
     protected function setUp(): void
@@ -175,7 +173,7 @@ final class BinanceClientTest extends TestCase
      */
     public function testSignatureAddThrowsExceptionOnCorruptBody(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $this->client->request('GET', 'foo', ['extra' => ['security_type' => 'TRADE'], 'body' => 'foo']);
     }

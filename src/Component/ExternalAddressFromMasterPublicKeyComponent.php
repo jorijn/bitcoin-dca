@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Jorijn\Bitcoin\Dca\Component;
 
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
@@ -35,7 +34,7 @@ class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPu
             return $this->addressCache[$masterPublicKey][$path];
         }
 
-        [$namespace, $index] = explode('/', $path);
+        [$namespace, $index] = explode('/', (string) $path);
         if ('0' !== $namespace) {
             throw new \InvalidArgumentException('no change addresses supported');
         }
@@ -54,7 +53,7 @@ class ExternalAddressFromMasterPublicKeyComponent implements AddressFromMasterPu
         try {
             // decode the result and add it to the cache in the same go.
             $result = $this->addressCache[$masterPublicKey] = json_decode($strResult, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
                 'failed to decode from external derivation tool: '.($exception->getMessage() ?: $exception::class),
                 [

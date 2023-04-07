@@ -15,19 +15,18 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoBalanceService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class BitvavoBalanceServiceTest extends TestCase
 {
-    /** @var BitvavoClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private BitvavoBalanceService $service;
 
     protected function setUp(): void

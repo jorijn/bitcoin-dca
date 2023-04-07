@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Factory\DeriveFromMasterPublicKeyComponentFactory
+ *
  * @covers ::__construct
  *
  * @internal

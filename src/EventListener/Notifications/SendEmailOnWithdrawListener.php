@@ -17,7 +17,7 @@ use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 
 class SendEmailOnWithdrawListener extends AbstractSendEmailListener
 {
-    public const NOTIFICATION_SUBJECT_LINE = 'You withdrew %s satoshis from %s';
+    final public const NOTIFICATION_SUBJECT_LINE = 'You withdrew %s satoshis from %s';
 
     public function onWithdraw(WithdrawSuccessEvent $withdrawSuccessEvent): void
     {

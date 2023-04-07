@@ -20,6 +20,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\VersionCommand
+ *
  * @covers ::__construct
  * @covers ::configure
  *

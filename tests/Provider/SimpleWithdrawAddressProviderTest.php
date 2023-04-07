@@ -16,19 +16,18 @@ namespace Tests\Jorijn\Bitcoin\Dca\Provider;
 use Jorijn\Bitcoin\Dca\Provider\SimpleWithdrawAddressProvider;
 use Jorijn\Bitcoin\Dca\Validator\ValidationException;
 use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Provider\SimpleWithdrawAddressProvider
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class SimpleWithdrawAddressProviderTest extends TestCase
 {
-    /** @var MockObject|ValidationInterface */
-    private $validation;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Validator\ValidationInterface $validation;
 
     private SimpleWithdrawAddressProvider $provider;
     private string $configuredAddress;

@@ -24,7 +24,7 @@ use Throwable;
 
 class CheckForUpdatesListener
 {
-    public const TEST_VALID_VERSION = '/^v\d+\.\d+\.\d+$/';
+    final public const TEST_VALID_VERSION = '/^v\d+\.\d+\.\d+$/';
     protected RemoteReleaseInformation $remoteReleaseInformation;
 
     public function __construct(

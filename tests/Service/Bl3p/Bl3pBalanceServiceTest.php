@@ -15,11 +15,11 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Bl3p;
 
 use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBalanceService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -33,8 +33,7 @@ final class Bl3pBalanceServiceTest extends TestCase
     private const VALUE_INT = 'value_int';
     private const AVAILABLE = 'available';
 
-    /** @var Bl3pClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private Bl3pBalanceService $service;
 
     protected function setUp(): void

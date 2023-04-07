@@ -11,24 +11,16 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
-use Rector\Core\Configuration\Option;
-use Rector\Set\ValueObject\SetList;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Rector\Config\RectorConfig;
+use Rector\Set\ValueObject\LevelSetList;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    // get parameters
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [
+return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->paths([
         __DIR__.'/src',
         __DIR__.'/tests',
     ]);
 
-    // Define what rule sets will be applied
-    $containerConfigurator->import(SetList::DEAD_CODE);
-    $containerConfigurator->import(SetList::CODE_QUALITY);
-    $containerConfigurator->import(SetList::PHP_80);
-    $containerConfigurator->import(SetList::NAMING);
-    $containerConfigurator->import(SetList::ORDER);
-    $containerConfigurator->import(SetList::TYPE_DECLARATION_STRICT);
-    $containerConfigurator->import(SetList::EARLY_RETURN);
+    $rectorConfig->sets([
+        LevelSetList::UP_TO_PHP_82,
+    ]);
 };

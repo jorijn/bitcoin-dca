@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Command\BuyCommand;
 use Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
@@ -31,6 +29,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\CheckForUpdatesListener
+ *
  * @covers ::__construct
  *
  * @internal
@@ -40,11 +39,9 @@ final class CheckForUpdatesListenerTest extends TestCase
     private const VERSION = 'v1.1.0';
     private const API_PATH_AT_GITHUB = '/api/path/at/github';
 
-    /** @var InputInterface|MockObject */
-    private $input;
+    private \Symfony\Component\Console\Input\InputInterface|\PHPUnit\Framework\MockObject\MockObject $input;
 
-    /** @var BufferedOutput */
-    private $bufferedOutput;
+    private \Symfony\Component\Console\Output\BufferedOutput $bufferedOutput;
 
     protected function setUp(): void
     {
@@ -258,7 +255,7 @@ final class CheckForUpdatesListenerTest extends TestCase
         $output = $this->createMock(OutputInterface::class);
 
         $apiResponse = $this->createMock(ResponseInterface::class);
-        $apiResponse->method('toArray')->willThrowException(new Exception('broken!'));
+        $apiResponse->method('toArray')->willThrowException(new \Exception('broken!'));
         $httpClient->expects(static::exactly(2))->method('request')->with('GET', self::API_PATH_AT_GITHUB)->willReturn(
             $apiResponse
         );

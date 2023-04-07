@@ -18,7 +18,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Throwable;
 
 class VerboseHttpClientDecorator implements HttpClientInterface
 {
@@ -50,7 +49,7 @@ class VerboseHttpClientDecorator implements HttpClientInterface
 
         try {
             $response = $this->httpClient->request($method, $url, $options);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->debug(
                 '[API call] exception was raised',
                 [

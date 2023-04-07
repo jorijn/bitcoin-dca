@@ -48,7 +48,7 @@ class BinanceWithdrawService implements WithdrawServiceInterface
         if (isset($response['balances'])) {
             foreach ($response['balances'] as $balance) {
                 if ('BTC' === $balance['asset']) {
-                    return (int) bcmul($balance['free'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+                    return (int) bcmul((string) $balance['free'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
                 }
             }
         }

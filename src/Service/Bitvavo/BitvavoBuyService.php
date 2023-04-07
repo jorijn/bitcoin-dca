@@ -21,10 +21,10 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class BitvavoBuyService implements BuyServiceInterface
 {
-    public const MARKET = 'market';
-    public const FILLED_AMOUNT = 'filledAmount';
-    public const ORDER = 'order';
-    public const ORDER_ID = 'orderId';
+    final public const MARKET = 'market';
+    final public const FILLED_AMOUNT = 'filledAmount';
+    final public const ORDER = 'order';
+    final public const ORDER_ID = 'orderId';
     protected string $tradingPair;
 
     public function __construct(protected BitvavoClientInterface $bitvavoClient, protected string $baseCurrency)
@@ -78,10 +78,10 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getCompletedBuyOrderFromResponse(array $orderInfo): CompletedBuyOrder
     {
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) bcmul($orderInfo[self::FILLED_AMOUNT], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
+            ->setAmountInSatoshis((int) bcmul((string) $orderInfo[self::FILLED_AMOUNT], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
             ->setFeesInSatoshis(
                 'BTC' === $orderInfo['feeCurrency']
-                    ? (int) bcmul($orderInfo['feePaid'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
+                    ? (int) bcmul((string) $orderInfo['feePaid'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
                     : 0
             )
             ->setDisplayAmountBought($orderInfo[self::FILLED_AMOUNT].' BTC')
@@ -95,10 +95,10 @@ class BitvavoBuyService implements BuyServiceInterface
     protected function getAveragePrice($data): float
     {
         $dividend = $divisor = 0;
-        $totalSats = (int) bcmul($data[self::FILLED_AMOUNT], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        $totalSats = (int) bcmul((string) $data[self::FILLED_AMOUNT], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
 
         foreach ($data['fills'] as $fill) {
-            $filledSats = (int) bcmul($fill['amount'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+            $filledSats = (int) bcmul((string) $fill['amount'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
             $percent = ($filledSats / $totalSats) * 100;
 
             $dividend += ($percent * (float) $fill['price']);

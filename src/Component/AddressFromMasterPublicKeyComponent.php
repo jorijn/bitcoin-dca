@@ -24,7 +24,6 @@ use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\Base58ExtendedKeySerializer;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\ExtendedKeySerializer;
 use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
-use const PHP_INT_SIZE;
 
 class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyComponentInterface
 {
@@ -82,6 +81,6 @@ class AddressFromMasterPublicKeyComponent implements AddressFromMasterPublicKeyC
     public function supported(): bool
     {
         // this component only works on PHP 64-bits
-        return PHP_INT_SIZE === 8;
+        return \PHP_INT_SIZE === 8;
     }
 }

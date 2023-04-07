@@ -35,11 +35,11 @@ class BinanceBalanceService implements BalanceServiceInterface
 
         return array_filter(
             array_reduce($response['balances'], static function (array $balances, array $asset): array {
-                $decimals = \strlen(explode('.', $asset['free'])[1]);
+                $decimals = \strlen(explode('.', (string) $asset['free'])[1]);
 
                 // binance holds a gazillion altcoins, no interest in showing hundreds if their balance
                 // is zero.
-                if (bccomp($asset['free'], '0', $decimals) <= 0) {
+                if (bccomp((string) $asset['free'], '0', $decimals) <= 0) {
                     $balances[$asset['asset']] = false;
 
                     return $balances;
@@ -47,7 +47,7 @@ class BinanceBalanceService implements BalanceServiceInterface
 
                 $balances[$asset['asset']] = [
                     $asset['asset'],
-                    bcadd($asset['free'], $asset['locked'], $decimals),
+                    bcadd((string) $asset['free'], (string) $asset['locked'], $decimals),
                     $asset['free'],
                 ];
 

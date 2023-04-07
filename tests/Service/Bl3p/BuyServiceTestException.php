@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use RuntimeException;
-
-class BuyServiceTestException extends RuntimeException
+class BuyServiceTestException extends \RuntimeException
 {
 }

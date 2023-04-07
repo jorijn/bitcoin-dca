@@ -14,22 +14,20 @@ declare(strict_types=1);
 namespace Tests\Jorijn\Bitcoin\Dca\Validator;
 
 use BitWasp\Bitcoin\Address\AddressCreator;
-use Exception;
 use Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidator;
 use Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidatorException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Validator\BitcoinAddressValidator
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class BitcoinAddressValidatorTest extends TestCase
 {
-    /** @var AddressCreator|MockObject */
-    private $addressCreator;
+    private \BitWasp\Bitcoin\Address\AddressCreator|\PHPUnit\Framework\MockObject\MockObject $addressCreator;
 
     private BitcoinAddressValidator $validator;
 
@@ -56,7 +54,7 @@ final class BitcoinAddressValidatorTest extends TestCase
     public function testExpectFailureOnAddressCreatorFailure(): void
     {
         $address = 'address'.random_int(1000, 2000);
-        $addressCreatorException = new Exception('error'.random_int(1000, 2000));
+        $addressCreatorException = new \Exception('error'.random_int(1000, 2000));
 
         $this->addressCreator
             ->expects(static::once())

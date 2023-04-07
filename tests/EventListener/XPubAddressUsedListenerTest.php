@@ -13,32 +13,28 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\XPubAddressUsedListener
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class XPubAddressUsedListenerTest extends TestCase
 {
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $xpubRepository;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface $xpubRepository;
 
-    /** @var AddressFromMasterPublicKeyComponentInterface|MockObject */
-    private $keyFactory;
+    private \Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface|\PHPUnit\Framework\MockObject\MockObject $keyFactory;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private XPubAddressUsedListener $listener;
     private WithdrawSuccessEvent $event;
     private string $configuredXPub;
@@ -156,7 +152,7 @@ final class XPubAddressUsedListenerTest extends TestCase
     public function testFailureIsLogged(): void
     {
         $activeIndex = random_int(1000, 2000);
-        $exception = new Exception('error'.random_int(1000, 2000));
+        $exception = new \Exception('error'.random_int(1000, 2000));
 
         $this->xpubRepository
             ->expects(static::atLeastOnce())

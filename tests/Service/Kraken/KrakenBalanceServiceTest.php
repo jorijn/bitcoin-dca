@@ -15,19 +15,18 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBalanceService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBalanceService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class KrakenBalanceServiceTest extends TestCase
 {
-    /** @var KrakenClientInterface|MockObject */
-    protected $client;
+    protected \Jorijn\Bitcoin\Dca\Client\KrakenClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
 
     protected KrakenBalanceService $balanceService;
 

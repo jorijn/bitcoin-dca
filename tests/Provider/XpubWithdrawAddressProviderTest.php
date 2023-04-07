@@ -17,25 +17,22 @@ use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Jorijn\Bitcoin\Dca\Validator\ValidationInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Provider\XpubWithdrawAddressProvider
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class XpubWithdrawAddressProviderTest extends TestCase
 {
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $xpubRepository;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface $xpubRepository;
 
-    /** @var AddressFromMasterPublicKeyComponent|MockObject */
-    private $keyFactory;
+    private \Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent|\PHPUnit\Framework\MockObject\MockObject $keyFactory;
 
-    /** @var MockObject|ValidationInterface */
-    private $validation;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Validator\ValidationInterface $validation;
     private XpubWithdrawAddressProvider $provider;
     private string $configuredXPub;
 

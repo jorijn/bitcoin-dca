@@ -22,7 +22,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\SerializerInterface;
-use Throwable;
 
 class BuyCommand extends Command implements MachineReadableOutputCommandInterface
 {
@@ -86,7 +85,7 @@ class BuyCommand extends Command implements MachineReadableOutputCommandInterfac
             $this->displayFormattedPurchaseOrder($completedBuyOrder, $symfonyStyle, $input->getOption('output'));
 
             return 0;
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $symfonyStyle->error($exception->getMessage());
         }
 

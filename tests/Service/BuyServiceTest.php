@@ -20,28 +20,25 @@ use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyService;
 use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\BuyService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class BuyServiceTest extends TestCase
 {
-    /** @var EventDispatcherInterface|MockObject */
-    private $dispatcher;
+    private \Psr\EventDispatcher\EventDispatcherInterface|\PHPUnit\Framework\MockObject\MockObject $dispatcher;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private string $configuredExchange;
 
-    /** @var BuyServiceInterface|MockObject */
-    private $supportedService;
+    private \Jorijn\Bitcoin\Dca\Service\BuyServiceInterface|\PHPUnit\Framework\MockObject\MockObject $supportedService;
     private int $timeout;
     private BuyService $service;
 
@@ -78,6 +75,7 @@ final class BuyServiceTest extends TestCase
 
     /**
      * @dataProvider providerOfBuyScenarios
+     *
      * @covers ::buy
      * @covers ::buyAtService
      */

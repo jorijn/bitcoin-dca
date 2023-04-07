@@ -13,28 +13,25 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\EventListener;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedWithdraw;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\ResetTaggedBalanceListener
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class ResetTaggedBalanceListenerTest extends TestCase
 {
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $repository;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface $repository;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private ResetTaggedBalanceListener $listener;
 
     protected function setUp(): void
@@ -64,7 +61,7 @@ final class ResetTaggedBalanceListenerTest extends TestCase
     /**
      * @covers ::onWithdrawSucces
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testListenerResetsBalanceForTag(): void
     {

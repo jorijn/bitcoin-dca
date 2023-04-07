@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
-use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponent;
 use Jorijn\Bitcoin\Dca\Exception\NoMasterPublicKeyAvailableException;
-use const PHP_INT_SIZE;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,13 +30,14 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     {
         parent::setUp();
 
-        if (PHP_INT_SIZE !== 8) {
+        if (\PHP_INT_SIZE !== 8) {
             static::markTestSkipped('unsupported on non 64 bits systems');
         }
     }
 
     /**
      * @dataProvider providerOfScenarios
+     *
      * @covers ::derive
      */
     public function testDerive(string $xpub, array $expectedAddressList): void
@@ -58,7 +57,7 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     public function testDeriveWithEmptyXpubKey(): void
     {
         $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $addressFromMasterPublicKeyComponent->derive('');
     }
 
@@ -78,6 +77,6 @@ final class AddressFromMasterPublicKeyComponentTest extends TestCase
     public function testSupported(): void
     {
         $addressFromMasterPublicKeyComponent = new AddressFromMasterPublicKeyComponent();
-        static::assertSame(PHP_INT_SIZE === 8, $addressFromMasterPublicKeyComponent->supported());
+        static::assertSame(\PHP_INT_SIZE === 8, $addressFromMasterPublicKeyComponent->supported());
     }
 }

@@ -60,7 +60,7 @@ class JsonFileTaggedIntegerRepository implements TaggedIntegerRepositoryInterfac
     /**
      * @param array $data
      *
-     * @throws JsonException
+     * @throws \JsonException
      */
     protected function write($data = []): void
     {

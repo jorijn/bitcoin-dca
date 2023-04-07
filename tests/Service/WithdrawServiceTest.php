@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Exception\NoExchangeAvailableException;
 use Jorijn\Bitcoin\Dca\Exception\NoRecipientAddressAvailableException;
@@ -22,15 +21,13 @@ use Jorijn\Bitcoin\Dca\Provider\WithdrawAddressProviderInterface;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Jorijn\Bitcoin\Dca\Service\WithdrawService;
 use Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Throwable;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\WithdrawService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -39,21 +36,16 @@ final class WithdrawServiceTest extends TestCase
 {
     private const ADDRESS = 'address';
 
-    /** @var MockObject|WithdrawAddressProviderInterface */
-    private $addressProvider;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Provider\WithdrawAddressProviderInterface $addressProvider;
 
-    /** @var MockObject|WithdrawServiceInterface */
-    private $supportedService;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Service\WithdrawServiceInterface $supportedService;
 
-    /** @var EventDispatcherInterface|MockObject */
-    private $dispatcher;
+    private \Psr\EventDispatcher\EventDispatcherInterface|\PHPUnit\Framework\MockObject\MockObject $dispatcher;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private string $configuredExchange;
 
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $balanceRepository;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface $balanceRepository;
 
     protected function setUp(): void
     {
@@ -114,9 +106,10 @@ final class WithdrawServiceTest extends TestCase
     /**
      * @covers ::getActiveService
      * @covers ::withdraw
+     *
      * @dataProvider providerOfTags
      *
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function testWithdrawHappyFlow(?string $tag): void
     {
@@ -168,6 +161,7 @@ final class WithdrawServiceTest extends TestCase
     /**
      * @covers ::getActiveService
      * @covers ::withdraw
+     *
      * @dataProvider providerOfTags
      */
     public function testWithdrawFails(?string $tag): void
@@ -182,7 +176,7 @@ final class WithdrawServiceTest extends TestCase
             ->method('error')
         ;
 
-        $runtimeException = new RuntimeException('random'.random_int(1000, 2000));
+        $runtimeException = new \RuntimeException('random'.random_int(1000, 2000));
         $this->supportedService
             ->expects(static::once())
             ->method('withdraw')
@@ -210,6 +204,7 @@ final class WithdrawServiceTest extends TestCase
     /**
      * @covers ::getActiveService
      * @covers ::getBalance
+     *
      * @dataProvider providerOfBalancesAndTags
      */
     public function testGetBalanceForActiveExchange(
@@ -250,7 +245,7 @@ final class WithdrawServiceTest extends TestCase
     /**
      * @covers ::getRecipientAddress
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testGetRecipientAddress(): void
     {
@@ -260,7 +255,7 @@ final class WithdrawServiceTest extends TestCase
         $unsupportedAddressProvider
             ->expects(static::exactly(2))
             ->method('provide')
-            ->willThrowException(new RuntimeException('test failure'))
+            ->willThrowException(new \RuntimeException('test failure'))
         ;
 
         $this->addressProvider

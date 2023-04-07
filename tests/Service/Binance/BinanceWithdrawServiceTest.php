@@ -17,11 +17,11 @@ use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BinanceClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\BinanceClientException;
 use Jorijn\Bitcoin\Dca\Service\Binance\BinanceWithdrawService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Binance\BinanceWithdrawService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -30,8 +30,7 @@ final class BinanceWithdrawServiceTest extends TestCase
 {
     private const URL_ASSET_DETAIL = 'sapi/v1/asset/assetDetail';
 
-    /** @var BinanceClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\BinanceClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private BinanceWithdrawService $service;
 
     protected function setUp(): void

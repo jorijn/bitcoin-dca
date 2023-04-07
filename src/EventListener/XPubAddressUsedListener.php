@@ -17,7 +17,6 @@ use Jorijn\Bitcoin\Dca\Component\AddressFromMasterPublicKeyComponentInterface;
 use Jorijn\Bitcoin\Dca\Event\WithdrawSuccessEvent;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class XPubAddressUsedListener
 {
@@ -58,7 +57,7 @@ class XPubAddressUsedListener
 
             // we have a match, increase the index in the database so a new address is returned next time
             $this->taggedIntegerRepository->increase($this->configuredXPub);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error('failed to determine / increase xpub index', [
                 'xpub' => $this->configuredXPub,
                 'reason' => $exception->getMessage() ?: $exception::class,

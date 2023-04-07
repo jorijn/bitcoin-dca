@@ -15,7 +15,6 @@ namespace Tests\Jorijn\Bitcoin\Dca\Client;
 
 use Jorijn\Bitcoin\Dca\Client\BitvavoClient;
 use Jorijn\Bitcoin\Dca\Exception\BitvavoClientException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -23,6 +22,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Client\BitvavoClient
+ *
  * @covers ::__construct
  *
  * @internal
@@ -31,14 +31,12 @@ final class BitvavoClientTest extends TestCase
 {
     private const HEADERS = 'headers';
 
-    /** @var HttpClientInterface|MockObject */
-    private $httpClient;
+    private \Symfony\Contracts\HttpClient\HttpClientInterface|\PHPUnit\Framework\MockObject\MockObject $httpClient;
     private string $accessWindow;
     private string $apiKey;
     private string $apiSecret;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private BitvavoClient $client;
 
     protected function setUp(): void
@@ -72,6 +70,7 @@ final class BitvavoClientTest extends TestCase
 
     /**
      * @covers ::apiCall
+     *
      * @dataProvider differentApiCalls
      */
     public function testApiCall(string $method, array $parameters, array $body): void
@@ -142,6 +141,7 @@ final class BitvavoClientTest extends TestCase
 
     /**
      * @covers ::apiCall
+     *
      * @dataProvider differentApiCalls
      */
     public function testApiCallThrowsExceptionIfBitvavoReturnsError(

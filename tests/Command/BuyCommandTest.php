@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Command\BuyCommand;
 use Jorijn\Bitcoin\Dca\Exception\BuyTimeoutException;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Service\BuyService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -26,6 +24,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BuyCommand
+ *
  * @covers ::__construct
  * @covers ::configure
  *
@@ -36,11 +35,9 @@ final class BuyCommandTest extends TestCase
     public const AMOUNT = 'amount';
     public const COMMAND = 'command';
 
-    /** @var BuyService|MockObject */
-    private $buyService;
+    private \Jorijn\Bitcoin\Dca\Service\BuyService|\PHPUnit\Framework\MockObject\MockObject $buyService;
 
-    /** @var MockObject|SerializerInterface */
-    private $serializer;
+    private \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\Serializer\SerializerInterface $serializer;
 
     private BuyCommand $command;
     private string $baseCurrency;
@@ -111,6 +108,7 @@ final class BuyCommandTest extends TestCase
      * @covers ::displayFormattedPurchaseOrder
      * @covers ::execute
      * @covers ::isDisplayingMachineReadableOutput
+     *
      * @dataProvider providerOfTags
      */
     public function testNotUnattendedAndConfirmsBuy(string $tag = null): void
@@ -175,6 +173,7 @@ final class BuyCommandTest extends TestCase
      * @covers ::displayFormattedPurchaseOrder
      * @covers ::execute
      * @covers ::isDisplayingMachineReadableOutput
+     *
      * @dataProvider providerOfDifferentFormats
      */
     public function testUnattendedBuyWithAlternativeOutputFormat(string $requestedFormat): void
@@ -241,7 +240,7 @@ final class BuyCommandTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function prepareBuyTest(?string $tag): array
     {

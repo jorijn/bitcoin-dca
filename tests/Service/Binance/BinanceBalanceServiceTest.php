@@ -15,19 +15,18 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Binance;
 
 use Jorijn\Bitcoin\Dca\Client\BinanceClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Binance\BinanceBalanceService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Binance\BinanceBalanceService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class BinanceBalanceServiceTest extends TestCase
 {
-    /** @var BinanceClientInterface|MockObject */
-    protected $client;
+    protected \Jorijn\Bitcoin\Dca\Client\BinanceClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     protected BinanceBalanceService $service;
 
     protected function setUp(): void

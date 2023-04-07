@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 
 class BitvavoWithdrawService implements WithdrawServiceInterface
 {
-    public const SYMBOL = 'symbol';
+    final public const SYMBOL = 'symbol';
 
     public function __construct(protected BitvavoClientInterface $bitvavoClient, protected LoggerInterface $logger)
     {
@@ -52,8 +52,8 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
             return 0;
         }
 
-        $available = (int) bcmul($response[0]['available'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
-        $inOrder = (int) bcmul($response[0]['inOrder'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        $available = (int) bcmul((string) $response[0]['available'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        $inOrder = (int) bcmul((string) $response[0]['inOrder'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
 
         return $available - $inOrder;
     }
@@ -62,7 +62,7 @@ class BitvavoWithdrawService implements WithdrawServiceInterface
     {
         $response = $this->bitvavoClient->apiCall('assets', 'GET', [self::SYMBOL => 'BTC']);
 
-        return (int) bcmul($response['withdrawalFee'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        return (int) bcmul((string) $response['withdrawalFee'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
     }
 
     public function supportsExchange(string $exchange): bool

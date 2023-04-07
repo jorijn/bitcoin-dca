@@ -19,7 +19,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
-use Throwable;
 
 class WriteOrderToCsvListener
 {
@@ -60,7 +59,7 @@ class WriteOrderToCsvListener
                     'add_headers' => $addHeaders,
                 ]
             );
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
                 'unable to write order to file',
                 [

@@ -15,12 +15,12 @@ namespace Tests\Jorijn\Bitcoin\Dca\Command;
 
 use Jorijn\Bitcoin\Dca\Command\BalanceCommand;
 use Jorijn\Bitcoin\Dca\Service\BalanceService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Command\BalanceCommand
+ *
  * @covers ::__construct
  * @covers ::configure
  *
@@ -28,8 +28,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 final class BalanceCommandTest extends TestCase
 {
-    /** @var BalanceService|MockObject */
-    private $service;
+    private \Jorijn\Bitcoin\Dca\Service\BalanceService|\PHPUnit\Framework\MockObject\MockObject $service;
     private CommandTester $commandTester;
 
     protected function setUp(): void

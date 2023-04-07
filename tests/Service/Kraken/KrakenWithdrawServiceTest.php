@@ -17,23 +17,21 @@ use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Service\Kraken\KrakenWithdrawService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Kraken\KrakenWithdrawService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class KrakenWithdrawServiceTest extends TestCase
 {
-    /** @var KrakenClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\KrakenClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private string $withdrawKey;
     private KrakenWithdrawService $service;
 

@@ -13,13 +13,11 @@ declare(strict_types=1);
 
 namespace Jorijn\Bitcoin\Dca\Exception;
 
-use Exception;
-
-class PendingBuyOrderException extends Exception
+class PendingBuyOrderException extends \Exception
 {
     public function __construct(protected string $orderId)
     {
-        parent::__construct(__CLASS__.' is supposed to be handled, something went wrong here.');
+        parent::__construct(self::class.' is supposed to be handled, something went wrong here.');
     }
 
     public function getOrderId(): string

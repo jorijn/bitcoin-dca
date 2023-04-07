@@ -19,7 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class KrakenClient implements KrakenClientInterface
 {
-    public const USER_AGENT = 'Mozilla/4.0 (compatible; Kraken PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')';
+    final public const USER_AGENT = 'Mozilla/4.0 (compatible; Kraken PHP client; Jorijn/BitcoinDca; '.PHP_OS.'; PHP/'.PHP_VERSION.')';
 
     public function __construct(
         protected HttpClientInterface $httpClient,

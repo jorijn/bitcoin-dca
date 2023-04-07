@@ -20,6 +20,7 @@ use Symfony\Component\Mime\Email;
 
 /**
  * @internal
+ *
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\Notifications\SendEmailOnWithdrawListener
  */
 final class SendEmailOnWithdrawListenerTest extends TesterOfAbstractSendEmailListener

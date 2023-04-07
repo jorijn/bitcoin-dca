@@ -16,11 +16,11 @@ namespace Tests\Jorijn\Bitcoin\Dca\Service\Bl3p;
 use Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bl3p\Bl3pBuyService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -39,8 +39,7 @@ final class Bl3pBuyServiceTest extends TestCase
     private const MONEY_ORDER_RESULT = '/money/order/result';
     private const MONEY_ORDER_ADD = '/money/order/add';
 
-    /** @var Bl3pClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\Bl3pClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private string $baseCurrency;
     private Bl3pBuyService $service;
 

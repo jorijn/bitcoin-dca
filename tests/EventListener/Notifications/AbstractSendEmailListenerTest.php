@@ -16,10 +16,10 @@ namespace Tests\Jorijn\Bitcoin\Dca\EventListener\Notifications;
 use Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendEmailListener;
 use Jorijn\Bitcoin\Dca\Exception\UnableToGetRandomQuoteException;
 use Jorijn\Bitcoin\Dca\Model\Quote;
-use JsonException;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendEmailListener
+ *
  * @covers ::__construct
  *
  * @internal
@@ -44,7 +44,7 @@ final class AbstractSendEmailListenerTest extends TesterOfAbstractSendEmailListe
     /**
      * @covers ::getRandomQuote
      *
-     * @throws JsonException
+     * @throws \JsonException
      */
     public function testGettingRandomQuote(): void
     {

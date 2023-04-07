@@ -20,22 +20,22 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class Bl3pBuyService implements BuyServiceInterface
 {
-    public const ORDER_ID = 'order_id';
-    public const TOTAL_FEE = 'total_fee';
-    public const DATA = 'data';
-    public const TOTAL_AMOUNT = 'total_amount';
-    public const VALUE_INT = 'value_int';
-    public const CURRENCY = 'currency';
-    public const DISPLAY = 'display';
-    public const TOTAL_SPENT = 'total_spent';
-    public const DISPLAY_SHORT = 'display_short';
-    public const AVG_COST = 'avg_cost';
-    public const ORDER_STATUS_CLOSED = 'closed';
-    public const STATUS = 'status';
-    public const TYPE = 'type';
-    public const AMOUNT_FUNDS_INT = 'amount_funds_int';
-    public const FEE_CURRENCY = 'fee_currency';
-    public const BL3P = 'bl3p';
+    final public const ORDER_ID = 'order_id';
+    final public const TOTAL_FEE = 'total_fee';
+    final public const DATA = 'data';
+    final public const TOTAL_AMOUNT = 'total_amount';
+    final public const VALUE_INT = 'value_int';
+    final public const CURRENCY = 'currency';
+    final public const DISPLAY = 'display';
+    final public const TOTAL_SPENT = 'total_spent';
+    final public const DISPLAY_SHORT = 'display_short';
+    final public const AVG_COST = 'avg_cost';
+    final public const ORDER_STATUS_CLOSED = 'closed';
+    final public const STATUS = 'status';
+    final public const TYPE = 'type';
+    final public const AMOUNT_FUNDS_INT = 'amount_funds_int';
+    final public const FEE_CURRENCY = 'fee_currency';
+    final public const BL3P = 'bl3p';
     protected string $tradingPair;
 
     public function __construct(protected Bl3pClientInterface $bl3pClient, protected string $baseCurrency)

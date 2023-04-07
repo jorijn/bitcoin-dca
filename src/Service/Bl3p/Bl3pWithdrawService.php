@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 
 class Bl3pWithdrawService implements WithdrawServiceInterface
 {
-    public const BL3P = 'bl3p';
+    final public const BL3P = 'bl3p';
 
     public function __construct(protected Bl3pClientInterface $bl3pClient, protected LoggerInterface $logger)
     {

@@ -15,7 +15,6 @@ namespace Tests\Jorijn\Bitcoin\Dca\Client;
 
 use Jorijn\Bitcoin\Dca\Client\KrakenClient;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -23,6 +22,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Client\KrakenClient
+ *
  * @covers ::__construct
  *
  * @internal
@@ -33,8 +33,7 @@ final class KrakenClientTest extends TestCase
 
     protected MockHttpClient $httpClient;
 
-    /** @var LoggerInterface|MockObject */
-    protected $logger;
+    protected \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     protected KrakenClient $client;
     protected string $version;
     private array $testResponses = [];

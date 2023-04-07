@@ -21,7 +21,7 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class BinanceBuyService implements BuyServiceInterface
 {
-    public const ORDER_URL = 'api/v3/order';
+    final public const ORDER_URL = 'api/v3/order';
     protected string $tradingPair;
 
     public function __construct(protected BinanceClientInterface $binanceClient, protected string $baseCurrency)
@@ -95,10 +95,10 @@ class BinanceBuyService implements BuyServiceInterface
         [$feeAmount, $feeCurrency] = $this->getFeeInformationFromOrderInfo($orderInfo);
 
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) bcmul($orderInfo['executedQty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
+            ->setAmountInSatoshis((int) bcmul((string) $orderInfo['executedQty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
             ->setFeesInSatoshis(
                 'BTC' === $feeCurrency
-                    ? (int) bcmul($feeAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
+                    ? (int) bcmul((string) $feeAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)
                     : 0
             )
             ->setDisplayAmountBought($orderInfo['executedQty'].' BTC')
@@ -111,10 +111,10 @@ class BinanceBuyService implements BuyServiceInterface
     protected function getAveragePrice($data): float
     {
         $dividend = $divisor = 0;
-        $totalSats = (int) bcmul($data['executedQty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+        $totalSats = (int) bcmul((string) $data['executedQty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
 
         foreach ($data['fills'] as $fill) {
-            $filledSats = (int) bcmul($fill['qty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
+            $filledSats = (int) bcmul((string) $fill['qty'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS);
             $percent = ($filledSats / $totalSats) * 100;
 
             $dividend += ($percent * (float) $fill['price']);
@@ -130,9 +130,9 @@ class BinanceBuyService implements BuyServiceInterface
         $fee = '0';
 
         foreach ($orderInfo['fills'] as $fill) {
-            $feeDecimals = \strlen(explode('.', $fill['commission'])[1]);
+            $feeDecimals = \strlen(explode('.', (string) $fill['commission'])[1]);
             $feeCurrency = $fill['commissionAsset'];
-            $fee = bcadd($fee, $fill['commission'], $feeDecimals);
+            $fee = bcadd($fee, (string) $fill['commission'], $feeDecimals);
         }
 
         return [$fee, $feeCurrency];

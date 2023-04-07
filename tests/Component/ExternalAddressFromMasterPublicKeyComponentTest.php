@@ -13,15 +13,13 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Component;
 
-use InvalidArgumentException;
 use Jorijn\Bitcoin\Dca\Component\ExternalAddressFromMasterPublicKeyComponent;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Component\ExternalAddressFromMasterPublicKeyComponent
+ *
  * @covers ::__construct
  *
  * @internal
@@ -32,8 +30,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
 
     private const XPUB_PYTHON_CLI = 'XPUB_PYTHON_CLI';
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private ExternalAddressFromMasterPublicKeyComponent $component;
 
     protected function setUp(): void
@@ -53,6 +50,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
 
     /**
      * @dataProvider providerOfScenarios
+     *
      * @covers ::derive
      */
     public function testDerive(string $xpub, array $expectedAddressList): void
@@ -70,7 +68,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithEmptyXpubKey(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->component->derive('');
     }
 
@@ -79,7 +77,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithChangeAddress(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->component->derive('dummy', '1/0');
     }
 
@@ -88,7 +86,7 @@ final class ExternalAddressFromMasterPublicKeyComponentTest extends TestCase
      */
     public function testDeriveWithUnsupportedKey(): void
     {
-        $this->expectException(Throwable::class);
+        $this->expectException(\Throwable::class);
         $this->component->derive('(╯°□°）╯︵ ┻━┻');
     }
 

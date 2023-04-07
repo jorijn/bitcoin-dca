@@ -17,23 +17,21 @@ use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
 use Jorijn\Bitcoin\Dca\EventListener\IncreaseTaggedBalanceListener;
 use Jorijn\Bitcoin\Dca\Model\CompletedBuyOrder;
 use Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\IncreaseTaggedBalanceListener
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class IncreaseTaggedBalanceListenerTest extends TestCase
 {
-    /** @var MockObject|TaggedIntegerRepositoryInterface */
-    private $repository;
+    private \PHPUnit\Framework\MockObject\MockObject|\Jorijn\Bitcoin\Dca\Repository\TaggedIntegerRepositoryInterface $repository;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private IncreaseTaggedBalanceListener $listener;
 
     protected function setUp(): void

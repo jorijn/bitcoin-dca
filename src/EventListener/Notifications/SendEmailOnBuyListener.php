@@ -17,7 +17,7 @@ use Jorijn\Bitcoin\Dca\Event\BuySuccessEvent;
 
 class SendEmailOnBuyListener extends AbstractSendEmailListener
 {
-    public const NOTIFICATION_SUBJECT_LINE = 'You bought %s sats on %s';
+    final public const NOTIFICATION_SUBJECT_LINE = 'You bought %s sats on %s';
 
     public function onBuy(BuySuccessEvent $buySuccessEvent): void
     {

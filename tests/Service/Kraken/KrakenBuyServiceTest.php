@@ -13,25 +13,23 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Kraken;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\KrakenClientInterface;
 use Jorijn\Bitcoin\Dca\Exception\KrakenClientException;
 use Jorijn\Bitcoin\Dca\Exception\PendingBuyOrderException;
 use Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBuyService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Kraken\KrakenBuyService
+ *
  * @covers ::__construct
  *
  * @internal
  */
 final class KrakenBuyServiceTest extends TestCase
 {
-    /** @var KrakenClientInterface|MockObject */
-    protected $client;
+    protected \Jorijn\Bitcoin\Dca\Client\KrakenClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     protected string $baseCurrency;
     protected KrakenBuyService $buyService;
 
@@ -69,9 +67,10 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getCompletedBuyOrder
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
+     *
      * @dataProvider togglerTradingAgreement
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testSuccessfulBuy(?string $tradingAgreement): void
     {
@@ -192,7 +191,7 @@ final class KrakenBuyServiceTest extends TestCase
     /**
      * @covers ::cancelBuyOrder
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testBuyIsCancelled(): void
     {
@@ -213,7 +212,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getCurrentPrice
      * @covers ::initiateBuy
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testBuyCannotBeLocatedAfterPurchase(): void
     {
@@ -273,7 +272,7 @@ final class KrakenBuyServiceTest extends TestCase
      * @covers ::getTakerFeeFromSchedule
      * @covers ::initiateBuy
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testBuyWithInclusiveStrategy(): void
     {

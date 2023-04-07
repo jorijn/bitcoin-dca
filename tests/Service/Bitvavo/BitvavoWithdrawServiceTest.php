@@ -13,16 +13,15 @@ declare(strict_types=1);
 
 namespace Tests\Jorijn\Bitcoin\Dca\Service\Bitvavo;
 
-use Exception;
 use Jorijn\Bitcoin\Dca\Bitcoin;
 use Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface;
 use Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Service\Bitvavo\BitvavoWithdrawService
+ *
  * @covers ::__construct
  *
  * @internal
@@ -33,11 +32,9 @@ final class BitvavoWithdrawServiceTest extends TestCase
     public const API_CALL = 'apiCall';
     public const GENMKT_MONEY_INFO = 'GENMKT/money/info';
 
-    /** @var BitvavoClientInterface|MockObject */
-    private $client;
+    private \Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private BitvavoWithdrawService $service;
 
     protected function setUp(): void
@@ -56,7 +53,7 @@ final class BitvavoWithdrawServiceTest extends TestCase
     /**
      * @covers ::getAvailableBalance
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testGetBalance(): void
     {
@@ -70,14 +67,14 @@ final class BitvavoWithdrawServiceTest extends TestCase
             )
         ;
 
-        static::assertSame(134500000, $this->service->getAvailableBalance());
+        static::assertSame(134_500_000, $this->service->getAvailableBalance());
         static::assertSame(0, $this->service->getAvailableBalance());
     }
 
     /**
      * @covers ::withdraw
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function testWithdraw(): void
     {

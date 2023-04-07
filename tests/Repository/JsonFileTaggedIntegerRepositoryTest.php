@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\Repository\JsonFileTaggedIntegerRepository
+ *
  * @covers ::__construct
  *
  * @internal
@@ -31,7 +32,7 @@ final class JsonFileTaggedIntegerRepositoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->file = __CLASS__.'.db';
+        $this->file = self::class.'.db';
         $this->repository = new JsonFileTaggedIntegerRepository($this->file);
     }
 

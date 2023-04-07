@@ -20,6 +20,7 @@ use Symfony\Component\Notifier\Bridge\Telegram\TelegramTransport;
 
 /**
  * @internal
+ *
  * @coversDefaultClass \Jorijn\Bitcoin\Dca\EventListener\Notifications\AbstractSendTelegramListener
  */
 final class AbstractSendTelegramListenerTest extends TestCase

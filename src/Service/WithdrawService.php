@@ -62,7 +62,7 @@ class WithdrawService
             ]);
 
             return $completedWithdraw;
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error('withdraw to {address} failed', [
                 'tag' => $tag,
                 'balance' => $balanceToWithdraw,

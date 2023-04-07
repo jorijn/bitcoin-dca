@@ -22,8 +22,8 @@ use Jorijn\Bitcoin\Dca\Service\BuyServiceInterface;
 
 class KrakenBuyService implements BuyServiceInterface
 {
-    public const FEE_STRATEGY_INCLUSIVE = 'include';
-    public const FEE_STRATEGY_EXCLUSIVE = 'exclude';
+    final public const FEE_STRATEGY_INCLUSIVE = 'include';
+    final public const FEE_STRATEGY_EXCLUSIVE = 'exclude';
 
     protected array $lastUserRefs = [];
     protected string $tradingPair;
@@ -151,7 +151,7 @@ class KrakenBuyService implements BuyServiceInterface
         }
 
         return (new CompletedBuyOrder())
-            ->setAmountInSatoshis((int) bcmul($orderInfo['vol'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
+            ->setAmountInSatoshis((int) bcmul((string) $orderInfo['vol'], Bitcoin::SATOSHIS, Bitcoin::DECIMALS))
             ->setFeesInSatoshis(0)
             ->setDisplayAmountBought($orderInfo['vol'].' BTC')
             ->setDisplayAmountSpent($orderInfo['cost'].' '.$this->baseCurrency)
