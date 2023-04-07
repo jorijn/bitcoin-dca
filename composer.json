@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "symfony/console": "^6.0",
         "symfony/dotenv": "^6.0",
         "symfony/dependency-injection": "^6.0",
