@@ -22,7 +22,7 @@
         "ext-bcmath": "*",
         "protonlabs/bitcoin": "1.0.x-dev",
         "symfony/event-dispatcher": "^6.0",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.3",
         "symfony/http-client": "^6.0",
         "symfony/serializer": "^6.0",
         "symfony/property-access": "^6.0",
