@@ -27,17 +27,25 @@ jobs:
           cache-from: type=registry,ref=jorijn/bitcoin-dca:latest
 
       - name: Extract the test logging artifacts from the container that was built
+        if: success() || failure()
         run: |
           docker run --rm --entrypoint= -v ${GITHUB_WORKSPACE}:/app/ jorijn/bitcoin-dca:ci sh -c "cp /tmp/tests_*.xml /app/"
           sed -i "s/\/app\//\/github\/workspace\//g" tests_coverage.xml tests_log.xml
 
       - name: Upload logging artifacts
         uses: actions/upload-artifact@v3
+        if: success() || failure()
         with:
           name: test_coverage_and_logging
           path: |
             tests_coverage.xml
             tests_log.xml
+            
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
+        with:
+          report_paths: 'tests_*.xml'
 
   sonarcloud:
     runs-on: ubuntu-latest
