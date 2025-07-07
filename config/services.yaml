@@ -16,6 +16,7 @@ parameters:
   env(BITVAVO_API_URL): 'https://api.bitvavo.com/v2/'
   env(BITVAVO_API_KEY): ~
   env(BITVAVO_API_SECRET): ~
+  env(BITVAVO_OPERATOR_ID): ~
 
   # kraken settings
   env(KRAKEN_API_URL): 'https://api.kraken.com/'
@@ -155,6 +156,7 @@ services:
       - '@logger'
       - '%env(string:BITVAVO_API_KEY)%'
       - '%env(string:BITVAVO_API_SECRET)%'
+      - '%env(int:BITVAVO_OPERATOR_ID)%'
 
   http_client.bitvavo:
     class: Symfony\Contracts\HttpClient\HttpClientInterface
