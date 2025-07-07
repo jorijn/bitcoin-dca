@@ -21,7 +21,7 @@ trait MasterPublicKeyScenarioTrait
      * BIP39 Mnemonic from https://iancoleman.io/bip39/#english
      * blanket feel weird account embody turtle trial upon east legal top suggest beach clump depth
      */
-    public function providerOfScenarios(): array
+    public static function providerOfScenarios(): array
     {
         return [
             'bip32' => [

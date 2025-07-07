@@ -61,7 +61,7 @@ final class BitvavoClientTest extends TestCase
         );
     }
 
-    public function differentApiCalls(): array
+    public static function differentApiCalls(): array
     {
         return [
             'GET /?foo=bar' => ['GET', ['foo' => 'bar'], []],

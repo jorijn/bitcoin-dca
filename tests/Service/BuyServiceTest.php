@@ -63,7 +63,7 @@ final class BuyServiceTest extends TestCase
         );
     }
 
-    public function providerOfBuyScenarios(): array
+    public static function providerOfBuyScenarios(): array
     {
         return [
             'buy fills immediately' => [0, false],

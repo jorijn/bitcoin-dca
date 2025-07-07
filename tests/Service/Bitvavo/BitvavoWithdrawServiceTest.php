@@ -61,10 +61,15 @@ final class BitvavoWithdrawServiceTest extends TestCase
             ->expects(static::exactly(2))
             ->method(self::API_CALL)
             ->with('balance', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC'])
-            ->willReturnOnConsecutiveCalls(
-                [[BitvavoWithdrawService::SYMBOL => 'BTC', 'available' => '2.345', 'inOrder' => '1']],
-                []
-            )
+            ->willReturnCallback(function () {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => [[BitvavoWithdrawService::SYMBOL => 'BTC', 'available' => '2.345', 'inOrder' => '1']],
+                    2 => [],
+                };
+            })
         ;
 
         static::assertSame(134_500_000, $this->service->getAvailableBalance());
@@ -87,33 +92,38 @@ final class BitvavoWithdrawServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method(self::API_CALL)
-            ->withConsecutive(
-                ['assets', 'GET', [BitvavoWithdrawService::SYMBOL => 'BTC']],
-                [
-                    'withdrawal',
-                    'POST',
-                    [],
-                    static::callback(static function (array $parameters) use ($netAmount, $address): bool {
-                        self::assertArrayHasKey(BitvavoWithdrawService::SYMBOL, $parameters);
-                        self::assertSame('BTC', $parameters[BitvavoWithdrawService::SYMBOL]);
-                        self::assertArrayHasKey(self::ADDRESS, $parameters);
-                        self::assertSame($address, $parameters[self::ADDRESS]);
-                        self::assertArrayHasKey('amount', $parameters);
+            ->willReturnCallback(function (...$args) use ($netAmount, $address, $bitvavoFee, $apiResponse) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $bitvavoFee) {
+                        [$endpoint, $method, $params] = $args;
+                        self::assertSame('assets', $endpoint);
+                        self::assertSame('GET', $method);
+                        self::assertSame([BitvavoWithdrawService::SYMBOL => 'BTC'], $params);
+                        return ['withdrawalFee' => bcdiv((string) $bitvavoFee, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)];
+                    })(),
+                    2 => (function () use ($args, $netAmount, $address, $apiResponse) {
+                        [$endpoint, $method, $params, $body] = $args;
+                        self::assertSame('withdrawal', $endpoint);
+                        self::assertSame('POST', $method);
+                        self::assertSame([], $params);
+                        self::assertArrayHasKey(BitvavoWithdrawService::SYMBOL, $body);
+                        self::assertSame('BTC', $body[BitvavoWithdrawService::SYMBOL]);
+                        self::assertArrayHasKey(self::ADDRESS, $body);
+                        self::assertSame($address, $body[self::ADDRESS]);
+                        self::assertArrayHasKey('amount', $body);
                         self::assertSame(
                             (string) bcdiv((string) $netAmount, Bitcoin::SATOSHIS, Bitcoin::DECIMALS),
-                            $parameters['amount']
+                            $body['amount']
                         );
-                        self::assertArrayHasKey('addWithdrawalFee', $parameters);
-                        self::assertTrue($parameters['addWithdrawalFee']);
-
-                        return true;
-                    }),
-                ]
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['withdrawalFee' => bcdiv((string) $bitvavoFee, Bitcoin::SATOSHIS, Bitcoin::DECIMALS)],
-                $apiResponse
-            )
+                        self::assertArrayHasKey('addWithdrawalFee', $body);
+                        self::assertTrue($body['addWithdrawalFee']);
+                        return $apiResponse;
+                    })(),
+                };
+            })
         ;
 
         $completedWithdraw = $this->service->withdraw($amount, $address);

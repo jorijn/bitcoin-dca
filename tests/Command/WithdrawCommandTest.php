@@ -40,7 +40,7 @@ final class WithdrawCommandTest extends TestCase
         $this->command = new WithdrawCommand($this->withdrawService);
     }
 
-    public function providerOfWithdrawScenarios(): array
+    public static function providerOfWithdrawScenarios(): array
     {
         return [
             'with tag, unattended' => ['tag'.random_int(1000, 2000), true, false, true, random_int(500000, 1_000_000)],

@@ -157,14 +157,23 @@ final class KrakenWithdrawServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method('queryPrivate')
-            ->withConsecutive(
-                ['Balance'],
-                ['WithdrawInfo']
-            )
-            ->willReturnOnConsecutiveCalls(
-                [KrakenWithdrawService::ASSET_NAME => (string) $bitcoinBalance],
-                ['fee' => $fee]
-            )
+            ->willReturnCallback(function (...$args) use ($bitcoinBalance, $fee) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $bitcoinBalance) {
+                        [$method] = $args;
+                        self::assertSame('Balance', $method);
+                        return [KrakenWithdrawService::ASSET_NAME => (string) $bitcoinBalance];
+                    })(),
+                    2 => (function () use ($args, $fee) {
+                        [$method] = $args;
+                        self::assertSame('WithdrawInfo', $method);
+                        return ['fee' => $fee];
+                    })(),
+                };
+            })
         ;
 
         static::assertSame($feeInSatoshis, $this->service->getWithdrawFeeInSatoshis());
@@ -180,13 +189,22 @@ final class KrakenWithdrawServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method('queryPrivate')
-            ->withConsecutive(['Balance'], ['WithdrawInfo'])
-            ->willReturnCallback(function ($with) use ($krakenClientException): array {
-                if ('Balance' === $with) {
-                    return ['BTC' => 3];
-                }
-
-                throw $krakenClientException;
+            ->willReturnCallback(function (...$args) use ($krakenClientException) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args) {
+                        [$method] = $args;
+                        self::assertSame('Balance', $method);
+                        return ['BTC' => 3];
+                    })(),
+                    2 => (function () use ($args, $krakenClientException) {
+                        [$method] = $args;
+                        self::assertSame('WithdrawInfo', $method);
+                        throw $krakenClientException;
+                    })(),
+                };
             })
         ;
 
