@@ -24,7 +24,22 @@ use PHPUnit\Framework\TestCase;
 final class CompletedBuyOrderTest extends TestCase
 {
     /**
-     * @covers ::<public>
+     * @covers ::__construct
+     * @covers ::getAmountInSatoshis
+     * @covers ::setAmountInSatoshis
+     * @covers ::getFeesInSatoshis
+     * @covers ::setFeesInSatoshis
+     * @covers ::getDisplayAmountBought
+     * @covers ::setDisplayAmountBought
+     * @covers ::getDisplayAmountSpent
+     * @covers ::setDisplayAmountSpent
+     * @covers ::getDisplayAmountSpentCurrency
+     * @covers ::setDisplayAmountSpentCurrency
+     * @covers ::getDisplayAveragePrice
+     * @covers ::setDisplayAveragePrice
+     * @covers ::getDisplayFeesSpent
+     * @covers ::setDisplayFeesSpent
+     * @covers ::getPurchaseMadeAt
      */
     public function testGettersAndSetters(): void
     {
