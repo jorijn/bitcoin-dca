@@ -59,7 +59,7 @@ final class WithdrawServiceTest extends TestCase
         $this->configuredExchange = 'ce'.random_int(1000, 2000);
     }
 
-    public function providerOfTags(): array
+    public static function providerOfTags(): array
     {
         return [
             'with tag' => ['tag'.random_int(1000, 2000)],
@@ -67,7 +67,7 @@ final class WithdrawServiceTest extends TestCase
         ];
     }
 
-    public function providerOfBalancesAndTags(): array
+    public static function providerOfBalancesAndTags(): array
     {
         return [
             'tag, exchange is limiting factor' => [1000, 'tag'.random_int(1000, 2000), 2000, 1000],

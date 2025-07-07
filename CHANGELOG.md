@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [v1.6.2] - 2025-07-07
+### Fixed
+* This release adds `operatorId` to the Bitvavo configuration, which is required for the latest version of the Bitvavo API.
+
 ## [v1.6.1] - 2022-02-05
 ### Fixed
 * This release fixes a bug where using XPub withdrawals wouldn't work

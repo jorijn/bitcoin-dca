@@ -214,11 +214,15 @@ final class BinanceBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method('request')
-            ->withConsecutive(
-                [
-                    'GET',
-                    BinanceBuyService::ORDER_URL,
-                    static::callback(function (array $options) use ($orderId): bool {
+            ->willReturnCallback(function (...$args) use ($orderId, $time, $getResponse, $infoResponse) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $orderId, $getResponse) {
+                        [$method, $url, $options] = $args;
+                        self::assertSame('GET', $method);
+                        self::assertSame(BinanceBuyService::ORDER_URL, $url);
                         self::assertArrayHasKey('symbol', $options['body']);
                         self::assertSame(['security_type' => 'TRADE'], $options['extra']);
                         self::assertArrayHasKey('orderId', $options['body']);
@@ -226,14 +230,12 @@ final class BinanceBuyServiceTest extends TestCase
                         self::assertSame($orderId, $options['body']['orderId']);
                         self::assertArrayHasKey('extra', $options);
                         self::assertArrayHasKey('body', $options);
-
-                        return true;
-                    }),
-                ],
-                [
-                    'GET',
-                    'api/v3/myTrades',
-                    static::callback(function (array $options) use ($time): bool {
+                        return $getResponse;
+                    })(),
+                    2 => (function () use ($args, $time, $infoResponse) {
+                        [$method, $url, $options] = $args;
+                        self::assertSame('GET', $method);
+                        self::assertSame('api/v3/myTrades', $url);
                         self::assertArrayHasKey('extra', $options);
                         self::assertArrayHasKey('symbol', $options['body']);
                         self::assertSame($this->tradingPair, $options['body']['symbol']);
@@ -241,12 +243,10 @@ final class BinanceBuyServiceTest extends TestCase
                         self::assertArrayHasKey('body', $options);
                         self::assertSame($time, $options['body']['startTime']);
                         self::assertSame(['security_type' => 'USER_DATA'], $options['extra']);
-
-                        return true;
-                    }),
-                ],
-            )
-            ->willReturnOnConsecutiveCalls($getResponse, $infoResponse)
+                        return $infoResponse;
+                    })(),
+                };
+            })
         ;
 
         $result = $this->service->checkIfOrderIsFilled($orderId);

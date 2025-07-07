@@ -52,7 +52,7 @@ final class BuyCommandTest extends TestCase
         $this->command = new BuyCommand($this->buyService, $this->serializer, $this->baseCurrency);
     }
 
-    public function providerOfDifferentFormats(): array
+    public static function providerOfDifferentFormats(): array
     {
         return [
             ['yaml'],
@@ -62,7 +62,7 @@ final class BuyCommandTest extends TestCase
         ];
     }
 
-    public function providerOfTags(): array
+    public static function providerOfTags(): array
     {
         return [
             'with tag' => ['tag'.random_int(1000, 2000)],

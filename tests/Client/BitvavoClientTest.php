@@ -35,6 +35,7 @@ final class BitvavoClientTest extends TestCase
     private string $accessWindow;
     private string $apiKey;
     private string $apiSecret;
+    private int $operatorId;
 
     private \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
     private BitvavoClient $client;
@@ -48,17 +49,19 @@ final class BitvavoClientTest extends TestCase
         $this->apiSecret = 'apisecret'.random_int(1000, 2000);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->accessWindow = (string) random_int(1000, 2000);
+        $this->operatorId = random_int(1000, 2000);
 
         $this->client = new BitvavoClient(
             $this->httpClient,
             $this->logger,
             $this->apiKey,
             $this->apiSecret,
+            $this->operatorId,
             $this->accessWindow
         );
     }
 
-    public function differentApiCalls(): array
+    public static function differentApiCalls(): array
     {
         return [
             'GET /?foo=bar' => ['GET', ['foo' => 'bar'], []],
@@ -84,6 +87,8 @@ final class BitvavoClientTest extends TestCase
         $endpointParams = $path.(empty($parameters) ? null : '?'.$query);
         $hashString = $now.$method.'/v2/'.$endpointParams;
 
+        $body['operatorId'] = $this->operatorId;
+        
         if (!empty($body)) {
             $hashString .= json_encode($body, JSON_THROW_ON_ERROR);
         }

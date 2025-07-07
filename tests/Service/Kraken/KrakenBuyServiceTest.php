@@ -44,7 +44,7 @@ final class KrakenBuyServiceTest extends TestCase
         );
     }
 
-    public function togglerTradingAgreement(): array
+    public static function togglerTradingAgreement(): array
     {
         return [
             'trading agreement enabled' => ['agree'],
@@ -99,10 +99,14 @@ final class KrakenBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(3))
             ->method('queryPrivate')
-            ->withConsecutive(
-                [
-                    'AddOrder',
-                    static::callback(function ($options) use ($tradingAgreement, $price, $amount, &$userRef): bool {
+            ->willReturnCallback(function (...$args) use ($tradingAgreement, $price, $amount, &$userRef, $txId, $fee) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $tradingAgreement, $price, $amount, &$userRef, $txId) {
+                        [$method, $options] = $args;
+                        self::assertSame('AddOrder', $method);
                         self::assertArrayHasKey('pair', $options);
                         self::assertSame('XBT'.$this->baseCurrency, $options['pair']);
                         self::assertArrayHasKey('type', $options);
@@ -125,33 +129,31 @@ final class KrakenBuyServiceTest extends TestCase
                         }
 
                         $userRef = $options['userref'];
-
-                        return true;
-                    }),
-                ],
-                [
-                    'OpenOrders',
-                    ['userref' => &$userRef],
-                ],
-                [
-                    'TradesHistory',
-                ],
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['txid' => [$txId]], // add order call
-                [[]], // open orders call
-                [
-                    'trades' => [
-                        [
-                            'ordertxid' => $txId,
-                            'vol' => bcdiv((string) $amount, $price, 8),
-                            'cost' => $amount,
-                            'price' => $price,
-                            'fee' => $fee,
-                        ],
-                    ],
-                ]
-            )
+                        return ['txid' => [$txId]];
+                    })(),
+                    2 => (function () use ($args, $userRef) {
+                        [$method, $options] = $args;
+                        self::assertSame('OpenOrders', $method);
+                        self::assertSame(['userref' => $userRef], $options);
+                        return [[]];
+                    })(),
+                    3 => (function () use ($args, $txId, $amount, $price, $fee) {
+                        [$method] = $args;
+                        self::assertSame('TradesHistory', $method);
+                        return [
+                            'trades' => [
+                                [
+                                    'ordertxid' => $txId,
+                                    'vol' => bcdiv((string) $amount, $price, 8),
+                                    'cost' => $amount,
+                                    'price' => $price,
+                                    'fee' => $fee,
+                                ],
+                            ],
+                        ];
+                    })(),
+                };
+            })
         ;
 
         $completedOrder = $this->buyService->initiateBuy($amount);
@@ -231,31 +233,32 @@ final class KrakenBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(3))
             ->method('queryPrivate')
-            ->withConsecutive(
-                [
-                    'AddOrder',
-                    static::callback(function ($options) use (&$userRef): bool {
+            ->willReturnCallback(function (...$args) use (&$userRef, $txId) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, &$userRef, $txId) {
+                        [$method, $options] = $args;
+                        self::assertSame('AddOrder', $method);
                         self::assertArrayHasKey('userref', $options);
                         self::assertNotEmpty($options['userref']);
-
                         $userRef = $options['userref'];
-
-                        return true;
-                    }),
-                ],
-                [
-                    'OpenOrders',
-                    ['userref' => &$userRef],
-                ],
-                [
-                    'TradesHistory',
-                ],
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['txid' => [$txId]], // add order call
-                [[]], // open orders call
-                [['trades' => []]]
-            )
+                        return ['txid' => [$txId]];
+                    })(),
+                    2 => (function () use ($args, $userRef) {
+                        [$method, $options] = $args;
+                        self::assertSame('OpenOrders', $method);
+                        self::assertSame(['userref' => $userRef], $options);
+                        return [[]];
+                    })(),
+                    3 => (function () use ($args) {
+                        [$method] = $args;
+                        self::assertSame('TradesHistory', $method);
+                        return [['trades' => []]];
+                    })(),
+                };
+            })
         ;
 
         $this->expectException(KrakenClientException::class);
@@ -293,53 +296,59 @@ final class KrakenBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(1))
             ->method('queryPublic')
-            ->withConsecutive(
-                ['Ticker', ['pair' => 'XBT'.$this->baseCurrency]],
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['XBT' => ['a' => [$price]]],
-            )
+            ->with('Ticker', ['pair' => 'XBT'.$this->baseCurrency])
+            ->willReturn(['XBT' => ['a' => [$price]]])
         ;
 
         $this->client
             ->expects(static::exactly(4))
             ->method('queryPrivate')
-            ->withConsecutive(
-                ['TradeVolume', ['pair' => 'XBT'.$this->baseCurrency, 'fee_info' => 'true']],
-                [
-                    'AddOrder',
-                    static::callback(function ($options) use ($expectedAmount, $price): bool {
+            ->willReturnCallback(function (...$args) use ($expectedAmount, $price, $takerFeePercentage, $txId, $fee) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $takerFeePercentage) {
+                        [$method, $options] = $args;
+                        self::assertSame('TradeVolume', $method);
+                        self::assertSame(['pair' => 'XBT'.$this->baseCurrency, 'fee_info' => 'true'], $options);
+                        return [
+                            'fees' => [
+                                'XBT'.$this->baseCurrency => [
+                                    'fee' => $takerFeePercentage,
+                                ],
+                            ],
+                        ];
+                    })(),
+                    2 => (function () use ($args, $expectedAmount, $price, $txId) {
+                        [$method, $options] = $args;
+                        self::assertSame('AddOrder', $method);
                         self::assertArrayHasKey('volume', $options);
                         self::assertSame(bcdiv((string) $expectedAmount, $price, 8), $options['volume']);
-
-                        return true;
-                    }),
-                ],
-                ['OpenOrders'],
-                ['TradesHistory'],
-            )
-            ->willReturnOnConsecutiveCalls(
-                [
-                    'fees' => [
-                        'XBT'.$this->baseCurrency => [
-                            'fee' => $takerFeePercentage,
-                        ],
-                    ],
-                ],
-                ['txid' => [$txId]], // add order call
-                [[]], // open orders call
-                [
-                    'trades' => [
-                        [
-                            'ordertxid' => $txId,
-                            'vol' => bcdiv((string) $expectedAmount, $price, 8),
-                            'cost' => $expectedAmount,
-                            'price' => $price,
-                            'fee' => $fee,
-                        ],
-                    ],
-                ]
-            )
+                        return ['txid' => [$txId]];
+                    })(),
+                    3 => (function () use ($args) {
+                        [$method] = $args;
+                        self::assertSame('OpenOrders', $method);
+                        return [[]];
+                    })(),
+                    4 => (function () use ($args, $txId, $expectedAmount, $price, $fee) {
+                        [$method] = $args;
+                        self::assertSame('TradesHistory', $method);
+                        return [
+                            'trades' => [
+                                [
+                                    'ordertxid' => $txId,
+                                    'vol' => bcdiv((string) $expectedAmount, $price, 8),
+                                    'cost' => $expectedAmount,
+                                    'price' => $price,
+                                    'fee' => $fee,
+                                ],
+                            ],
+                        ];
+                    })(),
+                };
+            })
         ;
 
         $completedBuyOrder = $krakenBuyService->initiateBuy($amount);

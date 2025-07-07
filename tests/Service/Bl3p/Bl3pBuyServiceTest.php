@@ -52,7 +52,7 @@ final class Bl3pBuyServiceTest extends TestCase
         $this->service = new Bl3pBuyService($this->client, $this->baseCurrency);
     }
 
-    public function providerOfFeeCurrencies(): array
+    public static function providerOfFeeCurrencies(): array
     {
         return [
             'Not BTC' => ['EUR'],
@@ -97,23 +97,31 @@ final class Bl3pBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method(self::API_CALL)
-            ->withConsecutive(
-                [
-                    self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD,
-                    [
-                        Bl3pBuyService::TYPE => 'bid',
-                        Bl3pBuyService::AMOUNT_FUNDS_INT => $amount * 100000,
-                        Bl3pBuyService::FEE_CURRENCY => self::BTC,
-                    ],
-                ],
-                [
-                    self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT,
-                    [
-                        Bl3pBuyService::ORDER_ID => $orderId,
-                    ],
-                ]
-            )
-            ->willReturnOnConsecutiveCalls($this->getNewOrderResult($orderId), $closedResult)
+            ->willReturnCallback(function (...$args) use ($amount, $orderId, $closedResult) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $amount, $orderId) {
+                        [$endpoint, $params] = $args;
+                        self::assertSame(self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD, $endpoint);
+                        self::assertSame([
+                            Bl3pBuyService::TYPE => 'bid',
+                            Bl3pBuyService::AMOUNT_FUNDS_INT => $amount * 100000,
+                            Bl3pBuyService::FEE_CURRENCY => self::BTC,
+                        ], $params);
+                        return $this->getNewOrderResult($orderId);
+                    })(),
+                    2 => (function () use ($args, $orderId, $closedResult) {
+                        [$endpoint, $params] = $args;
+                        self::assertSame(self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT, $endpoint);
+                        self::assertSame([
+                            Bl3pBuyService::ORDER_ID => $orderId,
+                        ], $params);
+                        return $closedResult;
+                    })(),
+                };
+            })
         ;
 
         $completedBuyDTO = $this->service->initiateBuy($amount);
@@ -140,11 +148,23 @@ final class Bl3pBuyServiceTest extends TestCase
         $this->client
             ->expects(static::exactly(2))
             ->method(self::API_CALL)
-            ->withConsecutive(
-                [self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD],
-                [self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT]
-            )
-            ->willReturnOnConsecutiveCalls($this->getNewOrderResult($orderId), $this->getPendingOrderResult())
+            ->willReturnCallback(function (...$args) use ($orderId) {
+                static $count = 0;
+                $count++;
+                
+                return match ($count) {
+                    1 => (function () use ($args, $orderId) {
+                        [$endpoint] = $args;
+                        self::assertSame(self::BTC.$this->baseCurrency.self::MONEY_ORDER_ADD, $endpoint);
+                        return $this->getNewOrderResult($orderId);
+                    })(),
+                    2 => (function () use ($args) {
+                        [$endpoint] = $args;
+                        self::assertSame(self::BTC.$this->baseCurrency.self::MONEY_ORDER_RESULT, $endpoint);
+                        return $this->getPendingOrderResult();
+                    })(),
+                };
+            })
         ;
 
         $this->expectException(PendingBuyOrderException::class);
