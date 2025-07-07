@@ -24,7 +24,6 @@ class BitvavoClient implements BitvavoClientInterface
         protected LoggerInterface $logger,
         protected ?string $apiKey,
         protected ?string $apiSecret,
-        protected ?int $operatorId = null,
         protected string $accessWindow = '10000'
     ) {
     }
@@ -40,9 +39,6 @@ class BitvavoClient implements BitvavoClientInterface
             $time = explode(' ', microtime());
             $now = $time[1].substr($time[0], 2, 3);
         }
-        
-        // add the required operatorId to the body
-        $body['operatorId'] = $this->operatorId;
 
         $query = http_build_query($parameters, '', '&');
         $endpointParams = $path.(empty($parameters) ? null : '?'.$query);

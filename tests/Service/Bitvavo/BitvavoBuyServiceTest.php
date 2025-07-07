@@ -43,6 +43,7 @@ final class BitvavoBuyServiceTest extends TestCase
     private \Jorijn\Bitcoin\Dca\Client\BitvavoClientInterface|\PHPUnit\Framework\MockObject\MockObject $client;
     private string $baseCurrency;
     private BitvavoBuyService $service;
+    private int $operatorId;
 
     protected function setUp(): void
     {
@@ -50,7 +51,8 @@ final class BitvavoBuyServiceTest extends TestCase
 
         $this->client = $this->createMock(BitvavoClientInterface::class);
         $this->baseCurrency = (string) random_int(111, 999);
-        $this->service = new BitvavoBuyService($this->client, $this->baseCurrency);
+        $this->operatorId = random_int(1, 1000);
+        $this->service = new BitvavoBuyService($this->client, $this->baseCurrency, $this->operatorId);
     }
 
     /**
@@ -79,6 +81,7 @@ final class BitvavoBuyServiceTest extends TestCase
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) $amount,
+                'operatorId' => $this->operatorId,
             ])
             ->willReturn($data)
         ;
@@ -107,6 +110,7 @@ final class BitvavoBuyServiceTest extends TestCase
                 'side' => 'buy',
                 'orderType' => self::MARKET,
                 self::AMOUNT_QUOTE => (string) 1,
+                'operatorId' => $this->operatorId,
             ])
             ->willReturn($this->getPendingResponseStructure($orderId))
         ;

@@ -27,9 +27,10 @@ class BitvavoBuyService implements BuyServiceInterface
     final public const ORDER_ID = 'orderId';
     protected string $tradingPair;
 
-    public function __construct(protected BitvavoClientInterface $bitvavoClient, protected string $baseCurrency)
+    public function __construct(protected BitvavoClientInterface $bitvavoClient, protected string $baseCurrency, protected int $operatorId)
     {
         $this->tradingPair = sprintf('BTC-%s', $this->baseCurrency);
+        $this->operatorId = $operatorId;
     }
 
     public function supportsExchange(string $exchange): bool
@@ -44,6 +45,7 @@ class BitvavoBuyService implements BuyServiceInterface
             'side' => 'buy',
             'orderType' => self::MARKET,
             'amountQuote' => (string) $amount,
+            'operatorId' => $this->operatorId,
         ]);
 
         if ('filled' !== $orderInfo['status']) {
